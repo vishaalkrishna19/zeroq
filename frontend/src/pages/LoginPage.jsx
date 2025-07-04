@@ -32,6 +32,7 @@ export default function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        // backgroundImage: 'url("/login-new.png")'
       }}
     >
       <Paper
@@ -60,9 +61,27 @@ export default function LoginPage() {
           }}
         >
           <Stack spacing={8} mb={32}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '12px', 
+            marginBottom: '32px' 
+          }}>
+            <div style={{ 
+              width: '40px', 
+              height: '40px', 
+              background: '#999', 
+              borderRadius: '8px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center' 
+            }}>
+              <img src="https://zeroq.hfapp.net/logo.svg" width="24px" height="24px" alt="ZeroQ Logo" />
+            </div>
             <Title order={3} size="h1" style={{ fontWeight: 400, color: "#222" }}>
               ZeroQ
             </Title>
+          </div>
           </Stack>
           <Title order={2} mb={8} style={{ fontWeight: 500, color: "#222" }}>
             Sign in to your account
@@ -141,6 +160,28 @@ export default function LoginPage() {
               borderBottomRightRadius: cardRadius,
             }}
           />
+          {/* Centered Logo Overlay */}
+          <div style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "150px",
+            height: "150px",
+
+            borderRadius: "16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+         
+          }}>
+            <img 
+              src="https://zeroq.hfapp.net/logo.svg" 
+              width="120px" 
+              height="120px" 
+              alt="ZeroQ Logo" 
+            />
+          </div>
         </Box>
       </Paper>
     </Box>
