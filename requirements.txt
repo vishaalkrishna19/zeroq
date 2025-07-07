@@ -1,9 +1,6 @@
-"""
-Requirements for Zeroqueue Employee Onboarding/Offboarding System
-
-Django project with authentication, user management, and granular permissions.
-Uses Django Allauth for authentication and Django REST Framework for API.
-"""
+# Requirements for Zeroqueue Employee Onboarding/Offboarding System
+# Django project with authentication, user management, and granular permissions.
+# Uses Django Allauth for authentication and Django REST Framework for API.
 
 # Django Core
 Django>=4.2.0,<5.0

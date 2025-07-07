@@ -129,7 +129,7 @@ class Account(models.Model):
         return User.objects.filter(
             useraccount__account=self,
             is_active=True
-        ).select_related('useraccount')
+        )
     
     def get_admin_users(self):
         """Returns queryset of admin users for this account."""
@@ -144,4 +144,4 @@ class Account(models.Model):
             useraccount__account=self,
             useraccount__role=admin_role,
             is_active=True
-        ).select_related('useraccount')
+        )

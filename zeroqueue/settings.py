@@ -167,7 +167,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -184,8 +183,21 @@ REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer'
 }
 
-# Email Configuration (for development)
+# Email Configuration
+# DEVELOPMENT MODE - emails printed to console (current mode)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# PRODUCTION MODE - real emails via SMTP (uncomment to use)
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'keerthanamg19@gmail.com'  # Your Gmail address
+EMAIL_HOST_PASSWORD = 'ryvucjdxdqmhgnzn'  # App password without spaces
+
+# Email settings
+DEFAULT_FROM_EMAIL = 'ZeroQueue Admin <keerthanamg19@gmail.com>'  # Your Gmail address
+EMAIL_SUBJECT_PREFIX = '[ZeroQueue] '
 
 # Logging Configuration
 LOGGING = {
