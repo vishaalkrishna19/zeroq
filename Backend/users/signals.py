@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, post_migrate
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.apps import apps
-
+from .services import EmailService
 User = get_user_model()
 
 

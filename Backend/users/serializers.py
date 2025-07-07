@@ -34,7 +34,8 @@ class UserSerializer(serializers.ModelSerializer):
         }
     
     def get_account_count(self, obj):
-        return obj.useraccount_set.filter(is_active=True).count()
+        # User now has only one account, return 1 if account exists, 0 otherwise
+        return 1 if obj.account else 0
 
 
 class UserListSerializer(serializers.ModelSerializer):
@@ -52,7 +53,8 @@ class UserListSerializer(serializers.ModelSerializer):
         ]
     
     def get_account_count(self, obj):
-        return obj.useraccount_set.filter(is_active=True).count()
+        # User now has only one account, return 1 if account exists, 0 otherwise  
+        return 1 if obj.account else 0
     
     def get_full_name(self, obj):
         return obj.get_full_name()

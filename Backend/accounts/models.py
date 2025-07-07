@@ -116,7 +116,7 @@ class Account(models.Model):
     @property
     def user_count(self):
         """Returns the current number of users associated with this account."""
-        return self.useraccount_set.filter(user__is_active=True).count()
+        return self.users.filter(is_active=True).count()
     
     @property
     def can_add_users(self):
@@ -125,23 +125,17 @@ class Account(models.Model):
     
     def get_active_users(self):
         """Returns queryset of active users for this account."""
-        from users.models import User
-        return User.objects.filter(
-            useraccount__account=self,
-            is_active=True
-        ).select_related('useraccount')
+        return self.users.filter(is_active=True)
     
     def get_admin_users(self):
         """Returns queryset of admin users for this account."""
-        from users.models import User
         from roles_permissions.models import Role
         
         admin_role = Role.objects.filter(name='admin').first()
         if not admin_role:
-            return User.objects.none()
+            return self.users.none()
             
-        return User.objects.filter(
-            useraccount__account=self,
-            useraccount__role=admin_role,
+        return self.users.filter(
+            role=admin_role,
             is_active=True
-        ).select_related('useraccount')
+        )

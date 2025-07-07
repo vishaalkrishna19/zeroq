@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import RegexValidator
 from django.utils import timezone
+from django.db import transaction
+import uuid
 import uuid
 
 
@@ -134,6 +136,60 @@ class User(AbstractUser):
         help_text='Whether two-factor authentication is enabled'
     )
     
+    # Company relationship - One user belongs to one company only
+    account = models.ForeignKey(
+        'accounts.Account',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='users',
+        help_text='Company this user belongs to'
+    )
+    
+    # Role in the company
+    role = models.ForeignKey(
+        'roles_permissions.Role',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text='User role in the company'
+    )
+    
+    # Onboarding/Offboarding status
+    onboarding_completed = models.BooleanField(
+        default=False,
+        help_text='Whether onboarding process is completed'
+    )
+    
+    onboarding_completed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='When onboarding was completed'
+    )
+    
+    offboarding_started = models.BooleanField(
+        default=False,
+        help_text='Whether offboarding process has started'
+    )
+    
+    offboarding_started_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='When offboarding was started'
+    )
+    
+    offboarding_completed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text='When offboarding was completed'
+    )
+    
+    # Admin access for the account
+    can_access_admin = models.BooleanField(
+        default=False,
+        help_text='Whether user can access admin features'
+    )
+    
     # Audit fields (inherited: date_joined, last_login)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
@@ -180,25 +236,27 @@ class User(AbstractUser):
     
     @property
     def account_memberships(self):
-        """Return queryset of account memberships."""
-        return self.useraccount_set.select_related('account', 'role')
+        """Return the user's account (now single account)."""
+        if self.account:
+            return [self.account]
+        return []
     
     def get_accounts(self):
-        """Return list of accounts this user belongs to."""
-        return [ua.account for ua in self.useraccount_set.select_related('account')]
+        """Return list of accounts this user belongs to (now just one)."""
+        if self.account:
+            return [self.account]
+        return []
     
     def get_primary_account(self):
-        """Return the primary account for this user."""
-        primary_ua = self.useraccount_set.filter(is_primary=True).first()
-        return primary_ua.account if primary_ua else None
+        """Return the user's account (now always the only account)."""
+        return self.account
     
     def has_role_in_account(self, role_name, account):
         """Check if user has a specific role in an account."""
-        return self.useraccount_set.filter(
-            account=account,
-            role__name=role_name,
-            is_active=True
-        ).exists()
+        return (self.account == account and 
+                self.role and 
+                self.role.name == role_name and 
+                self.is_active)
     
     def is_admin_in_account(self, account):
         """Check if user is admin in a specific account."""
@@ -206,9 +264,8 @@ class User(AbstractUser):
     
     def get_permissions_for_account(self, account):
         """Get all permissions for user in a specific account."""
-        ua = self.useraccount_set.filter(account=account, is_active=True).first()
-        if ua and ua.role:
-            return ua.role.rolepermission_set.filter(is_granted=True).values_list(
+        if self.account == account and self.role and self.is_active:
+            return self.role.rolepermission_set.filter(is_granted=True).values_list(
                 'permission__codename', flat=True
             )
         return []
@@ -218,6 +275,15 @@ class User(AbstractUser):
         super().set_password(raw_password)
         self.password_changed_at = timezone.now()
         self.must_change_password = False
+    
+    def save(self, *args, **kwargs):
+        """Override save to ensure proper database transactions."""
+        # Ensure employee_id is uppercase if provided
+        if self.employee_id:
+            self.employee_id = self.employee_id.upper()
+        
+        # Call parent save method
+        super().save(*args, **kwargs)
 
 
 class UserAccount(models.Model):
@@ -321,7 +387,11 @@ class UserAccount(models.Model):
                 raise ValidationError('User can only have one primary account.')
     
     def save(self, *args, **kwargs):
+        """Override save to ensure validation and proper database transactions."""
+        # Call clean method for validation
         self.clean()
+        
+        # Call parent save method
         super().save(*args, **kwargs)
     
     @property

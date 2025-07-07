@@ -59,6 +59,22 @@ class PermissionAdmin(admin.ModelAdmin):
     )
     
     ordering = ['category', 'level', 'name']
+    
+    def save_model(self, request, obj, form, change):
+        """Override to ensure permission data is properly saved."""
+        try:
+            # Save the permission
+            super().save_model(request, obj, form, change)
+            
+            # Verify the save was successful
+            obj.refresh_from_db()
+            
+            action = "created" if not change else "updated"
+            print(f"✅ Permission {action}: {obj.name} ({obj.codename})")
+            
+        except Exception as e:
+            print(f"❌ Error saving Permission: {e}")
+            raise
 
 
 class RolePermissionInline(admin.TabularInline):
@@ -146,6 +162,22 @@ class RoleAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related('rolepermission_set')
+    
+    def save_model(self, request, obj, form, change):
+        """Override to ensure role data is properly saved."""
+        try:
+            # Save the role
+            super().save_model(request, obj, form, change)
+            
+            # Verify the save was successful
+            obj.refresh_from_db()
+            
+            action = "created" if not change else "updated"
+            print(f"✅ Role {action}: {obj.name}")
+            
+        except Exception as e:
+            print(f"❌ Error saving Role: {e}")
+            raise
 
 
 @admin.register(RolePermission)

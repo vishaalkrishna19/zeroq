@@ -12,9 +12,9 @@ from .serializers import (
     UserCreateSerializer,
     UserAccountSerializer,
     UserAccountCreateSerializer,
-    PasswordChangeSerializer,
-    PasswordResetSerializer
+    PasswordChangeSerializer
 )
+from .services import EmailService
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -34,7 +34,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return UserSerializer
     
     def get_queryset(self):
-        queryset = User.objects.prefetch_related('useraccount_set__account', 'useraccount_set__role')
+        queryset = User.objects.select_related('account', 'role')
         
         # Filter by search query
         search = self.request.query_params.get('search', None)
@@ -65,7 +65,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # Filter by account
         account_id = self.request.query_params.get('account_id', None)
         if account_id:
-            queryset = queryset.filter(useraccount__account_id=account_id)
+            queryset = queryset.filter(account_id=account_id)
         
         return queryset.order_by('last_name', 'first_name')
     
@@ -80,6 +80,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         # Print password to terminal if generated
         if hasattr(user, '_generated_password'):
+            password= user._generated_password
             print("\n" + "="*60)
             print("🔐 NEW USER CREATED VIA API")
             print("="*60)
@@ -87,75 +88,160 @@ class UserViewSet(viewsets.ModelViewSet):
             print(f"Email: {user.email}")
             print(f"Full Name: {user.get_full_name()}")
             print(f"Generated Password: {user._generated_password}")
+            print(f"Generated Password: {password}")
+
             print(f"Employee ID: {user.employee_id or 'Not set'}")
             print(f"Created by: {request.user.username}")
             print("⚠️  User must change password on first login")
             print("="*60 + "\n")
-        
+            # Send email with credentials
+            if user.email:
+                email_sent = EmailService.send_user_credentials_email(
+                    user=user,
+                    password=password,
+                    created_by=request.user
+                )
+                if email_sent:
+                    print(":white_check_mark: Email sent successfully to user's email address")
+                else:
+                    print(":x: Failed to send email - check email configuration")
+            else:
+                print(":warning:  No email address provided - email not sent")
+
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     @action(detail=True, methods=['get'])
-    def accounts(self, request, pk=None):
-        """Get all accounts for this user."""
+    def account(self, request, pk=None):
+        """Get account information for this user."""
         user = self.get_object()
-        user_accounts = user.useraccount_set.select_related('account', 'role')
-        serializer = UserAccountSerializer(user_accounts, many=True)
-        return Response(serializer.data)
+        if user.account:
+            from accounts.serializers import AccountSerializer
+            serializer = AccountSerializer(user.account)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "User is not assigned to any account."}, 
+                          status=status.HTTP_404_NOT_FOUND)
     
-    @action(detail=True, methods=['post'])
-    def change_password(self, request, pk=None):
-        """Change user password."""
-        user = self.get_object()
+    @action(detail=False, methods=['post'])
+    def reset_password(self, request):
+        """Reset current user's password with current password verification."""
+        user = request.user
         
-        # Check if user can change this password
-        if request.user != user and not request.user.is_staff:
-            return Response(
-                {"error": "You can only change your own password."}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Get passwords from request
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
         
-        serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            user.set_password(serializer.validated_data['new_password'])
-            user.save()
-            
-            return Response({"message": "Password changed successfully."})
+        # Validate input
+        if not current_password or not new_password:
+            return Response({
+                "error": "Both current_password and new_password are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    @action(detail=True, methods=['post'])
-    def reset_password(self, request, pk=None):
-        """Admin password reset."""
-        if not request.user.is_staff:
-            return Response(
-                {"error": "Only staff members can reset passwords."}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # Verify current password
+        if not user.check_password(current_password):
+            return Response({
+                "error": "Current password is incorrect."
+            }, status=status.HTTP_400_BAD_REQUEST)
         
-        user = self.get_object()
-        serializer = PasswordResetSerializer(data=request.data)
+        # Validate new password (same as current)
+        if current_password == new_password:
+            return Response({
+                "error": "New password must be different from current password."
+            }, status=status.HTTP_400_BAD_REQUEST)
         
-        if serializer.is_valid():
-            new_password = serializer.validated_data['new_password']
-            force_change = serializer.validated_data['force_change']
-            
+        try:
+            # Set new password
             user.set_password(new_password)
-            user.must_change_password = force_change
+            user.must_change_password = False
+            user.password_changed_at = timezone.now()
             user.save()
+            
+            # Verify the password was set correctly
+            user.refresh_from_db()
+            if not user.check_password(new_password):
+                raise Exception("Password verification failed after save")
             
             # Log password reset
-            print(f"\n🔐 PASSWORD RESET by {request.user.username}")
-            print(f"Target User: {user.username} ({user.get_full_name()})")
-            print(f"Must change on login: {force_change}")
-            print(f"Reset at: {timezone.now()}\n")
+            print(f"\n🔐 PASSWORD RESET by user: {user.username}")
+            print(f"Email: {user.email}")
+            print(f"Reset at: {timezone.now()}")
+            print(f"New password verification: ✅")
+            print(f"Database save: ✅\n")
             
+            # Send email notification
+            if user.email:
+                email_sent = EmailService.send_password_reset_notification(
+                    user=user,
+                    new_password=new_password,
+                    reset_by=request.user
+                )
+                if email_sent:
+                    print(":white_check_mark: Password reset email sent successfully")
+                else:
+                    print(":x: Failed to send password reset email")
+
             return Response({
                 "message": "Password reset successfully.",
-                "must_change_password": force_change
+                "user": user.username,
+                "email_sent":user.email and email_sent,
+                "timestamp": timezone.now()
             })
+            
+        except Exception as e:
+            print(f"❌ Error during password reset: {e}")
+            return Response({
+                "error": "Failed to reset password. Please try again."
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    @action(detail=True, methods=['post'])
+    def admin_reset_password(self, request, pk=None):
+        """Admin password reset for any user."""
+        if not request.user.is_staff:
+            return Response(
+                {"error": "Only staff members can reset other users' passwords."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
         
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = self.get_object()
+        new_password = request.data.get('new_password')
+        
+        if not new_password:
+            return Response({
+                "error": "new_password is required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Set new password
+            user.set_password(new_password)
+            user.must_change_password = True  # Force user to change on next login
+            user.save()
+            
+            # Verify the password was set correctly
+            user.refresh_from_db()
+            if not user.check_password(new_password):
+                raise Exception("Password verification failed after save")
+            
+            # Log password reset
+            print(f"\n🔐 ADMIN PASSWORD RESET by {request.user.username}")
+            print(f"Target User: {user.username} ({user.get_full_name()})")
+            print(f"New Password: {new_password}")
+            print(f"Reset at: {timezone.now()}")
+            print(f"Must change on login: ✅")
+            print(f"Database save verification: ✅\n")
+            
+            return Response({
+                "message": f"Password reset successfully for {user.get_full_name()}.",
+                "target_user": user.username,
+                "must_change_password": True,
+                "timestamp": timezone.now()
+            })
+            
+        except Exception as e:
+            print(f"❌ Error during admin password reset: {e}")
+            return Response({
+                "error": "Failed to reset password. Please try again."
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     @action(detail=True, methods=['post'])
     def deactivate(self, request, pk=None):

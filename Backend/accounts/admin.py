@@ -79,5 +79,21 @@ class AccountAdmin(admin.ModelAdmin):
     
     ordering = ['account_name']
     
+    def save_model(self, request, obj, form, change):
+        """Override to ensure account data is properly saved."""
+        try:
+            # Save the account
+            super().save_model(request, obj, form, change)
+            
+            # Verify the save was successful
+            obj.refresh_from_db()
+            
+            action = "created" if not change else "updated"
+            print(f"✅ Account {action}: {obj.account_name} ({obj.account_id})")
+            
+        except Exception as e:
+            print(f"❌ Error saving Account: {e}")
+            raise
+    
     def get_queryset(self, request):
-        return super().get_queryset(request)
+        return super().get_queryset(request).select_related()
