@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to Workforce Platform</title>
+</head>
+<body>
+    <h2>Welcome to Workforce Platform</h2>
+    <p>Dear {{ user.first_name }},</p>
+    
+    <p>Your account has been created successfully. Here are your login details:</p>
+    
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Temporary Password:</strong> {{ password }}</p>
+        <p><strong>Login URL:</strong> <a href="{{ login_url }}">{{ login_url }}</a></p>
+    </div>
+    
+    <p><strong>Important:</strong> You will be required to change your password upon first login for security reasons.</p>
+    
+    <p>If you have any questions, please contact your administrator.</p>
+    
+    <p>Best regards,<br>Workforce Platform Team</p>
+</body>
+</html>

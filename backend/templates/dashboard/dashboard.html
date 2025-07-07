@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Workforce Platform</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .welcome { color: #333; }
+        .logout-btn { background-color: #dc3545; color: white; padding: 8px 16px; border: none; border-radius: 4px; text-decoration: none; display: inline-block; }
+        .logout-btn:hover { background-color: #c82333; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="welcome">Welcome, {{ user.first_name }}!</h1>
+        <p>Email: {{ user.email }}</p>
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+    </div>
+    
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h2>Dashboard</h2>
+        <p>Welcome to your workforce platform dashboard. Your account is active and ready to use.</p>
+    </div>
+</body>
+</html>

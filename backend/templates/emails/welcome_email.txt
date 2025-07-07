@@ -1,0 +1,16 @@
+Welcome to Workforce Platform
+
+Dear {{ user.first_name }},
+
+Your account has been created successfully. Here are your login details:
+
+Email: {{ user.email }}
+Temporary Password: {{ password }}
+Login URL: {{ login_url }}
+
+IMPORTANT: You will be required to change your password upon first login for security reasons.
+
+If you have any questions, please contact your administrator.
+
+Best regards,
+Workforce Platform Team
