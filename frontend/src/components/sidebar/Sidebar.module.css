@@ -1,0 +1,286 @@
+.sidebar {
+  height: 100vh;
+  background-color: rgba(21, 23, 26, 0.94);
+  border-right: 1px solid #3a3d41;
+  position: relative;
+  padding: 16px 10px;
+  flex-shrink: 0;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible;
+}
+
+.sidebarExpanded {
+  width: 260px;
+}
+
+.sidebarCollapsed {
+  width: 60px;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 45px;
+  right: -12px;
+  z-index: 1000;
+  background-color: rgba(21, 23, 26, 0.94);
+  transition: all 0.2s ease;
+}
+
+.toggleButton:hover {
+  background-color: #5d5d5d44;
+  transform: scale(1.1);
+}
+
+.header {
+  padding: 2px 0;
+  margin-left: -16px;
+  margin-right: -16px;
+  padding-left: 20px;
+  padding-right: 16px;
+  color: white;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+}
+
+.logoText {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.logoTextHidden {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.askAnything {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 0;
+  color: #f3f3f3;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.askAnything:hover {
+  background-color: #35373a;
+  color: white;
+}
+
+.separator {
+  height: 1px;
+  background-color: #3a3d41;
+  margin: 12px 0;
+  transition: opacity 0.3s ease;
+}
+
+.linkGroup {
+  position: relative;
+  font-size: 14px;
+}
+
+.linkButton {
+  width: 100%;
+  padding: 10px 10px;
+  border-radius: 8px;
+  border: 0;
+  color: white;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.linkButton:hover {
+  background-color: #35373a;
+}
+
+.linkButtonActive {
+  background-color: #2b7fff;
+
+}
+
+.linkButtonActive:hover {
+  background-color: #2b7fff;
+}
+
+
+
+.chevronIcon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+}
+
+.sidebarCollapsed .chevronIcon {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+/* Enhanced text fade animations - target Text components directly */
+.sidebarCollapsed .linkButton [data-mantine-text],
+.sidebarCollapsed .askAnything [data-mantine-text] {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sidebarExpanded .linkButton [data-mantine-text],
+.sidebarExpanded .askAnything [data-mantine-text] {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
+}
+
+/* Alternative approach - target all text content */
+.linkButton > div > [data-mantine-text] {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.askAnything > div > [data-mantine-text] {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebarCollapsed .linkButton > div > [data-mantine-text],
+.sidebarCollapsed .askAnything > div > [data-mantine-text] {
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sidebarExpanded .linkButton > div > [data-mantine-text],
+.sidebarExpanded .askAnything > div > [data-mantine-text] {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
+}
+
+/* Separator fade */
+.separator {
+  height: 1px;
+  background-color: #3a3d41;
+  margin: 12px 0;
+  transition: opacity 0.3s ease;
+}
+
+
+.sidebarExpanded .separator {
+  opacity: 1;
+  transition: opacity 0.3s ease 0.15s;
+}
+
+/* Enhanced content fade animations */
+.sidebarExpanded .linkButton,
+.sidebarExpanded .askAnything {
+  animation: fadeInContent 0.3s ease 0.2s both;
+}
+
+.sidebarExpanded .header {
+  animation: fadeInContent 0.3s ease 0.1s both;
+}
+
+.sidebarExpanded .scrollArea {
+  animation: fadeInContent 0.3s ease 0.25s both;
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+
+.submenuPortal {
+  position: fixed;
+  width: 300px;
+  pointer-events: none;
+  z-index: 1000;
+  height: 60px;
+}
+
+.submenuBridge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50px;
+  height: 100%;
+  background: transparent;
+  pointer-events: auto;
+}
+
+.submenuContent {
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 220px;
+  background-color: #030f26;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid #2a2d31;
+  animation: slideInFromLeft 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+}
+
+.submenuContent::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 20px;
+  width: 12px;
+  height: 12px;
+
+}
+
+.submenu {
+  display: none; /* Hide the old submenu */
+}
+
+.submenuItem {
+  width: 100%;
+  padding: 10px 8px;
+  border-radius: 8px;
+  border: 0;
+  color: #b3b3b3;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+}
+
+.submenuItem:hover {
+  background-color: #76797d38;
+  color: white;
+
+}
+
+.scrollArea {
+  height: calc(100vh - 150px);
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.linkButton [data-mantine-text] {
+  font-size: 14px !important;
+}
