@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
+from django.utils import timezone
 from .models import User, UserAccount
 from .admin import generate_strong_password
 
@@ -182,3 +184,51 @@ class PasswordResetSerializer(serializers.Serializer):
     def validate_new_password(self, value):
         validate_password(value)
         return value
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if not user:
+                raise serializers.ValidationError('Invalid credentials')
+            if not user.is_active:
+                raise serializers.ValidationError('User account is disabled')
+            attrs['user'] = user
+        else:
+            raise serializers.ValidationError('Must include username and password')
+
+        return attrs
+
+
+class FirstLoginPasswordChangeSerializer(serializers.Serializer):
+    current_password = serializers.CharField()
+    new_password = serializers.CharField(min_length=8)
+    confirm_password = serializers.CharField(min_length=8)
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['confirm_password']:
+            raise serializers.ValidationError("New passwords don't match")
+        return attrs
+
+    def validate_current_password(self, value):
+        user = self.context['user']
+        if not user.check_password(value):
+            raise serializers.ValidationError("Current password is incorrect")
+        return value
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source='get_full_name', read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'full_name', 
+                 'employee_id', 'job_title', 'department', 'must_change_password']
+        read_only_fields = ['id', 'username', 'must_change_password']

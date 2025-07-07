@@ -1,10 +1,12 @@
 from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.utils import timezone
+from rest_framework.permissions import AllowAny
+from rest_framework.authtoken.models import Token
 from .models import User, UserAccount
 from .serializers import (
     UserSerializer, 
@@ -13,7 +15,10 @@ from .serializers import (
     UserAccountSerializer,
     UserAccountCreateSerializer,
     PasswordChangeSerializer,
-    PasswordResetSerializer
+    PasswordResetSerializer,
+    LoginSerializer,
+    FirstLoginPasswordChangeSerializer,
+    UserProfileSerializer
 )
 from .services import EmailService
 
@@ -341,3 +346,83 @@ class UserAccountViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_view(request):
+    """
+    Login endpoint for frontend integration.
+    Returns user info and token, with must_change_password status.
+    """
+    serializer = LoginSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.validated_data['user']
+        
+        # Update last login
+        user.last_login = timezone.now()
+        user.save()
+        
+        # Get or create token
+        token, created = Token.objects.get_or_create(user=user)
+        
+        # Get user profile data
+        profile_serializer = UserProfileSerializer(user)
+        
+        return Response({
+            'success': True,
+            'token': token.key,
+            'user': profile_serializer.data,
+            'must_change_password': user.must_change_password,
+            'message': 'Login successful'
+        })
+    
+    return Response({
+        'success': False,
+        'errors': serializer.errors,
+        'message': 'Login failed'
+    }, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def first_login_password_change(request):
+    """
+    Mandatory password change for first-time login.
+    Only works if user has must_change_password = True.
+    """
+    if not request.user.must_change_password:
+        return Response({
+            'success': False,
+            'message': 'Password change not required'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    serializer = FirstLoginPasswordChangeSerializer(
+        data=request.data, 
+        context={'user': request.user}
+    )
+    
+    if serializer.is_valid():
+        # Change password
+        request.user.set_password(serializer.validated_data['new_password'])
+        request.user.must_change_password = False
+        request.user.save()
+        
+        print(f"✅ Password changed successfully for user: {request.user.username}")
+        
+        return Response({
+            'success': True,
+            'message': 'Password changed successfully. You can now use the system.'
+        })
+    
+    return Response({
+        'success': False,
+        'errors': serializer.errors,
+        'message': 'Password change failed'
+    }, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def user_profile(request):
+    """Get current user profile."""
+    serializer = UserProfileSerializer(request.user)
+    return Response({
+        'success': True,
+        'user': serializer.data
+    })

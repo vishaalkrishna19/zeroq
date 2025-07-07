@@ -172,3 +172,48 @@ Visit: http://127.0.0.1:8000/admin/
 ## Support
 
 For issues or questions about the Zeroqueue system, check the admin logs and ensure all migrations are applied correctly.
+
+##frontend notes
+Login Endpoint
+
+URL: POST /auth/login/
+Payload: {"username": "user123", "password": "temp_password"}
+Response:
+{
+  "success": true,
+  "token": "auth_token_here",
+  "user": {
+    "id": "uuid",
+    "username": "user123",
+    "email": "user@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "full_name": "John Doe",
+    "must_change_password": true
+  },
+  "must_change_password": true,
+  "message": "Login successful"
+}
+
+First Login Password Change
+
+URL: POST /auth/first-login-password-change/
+Headers: Authorization: Token auth_token_here
+Payload:
+{
+  "current_password": "temp_password",
+  "new_password": "new_secure_password",
+  "confirm_password": "new_secure_password"
+}
+
+User Profile
+
+URL: GET /auth/profile/
+Headers: Authorization: Token auth_token_here
+Frontend Flow
+1. User enters username and password on login form
+2. Send POST request to /auth/login/
+3. If successful and must_change_password is true, redirect to password change page
+4. On password change page, send POST to /auth/first-login-password-change/
+5. Store token for subsequent API calls
+6. Use token in Authorization header for all authenticated requests

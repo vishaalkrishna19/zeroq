@@ -1,4 +1,3 @@
-
 """zeroqueue URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -25,4 +24,5 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path('api/roles/', include('roles_permissions.urls')),
     path('accounts/', include('allauth.urls')),
+    path('', include('users.urls')),
 ]
