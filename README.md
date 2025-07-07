@@ -173,7 +173,7 @@ Visit: http://127.0.0.1:8000/admin/
 
 For issues or questions about the Zeroqueue system, check the admin logs and ensure all migrations are applied correctly.
 
-##frontend notes
+## frontend notes
 Login Endpoint
 
 URL: POST /auth/login/
