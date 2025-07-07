@@ -5,88 +5,81 @@ import {
   Alert, Loader
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconBrandApple, IconBrandGoogle, IconX } from "@tabler/icons-react";
+import { IconBrandApple, IconBrandGoogle, IconCheck, IconX } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
 const bgGradient = "#fff";
 const cardRadius = 15;
 
-const getCSRFToken = async () => {
-  // Try to get from cookie first
+// Helper to get CSRF token from cookie
+const getCSRFToken = () => {
   const match = document.cookie.match(/csrftoken=([^;]+)/);
-  if (match) return match[1];
+  return match ? match[1] : '';
+};
 
-  // If not found, fetch from API and try again
-  await fetch('http://localhost:8000/api/auth/csrf/', {
-    method: 'GET',
+// API service for password reset
+const resetPassword = async (username, currentPassword, newPassword) => {
+  const csrfToken = getCSRFToken();
+  const response = await fetch('http://localhost:8000/api/users/reset_password/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken,
+    },
     credentials: 'include',
+    body: JSON.stringify({
+      username: username,
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
   });
-  const newMatch = document.cookie.match(/csrftoken=([^;]+)/);
-  return newMatch ? newMatch[1] : '';
-};
 
-const loginUser = async (username, password) => {
-  try {
-    const csrfToken = await getCSRFToken();
-    console.log("CSRF Token:", csrfToken);
-    const response = await fetch('http://localhost:8000/api/auth/login/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.non_field_errors?.[0] || error.detail || 'Login failed');
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error('Login request failed:', error);
-    throw error;
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Password reset failed');
   }
+
+  return response.json();
 };
 
-export default function LoginPage() {
+export default function EnterKey() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
   const form = useForm({
-    initialValues: { username: "", password: "" },
+    initialValues: { 
+      username: "",
+      current_password: "", 
+      new_password: "" 
+    },
     validate: {
       username: (v) => (v.length >= 1 ? null : "Username is required"),
-      password: (v) => (v.length >= 1 ? null : "Password is required"),
+      current_password: (v) => (v.length >= 1 ? null : "Current password is required"),
+      new_password: (v) => (v.length >= 6 ? null : "New password must be ≥ 6 chars"),
     },
   });
 
   const handleSubmit = async (values) => {
     setLoading(true);
     setError(null);
+    setSuccess(false);
 
     try {
-      console.log("Logging in:", values);
-      const result = await loginUser(values.username, values.password);
+      console.log("Resetting password:", values);
+      const result = await resetPassword(values.username, values.current_password, values.new_password);
       
-      console.log("Login successful:", result);
+      console.log("Password reset successful:", result);
+      setSuccess(true);
       
-      if (result.key || result.token) {
-        localStorage.setItem('authToken', result.key || result.token);
-      }
-      
-      localStorage.setItem('username', values.username);
-      
-      navigate('/dashboard');
+      // Redirect to login after a short delay
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
       
     } catch (err) {
-      console.error("Login error:", err);
+      console.error("Password reset error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -151,17 +144,23 @@ export default function LoginPage() {
               </Title>
             </div>
           </Stack>
-          
+
           <Title order={2} mb={8} style={{ fontWeight: 500, color: "#222" }}>
-            Sign in to your account
+            Reset Your Password
           </Title>
           <Text size="sm" color="dimmed" mb={24}>
-            Enter your credentials
+            Enter your current password and new password
           </Text>
 
           {error && (
             <Alert icon={<IconX size="1rem" />} color="red" mb="md">
               {error}
+            </Alert>
+          )}
+
+          {success && (
+            <Alert icon={<IconCheck size="1rem" />} color="green" mb="md">
+              Password reset successful! Redirecting to login...
             </Alert>
           )}
 
@@ -174,25 +173,34 @@ export default function LoginPage() {
                 {...form.getInputProps("username")}
                 radius="md"
                 size="md"
-                disabled={loading}
+                disabled={loading || success}
               />
               <PasswordInput
-                label="Password"
-                placeholder="Your password"
+                label="Current Password"
+                placeholder="Enter your current password"
                 required
-                {...form.getInputProps("password")}
+                {...form.getInputProps("current_password")}
                 radius="md"
                 size="md"
-                disabled={loading}
+                disabled={loading || success}
+              />
+              <PasswordInput
+                label="New Password"
+                placeholder="Enter your new password"
+                required
+                {...form.getInputProps("new_password")}
+                radius="md"
+                size="md"
+                disabled={loading || success}
               />
               <Button
                 fullWidth
                 radius="md"
                 size="md"
                 type="submit"
-                disabled={loading}
+                disabled={loading || success}
                 style={{
-                  background: "oklch(62.3% .214 259.815)",
+                  background: success ? "#51cf66" : "oklch(62.3% .214 259.815)",
                   color: "#fff",
                   fontWeight: 600,
                   marginTop: 8,
@@ -202,22 +210,24 @@ export default function LoginPage() {
                 {loading ? (
                   <>
                     <Loader size="sm" mr="sm" />
-                    Signing In...
+                    Resetting Password...
                   </>
+                ) : success ? (
+                  "Password Reset Successfully!"
                 ) : (
-                  "Sign In"
+                  "Reset Password"
                 )}
               </Button>
             </Stack>
           </form>
 
           <Group position="center" mt="md" style={{ fontSize: 13 }}>
-            <Anchor component="button" type="button" color="gray">
-              Terms & Conditions
+            <Anchor component="button" type="button" color="gray" onClick={() => navigate('/login')}>
+              Back to Login
             </Anchor>
           </Group>
         </Box>
-        
+
         {/* Right: Image */}
         <Box
           style={{
@@ -247,6 +257,7 @@ export default function LoginPage() {
               borderBottomRightRadius: cardRadius,
             }}
           />
+          {/* Centered Logo Overlay */}
           <div style={{
             position: "absolute",
             top: "50%",
@@ -254,10 +265,12 @@ export default function LoginPage() {
             transform: "translate(-50%, -50%)",
             width: "150px",
             height: "150px",
+
             borderRadius: "16px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+         
           }}>
             <img 
               src="https://zeroq.hfapp.net/logo.svg" 

@@ -15,9 +15,39 @@ import {
 } from '@tabler/icons-react';
 import styles from './TopBar.module.css';
 import { SearchModal } from '../searchModal/SearchModal';
+import { useNavigate } from 'react-router-dom';
 
 export function TopBar() {
   const [searchModalOpened, setSearchModalOpened] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    try {
+      // Call Django's logout endpoint
+      await fetch('http://localhost:8000/api/auth/logout/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${localStorage.getItem('authToken')}`,
+        },
+        credentials: 'include',
+      });
+      
+      // Clear local storage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('username');
+      
+      // Redirect to login page
+      navigate('/login');
+      
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if logout fails, clear local storage and redirect
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('username');
+      navigate('/login');
+    }
+  };
 
   return (
     <>
@@ -66,7 +96,6 @@ export function TopBar() {
                     src="https://s3.us-west-2.amazonaws.com/assets.www.happyfox.com/media/images/Slack.original.svg"
                     className={styles.companyLogo}
                     alt="Company Logo"
-                   
                   />
                   <Text className={styles.companyText}>Company account</Text>
                   <IconChevronDown size={12} />
@@ -75,7 +104,7 @@ export function TopBar() {
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Item>Account settings</Menu.Item>
-              <Menu.Item>Sign out</Menu.Item>
+              <Menu.Item onClick={handleSignOut}>Sign out</Menu.Item>
             </Menu.Dropdown>
           </Menu>
         </Box>

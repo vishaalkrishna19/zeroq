@@ -1,8 +1,27 @@
 import { Box, Text } from '@mantine/core';
 import { TopBar } from '../../components/topBar/TopBar';
 import styles from './Dashboard.module.css';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    // Check if user is logged in
+    const authToken = localStorage.getItem('authToken');
+    const storedUsername = localStorage.getItem('username');
+    
+    if (!authToken) {
+      // Redirect to login if no auth token
+      navigate('/login');
+      return;
+    }
+    
+    setUsername(storedUsername || 'User');
+  }, [navigate]);
+
   return (
     <Box className={styles.container}>
       <TopBar />
@@ -23,7 +42,7 @@ export default function Dashboard() {
             ZeroQ
           </Text>
           <Text className={styles.greetingText}>
-            Hello, Vishaal!
+            Hello, {username}!
           </Text>
         </Box>
 

@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
@@ -15,6 +16,8 @@ from .serializers import (
     PasswordChangeSerializer
 )
 from .services import EmailService
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -25,6 +28,15 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+    def get_permissions(self):
+        """Override permissions for specific actions."""
+        if self.action == 'reset_password':
+            # Allow unauthenticated access for password reset
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = self.permission_classes
+        return [permission() for permission in permission_classes]
     
     def get_serializer_class(self):
         if self.action == 'list':
@@ -125,23 +137,38 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['post'])
     def reset_password(self, request):
-        """Reset current user's password with current password verification."""
-        user = request.user
-        
-        # Get passwords from request
+        """Reset user's password with username and current password verification."""
+        # Get credentials from request
+        username = request.data.get('username')
         current_password = request.data.get('current_password')
         new_password = request.data.get('new_password')
         
+        print(f"🔐 Password reset attempt for username: {username}")
+        
         # Validate input
-        if not current_password or not new_password:
+        if not username or not current_password or not new_password:
             return Response({
-                "error": "Both current_password and new_password are required."
+                "error": "Username, current_password, and new_password are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Try to authenticate user with username and current password
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({
+                "error": "Invalid username or password."
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Verify current password
         if not user.check_password(current_password):
             return Response({
-                "error": "Current password is incorrect."
+                "error": "Invalid username or password."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if user is active
+        if not user.is_active:
+            return Response({
+                "error": "User account is inactive."
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Validate new password (same as current)
@@ -170,11 +197,12 @@ class UserViewSet(viewsets.ModelViewSet):
             print(f"Database save: ✅\n")
             
             # Send email notification
+            email_sent = False
             if user.email:
                 email_sent = EmailService.send_password_reset_notification(
                     user=user,
                     new_password=new_password,
-                    reset_by=request.user
+                    reset_by=user  # Self-reset
                 )
                 if email_sent:
                     print(":white_check_mark: Password reset email sent successfully")
@@ -184,8 +212,9 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({
                 "message": "Password reset successfully.",
                 "user": user.username,
-                "email_sent":user.email and email_sent,
-                "timestamp": timezone.now()
+                "email_sent": user.email and email_sent,
+                "timestamp": timezone.now(),
+                "success": True
             })
             
         except Exception as e:
@@ -395,3 +424,7 @@ class UserAccountViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+@ensure_csrf_cookie
+def csrf(request):
+    return JsonResponse({'detail': 'CSRF cookie set'})
