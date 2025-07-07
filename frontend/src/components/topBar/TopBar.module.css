@@ -1,0 +1,127 @@
+.topBar {
+  height: 64px;
+  background-color: #f8f9fa;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 500;
+  color: #212529;
+}
+
+.centerSection {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.searchButton {
+  width: 100%;
+  max-width: 400px;
+  height: 40px;
+  background: white;
+  border: 1px solid #dadce0;
+  border-radius: 10px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.searchButton:hover {
+  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.127);
+  border-color: rgba(160, 160, 160, 0.773);
+}
+
+.searchButtonLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #5f6368;
+}
+
+.searchPlaceholder {
+  font-size: 14px;
+  color: #5f6368;
+}
+
+.searchKeyboardShortcuts {
+  display: flex;
+  gap: 4px;
+}
+
+.searchKeyboardShortcut {
+  background: #f1f3f4;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: #5f6368;
+  font-weight: 500;
+  border: 1px solid #dadce0;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconButton {
+  color: #5f6368;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.iconButton:hover {
+  background-color: #f1f3f4;
+}
+
+.profileSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.profileSection:hover {
+  background-color: #f1f3f4;
+}
+
+.companyLogo {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.companyText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #3c4043;
+}
+
+.profileAvatar {
+  border-radius: 50%;
+}
