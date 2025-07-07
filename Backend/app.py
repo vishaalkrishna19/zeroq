@@ -17,7 +17,9 @@ def send_user_credentials_email(user_email, user_name, password):
         print(f"Failed to send user credentials email to {user_email}: {str(e)}")
         return False
     return True
+#Hello this is a test line
 
+print("hello")
 
 
 
