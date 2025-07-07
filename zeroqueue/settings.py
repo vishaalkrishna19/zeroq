@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -184,8 +188,43 @@ REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'users.serializers.UserSerializer'
 }
 
-# Email Configuration (for development)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Email Configuration
+# Load from environment variables with fallbacks
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+
+# Email settings for user creation
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', os.getenv('EMAIL_HOST_USER', ''))
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', os.getenv('EMAIL_HOST_USER', ''))
+
+# Email Templates Configuration
+EMAIL_TEMPLATES = {
+    'USER_CREATED': {
+        'subject': 'Welcome to ZeroQueue - Your Account Details',
+        'template': 'emails/user_created.html',
+        'text_template': 'emails/user_created.txt',
+    },
+    'PASSWORD_RESET': {
+        'subject': 'ZeroQueue - Password Reset Notification',
+        'template': 'emails/password_reset.html',
+        'text_template': 'emails/password_reset.txt',
+    },
+}
+
+# Print email configuration for debugging (remove in production)
+print(f"Email Configuration:")
+print(f"EMAIL_BACKEND: {EMAIL_BACKEND}")
+print(f"EMAIL_HOST: {EMAIL_HOST}")
+print(f"EMAIL_PORT: {EMAIL_PORT}")
+print(f"EMAIL_USE_TLS: {EMAIL_USE_TLS}")
+print(f"EMAIL_HOST_USER: {EMAIL_HOST_USER}")
+print(f"EMAIL_HOST_PASSWORD: {'*' * len(EMAIL_HOST_PASSWORD) if EMAIL_HOST_PASSWORD else 'NOT SET'}")
+print(f"DEFAULT_FROM_EMAIL: {DEFAULT_FROM_EMAIL}")
+print(f"ADMIN_EMAIL: {ADMIN_EMAIL}")
 
 # Logging Configuration
 LOGGING = {

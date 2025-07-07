@@ -1,0 +1,14 @@
+Subject: Welcome to ZeroQueue - Your Account Details
+
+Dear {name},
+
+Welcome to ZeroQueue! Your account has been successfully created.
+
+Here are your login credentials:
+Email: {email}
+Password: {password}
+
+Please log in and change your password at your earliest convenience.
+
+Best regards,
+ZeroQueue Team

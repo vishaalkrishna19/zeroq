@@ -8,6 +8,7 @@ from django import forms
 import secrets
 import string
 from .models import User, UserAccount
+from .services import EmailService
 
 
 class CustomUserCreationForm(forms.ModelForm):
@@ -221,7 +222,7 @@ class UserAdmin(BaseUserAdmin):
     account_count.short_description = 'Active Accounts'
     
     def save_model(self, request, obj, form, change):
-        """Override to generate password for new users and print it."""
+        """Override to generate password for new users and send email."""
         if not change:  # Creating new user
             # Generate strong password automatically
             password = generate_strong_password()
@@ -232,7 +233,7 @@ class UserAdmin(BaseUserAdmin):
             # Save the user first
             super().save_model(request, obj, form, change)
             
-            # Print password to terminal
+            # Print password to terminal (existing functionality)
             print("\n" + "="*60)
             print("🔐 NEW USER CREATED")
             print("="*60)
@@ -247,6 +248,36 @@ class UserAdmin(BaseUserAdmin):
             print("="*60)
             print("Please securely share this password with the user.")
             print("="*60 + "\n")
+            
+            # Send email with credentials
+            if obj.email:
+                email_sent = EmailService.send_user_credentials_email(
+                    user=obj,
+                    password=password,
+                    created_by=request.user
+                )
+                
+                if email_sent:
+                    print("✅ Email sent successfully to user's email address")
+                    self.message_user(
+                        request,
+                        f"User '{obj.username}' created successfully and credentials sent to {obj.email}",
+                        level='success'
+                    )
+                else:
+                    print("❌ Failed to send email - check email configuration")
+                    self.message_user(
+                        request,
+                        f"User '{obj.username}' created but failed to send email to {obj.email}",
+                        level='warning'
+                    )
+            else:
+                print("⚠️  No email address provided - email not sent")
+                self.message_user(
+                    request,
+                    f"User '{obj.username}' created but no email address provided",
+                    level='warning'
+                )
         else:
             super().save_model(request, obj, form, change)
     

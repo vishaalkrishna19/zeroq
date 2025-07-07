@@ -1,0 +1,1 @@
+ADMIN_EMAIL = 'keerthana.mg@supporthive.com'

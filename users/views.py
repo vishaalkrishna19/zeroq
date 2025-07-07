@@ -15,6 +15,7 @@ from .serializers import (
     PasswordChangeSerializer,
     PasswordResetSerializer
 )
+from .services import EmailService
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -70,7 +71,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return queryset.order_by('last_name', 'first_name')
     
     def create(self, request, *args, **kwargs):
-        """Override create to handle password generation and logging."""
+        """Override create to handle password generation and email sending."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
@@ -80,17 +81,34 @@ class UserViewSet(viewsets.ModelViewSet):
         
         # Print password to terminal if generated
         if hasattr(user, '_generated_password'):
+            password = user._generated_password
+            
             print("\n" + "="*60)
             print("🔐 NEW USER CREATED VIA API")
             print("="*60)
             print(f"Username: {user.username}")
             print(f"Email: {user.email}")
             print(f"Full Name: {user.get_full_name()}")
-            print(f"Generated Password: {user._generated_password}")
+            print(f"Generated Password: {password}")
             print(f"Employee ID: {user.employee_id or 'Not set'}")
             print(f"Created by: {request.user.username}")
             print("⚠️  User must change password on first login")
             print("="*60 + "\n")
+            
+            # Send email with credentials
+            if user.email:
+                email_sent = EmailService.send_user_credentials_email(
+                    user=user,
+                    password=password,
+                    created_by=request.user
+                )
+                
+                if email_sent:
+                    print("✅ Email sent successfully to user's email address")
+                else:
+                    print("❌ Failed to send email - check email configuration")
+            else:
+                print("⚠️  No email address provided - email not sent")
         
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -126,7 +144,7 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def reset_password(self, request, pk=None):
-        """Admin password reset."""
+        """Admin password reset with email notification."""
         if not request.user.is_staff:
             return Response(
                 {"error": "Only staff members can reset passwords."}, 
@@ -150,9 +168,23 @@ class UserViewSet(viewsets.ModelViewSet):
             print(f"Must change on login: {force_change}")
             print(f"Reset at: {timezone.now()}\n")
             
+            # Send email notification
+            if user.email:
+                email_sent = EmailService.send_password_reset_notification(
+                    user=user,
+                    new_password=new_password,
+                    reset_by=request.user
+                )
+                
+                if email_sent:
+                    print("✅ Password reset email sent successfully")
+                else:
+                    print("❌ Failed to send password reset email")
+            
             return Response({
                 "message": "Password reset successfully.",
-                "must_change_password": force_change
+                "must_change_password": force_change,
+                "email_sent": user.email and email_sent
             })
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
