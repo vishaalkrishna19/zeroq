@@ -70,6 +70,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'allauth.account.middleware.AccountMiddleware',  # Required for allauth
+    'users.middleware.ForcePasswordResetMiddleware',  # Force password reset
+    'users.middleware.LoginRedirectMiddleware',  # Handle login redirects
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]

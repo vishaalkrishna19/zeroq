@@ -1,1 +1,1 @@
-ADMIN_EMAIL = 'keerthana.mg@supporthive.com'
+ADMIN_EMAIL = 'ramya.n@supporthive.com'

@@ -55,31 +55,50 @@ class EmailService:
                 'support_email': settings.ADMIN_EMAIL,
             }
             
-            # Create simple text email content
-            text_content = f"""Dear {user.get_full_name() or user.username},
+            # Render HTML and text content from templates
+            try:
+                html_content = render_to_string('emails/user_created.html', context)
+                text_content = render_to_string('emails/user_created.txt', context)
+                
+                # Create email message with HTML and text alternatives
+                email = EmailMultiAlternatives(
+                    subject=subject,
+                    body=text_content,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[user.email],
+                )
+                email.attach_alternative(html_content, "text/html")
+                email.send()
+                
+            except Exception as template_error:
+                logger.warning(f"Failed to render email templates, falling back to simple text: {str(template_error)}")
+                # Fallback to simple text email
+                text_content = f"""Dear {user.get_full_name() or user.username},
 
 Welcome to ZeroQueue! Your account has been successfully created.
 
-Login Credentials:
+LOGIN CREDENTIALS:
 Username: {user.username}
 Email: {user.email}
 Temporary Password: {password}
 
-Please log in and change your password at your earliest convenience.
+🔑 Set your new password: {context['site_url']}/auth/reset-password/?token={user.id}
+
+After setting your password, log in at: {context['site_url']}/admin/
 
 Best regards,
 ZeroQueue Team
 
 Support: {settings.ADMIN_EMAIL}"""
-            
-            # Send simple text email
-            send_mail(
-                subject=subject,
-                message=text_content,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False,
-            )
+                
+                # Send simple text email
+                send_mail(
+                    subject=subject,
+                    message=text_content,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
             
             logger.info(f"User credentials email sent successfully to {user.email}")
             print(f"✅ User credentials email sent successfully to {user.email}")

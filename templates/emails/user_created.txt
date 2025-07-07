@@ -1,32 +1,37 @@
-Subject: Welcome to ZeroQueue - Your Account Details
+=====================================
+Welcome to ZeroQueue!
+=====================================
 
-Dear {{ user.get_full_name|default:user.username }},
+Hello {{ user.get_full_name|default:user.username }},
 
-Welcome to ZeroQueue! Your account has been successfully created.
+Your account has been successfully created in our ZeroQueue system.
 
-Login Credentials:
+LOGIN CREDENTIALS:
+------------------
 Username: {{ user.username }}
 Email: {{ user.email }}
 Temporary Password: {{ password }}
+{% if user.employee_id %}Employee ID: {{ user.employee_id }}{% endif %}
 
-Please log in and change your password at your earliest convenience.
+IMPORTANT SECURITY NOTICE:
+-------------------------
+🔒 For your security, you must change your password on first login. 
+   The temporary password above will only work once.
+
+NEXT STEPS:
+----------
+1. Click this link to set your new password: {{ site_url }}/auth/reset-password/?token={{ user.id }}
+2. After setting your password, log in at: {{ site_url }}/admin/
+3. Complete your profile information
+
+{% if created_by %}
+Account created by: {{ created_by.get_full_name|default:created_by.username }}
+{% endif %}
+
+Need help? Contact us at {{ support_email }}
 
 Best regards,
 ZeroQueue Team
 
-Support: {{ support_email }}
-
 ---
-This email was sent automatically. Please do not reply to this email.
-© 2024 ZeroQueue. All rights reserved.
-ZeroQueue Team
-
----
-This email was sent automatically. Please do not reply to this email.
-© 2024 ZeroQueue. All rights reserved.
-Best regards,
-The ZeroQueue Team
-
----
-This email was sent automatically. Please do not reply to this email.
-© 2024 ZeroQueue. All rights reserved.
+This is an automated message. Please do not reply to this email.

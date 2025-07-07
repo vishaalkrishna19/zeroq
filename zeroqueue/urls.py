@@ -24,5 +24,5 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path('api/roles/', include('roles_permissions.urls')),
     path('accounts/', include('allauth.urls')),
-    path('', include('users.urls')),
+    path('auth/', include('users.auth_urls')),  # Custom auth URLs
 ]
