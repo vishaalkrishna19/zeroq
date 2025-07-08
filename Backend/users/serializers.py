@@ -15,13 +15,10 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-            'employee_id', 'phone_number', 'date_of_birth',
-            'hire_date', 'termination_date', 'job_title', 'department',
-            'manager', 'employment_status', 'is_active', 'is_staff',
-            'is_superuser', 'is_system_admin', 'last_login_ip',
-            'must_change_password', 'two_factor_enabled',
-            'address_line1', 'address_line2', 'city', 'state',
-            'postal_code', 'country', 'account_count', 'is_employed',
+            'employee_id', 'hire_date', 'termination_date', 'job_title', 'department',
+            'employment_status', 'is_active', 'is_staff',
+            'is_superuser', 'must_change_password', 'two_factor_enabled',
+            'account_count', 'is_employed',
             'days_since_hire', 'date_joined', 'last_login', 'updated_at'
         ]
         read_only_fields = [
@@ -67,11 +64,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'username', 'email', 'first_name', 'last_name',
-            'employee_id', 'phone_number', 'date_of_birth',
-            'hire_date', 'job_title', 'department', 'manager',
-            'employment_status', 'is_active', 'is_staff',
-            'address_line1', 'address_line2', 'city', 'state',
-            'postal_code', 'country'
+            'employee_id', 'hire_date', 'job_title', 'department',
+            'employment_status', 'is_active', 'is_staff'
         ]
     
     def create(self, validated_data):

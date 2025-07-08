@@ -1,9 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.core.validators import RegexValidator
 from django.utils import timezone
-from django.db import transaction
-import uuid
 import uuid
 
 
@@ -25,25 +22,7 @@ class User(AbstractUser):
         help_text='Company employee ID'
     )
     
-    # Phone number with validation
-    phone_regex = RegexValidator(
-        regex=r'^\+?1?\d{9,15}$',
-        message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed."
-    )
-    phone_number = models.CharField(
-        validators=[phone_regex],
-        max_length=17,
-        blank=True,
-        null=True,
-        help_text='Phone number with country code'
-    )
-    
-    # Profile information
-    date_of_birth = models.DateField(
-        null=True,
-        blank=True,
-        help_text='Date of birth'
-    )
+    # Profile information removed - keeping minimal user data
     
     # Employment information
     hire_date = models.DateField(
@@ -73,23 +52,6 @@ class User(AbstractUser):
         help_text='Department or team'
     )
     
-    manager = models.ForeignKey(
-        'self',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='direct_reports',
-        help_text='Direct manager/supervisor'
-    )
-    
-    # Address information
-    address_line1 = models.CharField(max_length=255, blank=True, null=True)
-    address_line2 = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True)
-    state = models.CharField(max_length=100, blank=True, null=True)
-    postal_code = models.CharField(max_length=20, blank=True, null=True)
-    country = models.CharField(max_length=100, blank=True, null=True, default='United States')
-    
     # Status tracking
     EMPLOYMENT_STATUS_CHOICES = [
         ('active', 'Active'),
@@ -107,15 +69,9 @@ class User(AbstractUser):
     )
     
     # Security and access
-    is_system_admin = models.BooleanField(
+    is_staff = models.BooleanField(
         default=False,
-        help_text='Whether this user has system-wide admin privileges'
-    )
-    
-    last_login_ip = models.GenericIPAddressField(
-        null=True,
-        blank=True,
-        help_text='IP address of last login'
+        help_text='Designates whether the user can log into this admin site.'
     )
     
     # Password management
@@ -153,35 +109,6 @@ class User(AbstractUser):
         null=True,
         blank=True,
         help_text='User role in the company'
-    )
-    
-    # Onboarding/Offboarding status
-    onboarding_completed = models.BooleanField(
-        default=False,
-        help_text='Whether onboarding process is completed'
-    )
-    
-    onboarding_completed_at = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text='When onboarding was completed'
-    )
-    
-    offboarding_started = models.BooleanField(
-        default=False,
-        help_text='Whether offboarding process has started'
-    )
-    
-    offboarding_started_at = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text='When offboarding was started'
-    )
-    
-    offboarding_completed_at = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text='When offboarding was completed'
     )
     
     # Admin access for the account

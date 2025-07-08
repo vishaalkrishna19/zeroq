@@ -41,6 +41,7 @@ class UserAccountInline(admin.TabularInline):
     model = UserAccount
     fk_name = 'user'  # Specify which ForeignKey to use
     extra = 0
+    # Remove the commented out admin code lines
     fields = [
         'account', 
         'role', 
@@ -78,7 +79,6 @@ class UserAdmin(BaseUserAdmin):
         'is_active', 
         'is_staff', 
         'is_superuser',
-        'is_system_admin',
         'must_change_password',
         'two_factor_enabled',
         'date_joined',
@@ -101,7 +101,6 @@ class UserAdmin(BaseUserAdmin):
         'last_login',
         'updated_at',
         'password_changed_at',
-        'last_login_ip',
         'account_count',
         'reset_password_button'
     ]
@@ -120,9 +119,7 @@ class UserAdmin(BaseUserAdmin):
             'fields': (
                 'first_name', 
                 'last_name', 
-                'email',
-                'phone_number',
-                'date_of_birth'
+                'email'
             )
         }),
         ('Employment Information', {
@@ -130,7 +127,6 @@ class UserAdmin(BaseUserAdmin):
                 'employee_id',
                 'job_title',
                 'department',
-                'manager',
                 'hire_date',
                 'termination_date',
                 'employment_status',
@@ -138,23 +134,11 @@ class UserAdmin(BaseUserAdmin):
                 'role'
             )
         }),
-        ('Address', {
-            'fields': (
-                'address_line1',
-                'address_line2', 
-                'city', 
-                'state', 
-                'postal_code', 
-                'country'
-            ),
-            'classes': ('collapse',)
-        }),
         ('Permissions & Access', {
             'fields': (
                 'is_active',
                 'is_staff', 
                 'is_superuser',
-                'is_system_admin',
                 'groups', 
                 'user_permissions'
             )
@@ -162,7 +146,6 @@ class UserAdmin(BaseUserAdmin):
         ('Security', {
             'fields': (
                 'two_factor_enabled',
-                'last_login_ip'
             ),
             'classes': ('collapse',)
         }),
@@ -193,7 +176,7 @@ class UserAdmin(BaseUserAdmin):
         }),
         ('Employment Details', {
             'fields': (
-                'employee_id',
+
                 'job_title',
                 'department',
                 'hire_date',
@@ -246,28 +229,28 @@ class UserAdmin(BaseUserAdmin):
     
     activate_users.short_description = "Activate selected users"
     
-    def test_user_passwords(self, request, queryset):
-        """Admin action to test password verification for debugging."""
-        from django.contrib import messages
+    # def test_user_passwords(self, request, queryset):
+    #     """Admin action to test password verification for debugging."""
+    #     from django.contrib import messages
         
-        for user in queryset:
-            print(f"\n🔍 PASSWORD DEBUG for {user.username}:")
-            print(f"Database Hash: {user.password}")
-            print(f"Must Change Password: {user.must_change_password}")
-            print(f"Password Changed At: {user.password_changed_at}")
-            print(f"Is Active: {user.is_active}")
+    #     for user in queryset:
+    #         print(f"\n🔍 PASSWORD DEBUG for {user.username}:")
+    #         print(f"Database Hash: {user.password}")
+    #         print(f"Must Change Password: {user.must_change_password}")
+    #         print(f"Password Changed At: {user.password_changed_at}")
+    #         print(f"Is Active: {user.is_active}")
             
-            # Test with a common password to demonstrate
-            test_password = "admin123"
-            if user.check_password(test_password):
-                print(f"✅ User {user.username} password is: {test_password}")
-            else:
-                print(f"❌ User {user.username} password is NOT: {test_password}")
-                print("💡 Use the original generated password from terminal output")
+    #         # Test with a common password to demonstrate
+    #         test_password = "admin123"
+    #         if user.check_password(test_password):
+    #             print(f"✅ User {user.username} password is: {test_password}")
+    #         else:
+    #             print(f"❌ User {user.username} password is NOT: {test_password}")
+    #             print("💡 Use the original generated password from terminal output")
         
-        self.message_user(request, f"Password debug info printed to terminal for {queryset.count()} users.")
+    #     self.message_user(request, f"Password debug info printed to terminal for {queryset.count()} users.")
     
-    test_user_passwords.short_description = "🔍 Debug password info for selected users"
+    # test_user_passwords.short_description = "🔍 Debug password info for selected users"
     
     def reset_passwords_admin_action(self, request, queryset):
         """Admin action to reset passwords for selected users."""
@@ -346,8 +329,17 @@ class UserAdmin(BaseUserAdmin):
                 obj.refresh_from_db()
                 
                 # Print password to terminal with database verification
-                print("\n" + "="*60)
-                print("🔐 NEW USER CREATED")
+                # if obj.account:
+                #     user_account = UserAccount.objects.create(
+                #         user=obj,
+                #         account=obj.account,
+                #         role=obj.role,  # Use the role from User model
+                #         is_primary=True,  # First account is primary
+                #         is_active=True,
+                #         can_access_admin=obj.is_staff,
+                #         created_by=request.user
+                #     )
+                #     print(f"✅ UserAccount created: {user_account}")
                 print("="*60)
                 print(f"Username: {obj.username}")
                 print(f"Email: {obj.email}")
@@ -632,7 +624,15 @@ class UserAccountAdmin(admin.ModelAdmin):
         except Exception as e:
             print(f"❌ Error saving UserAccount: {e}")
             raise
-    
+    # Simplified save_model
+    # def save_model(self, request, obj, form, change):
+    #     if not change:  # New user
+    #         password = generate_strong_password()
+    #         obj.set_password(password)
+    #         obj.created_by = request.user
+    #         print(f"New user: {obj.username}, Password: {password}")
+    #     super().save_model(request, obj, form, change)
+        
     def get_queryset(self, request):
         return super().get_queryset(request).select_related(
             'user', 'account', 'role'
