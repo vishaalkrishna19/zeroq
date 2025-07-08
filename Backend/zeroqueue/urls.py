@@ -1,4 +1,3 @@
-
 """zeroqueue URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -16,16 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include  
-from users.views import csrf
+from users.views import csrf, CustomLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/auth/login/', CustomLoginView.as_view(), name='custom_login'),
+    path('api/auth/csrf/', csrf, name='csrf'),
     path('api/auth/', include('dj_rest_auth.urls')),
-    path('api/auth/csrf/', csrf, name='csrf'), 
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('api/accounts/', include('accounts.urls')),
     path('api/users/', include('users.urls')),
     path('api/roles/', include('roles_permissions.urls')),
     path('accounts/', include('allauth.urls')),
-    
 ]

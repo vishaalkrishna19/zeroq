@@ -44,7 +44,17 @@ const loginUser = async (username, password) => {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.non_field_errors?.[0] || error.detail || 'Login failed');
+      
+      // Check if this is a must_reset_password error (403 status)
+      if (response.status === 403 && error.must_reset_password) {
+        const resetError = new Error(error.error || 'You must change your password before logging in.');
+        resetError.mustResetPassword = true;
+        resetError.redirectUrl = error.redirect_url;
+        throw resetError;
+      }
+      
+      // Regular login error
+      throw new Error(error.non_field_errors?.[0] || error.detail || error.error || 'Login failed');
     }
 
     return response.json();
@@ -87,6 +97,16 @@ export default function LoginPage() {
       
     } catch (err) {
       console.error("Login error:", err);
+      
+      // Check if this is a must_reset_password error
+      if (err.mustResetPassword) {
+        // Store username and password for the reset flow
+        sessionStorage.setItem('resetUsername', values.username);
+        sessionStorage.setItem('resetCurrentPassword', values.password);
+        navigate('/enter-key');
+        return;
+      }
+      
       setError(err.message);
     } finally {
       setLoading(false);

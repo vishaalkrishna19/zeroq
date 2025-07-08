@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
 from django.utils import timezone
+from dj_rest_auth.views import LoginView
 from .models import User, UserAccount
 from .serializers import (
     UserSerializer, 
@@ -18,6 +19,37 @@ from .serializers import (
 from .services import EmailService
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
+
+
+class CustomLoginView(LoginView):
+    """
+    Custom login view that prevents login with temporary password.
+    Forces users to go through password reset flow if must_change_password is True.
+    """
+    
+    def post(self, request, *args, **kwargs):
+        # Get credentials from request
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        if username and password:
+            # Try to find the user first
+            try:
+                user = User.objects.get(username=username)
+                # Check if user exists and password is correct
+                if user.check_password(password) and user.is_active:
+                    # If user must change password, prevent login and redirect to reset flow
+                    if user.must_change_password:
+                        return Response({
+                            "error": "You must change your password before logging in.",
+                            "must_reset_password": True,
+                            "redirect_url": "/enter-key"
+                        }, status=status.HTTP_403_FORBIDDEN)
+            except User.DoesNotExist:
+                pass  # Let default authentication handle the error
+        
+        # If no must_change_password issue, proceed with normal login
+        return super().post(request, *args, **kwargs)
 
 
 class UserViewSet(viewsets.ModelViewSet):
