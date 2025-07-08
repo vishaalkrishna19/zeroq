@@ -20,7 +20,7 @@ const getCSRFToken = () => {
 // API service for credential verification using Django's built-in login
 const verifyCredentials = async (username, currentPassword) => {
   const csrfToken = getCSRFToken();
-  const response = await fetch('http://localhost:8000/api/auth/login/', {
+  const response = await fetch('http://localhost:8000/api/users/verify_credentials/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
