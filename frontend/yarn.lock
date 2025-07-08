@@ -173,10 +173,10 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
-"@esbuild/darwin-x64@0.25.5":
+"@esbuild/darwin-arm64@0.25.5":
   version "0.25.5"
-  resolved "https://registry.npmjs.org/@esbuild/darwin-x64/-/darwin-x64-0.25.5.tgz"
-  integrity sha512-1iT4FVL0dJ76/q1wd7XDsXrSW+oLoquptvh4CLR4kITDtqi2e/xwXwdCVH8hVHU43wgJdsq7Gxuzcs6Iq/7bxQ==
+  resolved "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.5.tgz"
+  integrity sha512-GtaBgammVvdF7aPIgH2jxMDdivezgFu6iKpmT+48+F8Hhg5J/sfnDieg0aeG/jfSvkYQU2/pceFPDKlqZzwnfQ==
 
 "@floating-ui/core@^1.7.2":
   version "1.7.2"
@@ -240,10 +240,15 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@mantine/core@^8.1.2", "@mantine/core@8.1.2":
-  version "8.1.2"
-  resolved "https://registry.npmjs.org/@mantine/core/-/core-8.1.2.tgz"
-  integrity sha512-+maX0a1+fxh6Lvnzi0qb0AZsCnnHlIiTE/hFC+dd3eRfUW2PEKJ5/wTpmrX8IGyxa+NS+fXjZD/cU4Yt9xNjdg==
+"@mantine/carousel@^8.1.3":
+  version "8.1.3"
+  resolved "https://registry.npmjs.org/@mantine/carousel/-/carousel-8.1.3.tgz"
+  integrity sha512-CvdFsBXVDubz2v2TJAOhtXbjTCkCTpXB5z67frxk/VqtlvBQF69Vo8Nj1Ah+j7lx9UpGrKL5nErmFYuKxXO2xw==
+
+"@mantine/core@^8.1.3", "@mantine/core@8.1.3":
+  version "8.1.3"
+  resolved "https://registry.npmjs.org/@mantine/core/-/core-8.1.3.tgz"
+  integrity sha512-2WOPC8GSN3MApet0MccSn6LaXRhcP6SVtZnbuHoqJ/atrfK7kLE66ILr4OXov7JAj1ASJ4Xk0bOXmu5fBExAvQ==
   dependencies:
     "@floating-ui/react" "^0.26.28"
     clsx "^2.1.1"
@@ -260,22 +265,22 @@
     fast-deep-equal "^3.1.3"
     klona "^2.0.6"
 
-"@mantine/hooks@^8.1.2", "@mantine/hooks@8.1.2":
-  version "8.1.2"
-  resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-8.1.2.tgz"
-  integrity sha512-BrriTsiazqZ2fLuL7UDasNTQJSaoJ7mN2qYVkdsiYI158lxJdUaFWHhd6BDyzK+W6thvBx2D+R/hh1rsWWefdQ==
+"@mantine/hooks@^8.1.3", "@mantine/hooks@8.1.3":
+  version "8.1.3"
+  resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-8.1.3.tgz"
+  integrity sha512-yL4SbyYjrkmtIhscswajNz9RL0iO2+V8CMtOi0KISch2rPNvTAJNumFuZaXgj4UHeDc0JQYSmcZ+EW8NGm7xcQ==
 
-"@mantine/spotlight@^8.1.2":
-  version "8.1.2"
-  resolved "https://registry.npmjs.org/@mantine/spotlight/-/spotlight-8.1.2.tgz"
-  integrity sha512-lepO2YzhfhY3q6F6CmV63UhVY3iR81XvCC6Ss58dUcB6E0+G47kkPTw6yiIVM278pVXPWudHD8pO4HHxSKkVXA==
+"@mantine/spotlight@^8.1.3":
+  version "8.1.3"
+  resolved "https://registry.npmjs.org/@mantine/spotlight/-/spotlight-8.1.3.tgz"
+  integrity sha512-GhJbSoUdcALGSMLC/zjVVncRDyvxwxjtlzFeHLuY0Dgkgj+60x3tnzAulDrqYVhLMk7fGyex22VV/Xwl7mG1+Q==
   dependencies:
-    "@mantine/store" "8.1.2"
+    "@mantine/store" "8.1.3"
 
-"@mantine/store@8.1.2":
-  version "8.1.2"
-  resolved "https://registry.npmjs.org/@mantine/store/-/store-8.1.2.tgz"
-  integrity sha512-Dt7NJc2+kvtpWkTXR5Mwmwo5zluFM9n6UYaIn4i726PPoABCAvQU4wwkw9GkOEdPNkRcnRdNg5SxWa+QZY/4ag==
+"@mantine/store@8.1.3":
+  version "8.1.3"
+  resolved "https://registry.npmjs.org/@mantine/store/-/store-8.1.3.tgz"
+  integrity sha512-rO72LfSJqSNCwufqJxTWiHMyOR6sR3mqAcnBcw/f5aTvyOYoHZzlm4q4+TL8/2vYGRVsr9YM2Ez6HQ1vk/RR8g==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -303,10 +308,10 @@
   resolved "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.0-beta.19.tgz"
   integrity sha512-3FL3mnMbPu0muGOCaKAhhFEYmqv9eTfPSJRJmANrCwtgK8VuxpsZDGK+m0LYAGoyO8+0j5uRe4PeyPDK1yA/hA==
 
-"@rollup/rollup-darwin-x64@4.44.1":
+"@rollup/rollup-darwin-arm64@4.44.1":
   version "4.44.1"
-  resolved "https://registry.npmjs.org/@rollup/rollup-darwin-x64/-/rollup-darwin-x64-4.44.1.tgz"
-  integrity sha512-gDnWk57urJrkrHQ2WVx9TSVTH7lSlU7E3AFqiko+bgjlh78aJ88/3nycMax52VIVjIm3ObXnDL2H00e/xzoipw==
+  resolved "https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.44.1.tgz"
+  integrity sha512-fM/xPesi7g2M7chk37LOnmnSTHLG/v2ggWqKj3CCA1rMA4mm5KVBT1fNoswbo1JhPuNNZrVwpTvlCVggv8A2zg==
 
 "@tabler/icons-react@^3.34.0":
   version "3.34.0"
@@ -433,6 +438,24 @@ electron-to-chromium@^1.5.173:
   version "1.5.179"
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.179.tgz"
   integrity sha512-UWKi/EbBopgfFsc5k61wFpV7WrnnSlSzW/e2XcBmS6qKYTivZlLtoll5/rdqRTxGglGHkmkW0j0pFNJG10EUIQ==
+
+embla-carousel-react@^8.6.0, embla-carousel-react@>=8.0.0:
+  version "8.6.0"
+  resolved "https://registry.npmjs.org/embla-carousel-react/-/embla-carousel-react-8.6.0.tgz"
+  integrity sha512-0/PjqU7geVmo6F734pmPqpyHqiM99olvyecY7zdweCw+6tKEXnrE90pBiBbMMU8s5tICemzpQ3hi5EpxzGW+JA==
+  dependencies:
+    embla-carousel "8.6.0"
+    embla-carousel-reactive-utils "8.6.0"
+
+embla-carousel-reactive-utils@8.6.0:
+  version "8.6.0"
+  resolved "https://registry.npmjs.org/embla-carousel-reactive-utils/-/embla-carousel-reactive-utils-8.6.0.tgz"
+  integrity sha512-fMVUDUEx0/uIEDM0Mz3dHznDhfX+znCCDCeIophYb1QGVM7YThSWX+wz11zlYwWFOr74b4QLGg0hrGPJeG2s4A==
+
+embla-carousel@>=8.0.0, embla-carousel@8.6.0:
+  version "8.6.0"
+  resolved "https://registry.npmjs.org/embla-carousel/-/embla-carousel-8.6.0.tgz"
+  integrity sha512-SjWyZBHJPbqxHOzckOfo8lHisEaJWmwd23XppYFYVh10bU66/Pn5tkVkbkCMZVdbUE5eTCI2nD8OyIP4Z+uwkA==
 
 esbuild@^0.25.0:
   version "0.25.5"
@@ -570,6 +593,11 @@ lru-cache@^5.1.1:
   integrity sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==
   dependencies:
     yallist "^3.0.2"
+
+lucide-react@^0.525.0:
+  version "0.525.0"
+  resolved "https://registry.npmjs.org/lucide-react/-/lucide-react-0.525.0.tgz"
+  integrity sha512-Tm1txJ2OkymCGkvwoHt33Y2JpN5xucVq1slHcgE6Lk0WjDfjgKWor5CdVER8U6DvcfMwh4M8XxmpTiyzfmfDYQ==
 
 merge2@^1.3.0:
   version "1.4.1"
@@ -741,7 +769,7 @@ react-textarea-autosize@8.5.9:
     use-composed-ref "^1.3.0"
     use-latest "^1.2.1"
 
-"react@^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^18.x || ^19.x", react@^19.1.0, "react@>= 16", react@>=16.8.0, react@>=18:
+"react@^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^16.8.0 || ^17.0.1 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^18.x || ^19.x", react@^19.1.0, "react@>= 16", react@>=16.8.0, react@>=18:
   version "19.1.0"
   resolved "https://registry.npmjs.org/react/-/react-19.1.0.tgz"
   integrity sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==

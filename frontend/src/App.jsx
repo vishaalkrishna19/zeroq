@@ -10,6 +10,7 @@ import ResetPassword from "./pages/reset/ResetPassword";
 import SetPassword from "./pages/set/SetPassword";
 import EnterKey from "./pages/set/EnterKey";
 import UserPanel from "./pages/user/UserPanel";
+import EmployeeJourneys from "./pages/employeeJourneys/EmployeeJourneys";
 
 function ProtectedRoute({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -66,6 +67,7 @@ function AppContent() {
           <Route path="/set-password" element={<SetPassword />} />
           <Route path="/enter-key" element={<EnterKey />} />
           <Route path="/user-panel" element={<ProtectedRoute><UserPanel /></ProtectedRoute>} />
+          <Route path="/dashboard/employee-journeys" element={<EmployeeJourneys />} />
         </Routes>
       </Box>
     </Box>

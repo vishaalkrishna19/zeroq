@@ -1,0 +1,113 @@
+.container {
+  background: #f8f9ff;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  width: 80vw;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.carouselContainer {
+  position: relative;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+.carousel {
+  margin: 0 40px;
+}
+
+.carousel [data-carousel-viewport] {
+  overflow: hidden;
+}
+
+.carousel [data-carousel-container] {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+.carousel [data-carousel-slide] {
+  flex: 0 0 280px;
+  margin-right: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6366f1;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.arrowButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #6b7280;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.arrowButton:hover {
+  background: #f9fafb;
+}
+
+.arrowButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  width: 100%;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+  transition: box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.iconContainer {
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+  line-height: 1.2;
+  margin: 0 0 8px 0;
+}
+
+.cardDescription {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+  flex: 1;
+  margin: 0;
+}
