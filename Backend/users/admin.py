@@ -512,11 +512,19 @@ class UserAdmin(BaseUserAdmin):
         """Override to generate password for new users and send email."""
         try:
             if not change:  # Creating new user
+<<<<<<< Updated upstream
                 # Validate required fields
                 if not obj.username:
                     raise ValidationError("Username is required")
                 if not obj.email:
                     raise ValidationError("Email is required")
+=======
+                # Generate strong password automatically
+                password = generate_strong_password()
+                obj.set_password(password)
+                obj.created_by = request.user
+                obj.must_change_password = True  # Ensure this is set
+>>>>>>> Stashed changes
                 
                 with transaction.atomic():
                     # Generate strong password automatically

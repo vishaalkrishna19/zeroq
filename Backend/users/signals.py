@@ -47,7 +47,7 @@ def create_default_admin_user(sender, **kwargs):
             employment_status='active'
         )
         admin_user.set_password('admin123')  # Change this in production!
-        admin_user.must_change_password = True
+        admin_user.must_change_password = True  # Ensure this is set
         admin_user.save()
         
         print("\n" + "="*60)

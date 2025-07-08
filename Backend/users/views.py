@@ -15,6 +15,12 @@ from .serializers import (
     PasswordChangeSerializer
 )
 from .services import EmailService
+<<<<<<< Updated upstream
+=======
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+from rest_framework.decorators import api_view, permission_classes
+>>>>>>> Stashed changes
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -394,4 +400,87 @@ class UserAccountViewSet(viewsets.ModelViewSet):
         )
         
         serializer = self.get_serializer(queryset, many=True)
+<<<<<<< Updated upstream
         return Response(serializer.data)
+=======
+        return Response(serializer.data)
+
+@ensure_csrf_cookie
+def csrf(request):
+    return JsonResponse({'detail': 'CSRF cookie set'})
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def custom_login(request):
+    """
+    Custom login view that checks must_change_password status.
+    """
+    username = request.data.get('username')
+    password = request.data.get('password')
+    
+    if not username or not password:
+        return Response({
+            "error": "Username and password are required."
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Try to get user
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response({
+            "error": "Invalid username or password."
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Check if user is active
+    if not user.is_active:
+        return Response({
+            "error": "User account is inactive."
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Verify password
+    if not user.check_password(password):
+        return Response({
+            "error": "Invalid username or password."
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Check if user must change password
+    if user.must_change_password:
+        return Response({
+            "must_reset_password": True,
+            "message": "You must reset your password before logging in.",
+            "username": username,
+            "redirect_url": "/enter-key"
+        }, status=status.HTTP_200_OK)
+    
+    # If password doesn't need to be changed, proceed with normal login
+    # Authenticate and create session/token
+    from django.contrib.auth import authenticate, login
+    from rest_framework.authtoken.models import Token
+    
+    authenticated_user = authenticate(request, username=username, password=password)
+    if authenticated_user:
+        login(request, authenticated_user)
+        
+        # Get or create auth token
+        token, created = Token.objects.get_or_create(user=authenticated_user)
+        
+        # Update last login IP
+        user.last_login_ip = request.META.get('REMOTE_ADDR')
+        user.save(update_fields=['last_login_ip'])
+        
+        return Response({
+            "message": "Login successful",
+            "user": {
+                "username": user.username,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+            },
+            "token": token.key,
+            "must_reset_password": False
+        }, status=status.HTTP_200_OK)
+    
+    return Response({
+        "error": "Authentication failed."
+    }, status=status.HTTP_400_BAD_REQUEST)
+>>>>>>> Stashed changes

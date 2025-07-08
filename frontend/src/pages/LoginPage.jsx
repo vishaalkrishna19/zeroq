@@ -9,6 +9,49 @@ import { IconBrandApple, IconBrandGoogle } from "@tabler/icons-react";
 const bgGradient = "#fff";
 const cardRadius = 15;
 
+const getCSRFToken = async () => {
+  // Try to get from cookie first
+  const match = document.cookie.match(/csrftoken=([^;]+)/);
+  if (match) return match[1];
+
+  // If not found, fetch from API and try again
+  await fetch('http://localhost:8000/api/auth/csrf/', {
+    method: 'GET',
+    credentials: 'include',
+  });
+  const newMatch = document.cookie.match(/csrftoken=([^;]+)/);
+  return newMatch ? newMatch[1] : '';
+};
+
+const loginUser = async (username, password) => {
+  try {
+    const csrfToken = await getCSRFToken();
+    console.log("CSRF Token:", csrfToken);
+    const response = await fetch('http://localhost:8000/api/auth/custom-login/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        username: username,
+        password: password,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || error.detail || 'Login failed');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Login request failed:', error);
+    throw error;
+  }
+};
+
 export default function LoginPage() {
   const form = useForm({
     initialValues: { email: "", password: "" },
@@ -18,9 +61,41 @@ export default function LoginPage() {
     },
   });
 
-  const handleSubmit = (values) => {
-    console.log("Logging in:", values);
+  const handleSubmit = async (values) => {
+    setLoading(true);
+    setError(null);
 
+    try {
+      console.log("Logging in:", values);
+      const result = await loginUser(values.username, values.password);
+      
+      console.log("Login result:", result);
+      
+      // Check if user must reset password
+      if (result.must_reset_password) {
+        console.log("User must reset password, redirecting to enter-key");
+        // Store username for password reset flow
+        sessionStorage.setItem('resetUsername', values.username);
+        sessionStorage.setItem('resetCurrentPassword', values.password);
+        navigate('/enter-key');
+        return;
+      }
+      
+      // Normal login flow
+      if (result.token) {
+        localStorage.setItem('authToken', result.token);
+      }
+      
+      localStorage.setItem('username', values.username);
+      
+      navigate('/dashboard');
+      
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

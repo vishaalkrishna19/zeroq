@@ -83,7 +83,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             password=password,
             **validated_data
         )
-        user.must_change_password = True
+        user.must_change_password = True  # Ensure this is set
         user.save()
         
         # Store password for terminal output
