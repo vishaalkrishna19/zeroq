@@ -196,23 +196,9 @@ class UserViewSet(viewsets.ModelViewSet):
             print(f"New password verification: ✅")
             print(f"Database save: ✅\n")
             
-            # Send email notification
-            email_sent = False
-            if user.email:
-                email_sent = EmailService.send_password_reset_notification(
-                    user=user,
-                    new_password=new_password,
-                    reset_by=user  # Self-reset
-                )
-                if email_sent:
-                    print(":white_check_mark: Password reset email sent successfully")
-                else:
-                    print(":x: Failed to send password reset email")
-
             return Response({
                 "message": "Password reset successfully.",
                 "user": user.username,
-                "email_sent": user.email and email_sent,
                 "timestamp": timezone.now(),
                 "success": True
             })

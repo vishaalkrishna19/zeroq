@@ -1,23 +1,31 @@
-Subject: Welcome to ZeroQueue - Your Account Details
-Dear {{ user.get_full_name|default:user.username }},
-Welcome to ZeroQueue! Your account has been successfully created.
-Login Credentials:
+Welcome to ZeroQueue - Your Account Details
+
+Hello {{ user.get_full_name|default:user.username }},
+
+Your account has been successfully created in our ZeroQueue system. Below are your login credentials:
+
+=== Your Login Credentials ===
 Username: {{ user.username }}
 Email: {{ user.email }}
-Temporary Password: {{ password }}
-Please log in and change your password at your earliest convenience.
-Best regards,
+Temporary Password: {{ password }}{% if user.employee_id %}
+Employee ID: {{ user.employee_id }}{% endif %}
+
+🔒 SECURITY NOTICE: For your security, you must change your password on first login. The temporary password above will only work once.
+
+To set your new password, please visit:
+{{ site_url }}/enter-key
+
+After setting your new password, you can log in to the system at:
+{{ site_url }}/login
+
+{% if created_by %}
+---
+This account was created by: {{ created_by.get_full_name|default:created_by.username }}
+{% endif %}
+
+---
 ZeroQueue Team
-Support: {{ support_email }}
----
-This email was sent automatically. Please do not reply to this email.
-© 2024 ZeroQueue. All rights reserved.
-ZeroQueue Team
----
-This email was sent automatically. Please do not reply to this email.
-© 2024 ZeroQueue. All rights reserved.
-Best regards,
-The ZeroQueue Team
----
-This email was sent automatically. Please do not reply to this email.
+Need help? Contact us at {{ support_email }}
+
+This is an automated message. Please do not reply to this email.
 © 2024 ZeroQueue. All rights reserved.
