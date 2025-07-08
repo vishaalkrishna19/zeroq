@@ -189,80 +189,168 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"message": "User is not assigned to any account."}, 
                           status=status.HTTP_404_NOT_FOUND)
     
+    # @action(detail=False, methods=['post'])
+    # def reset_password(self, request):
+    #     """Reset user's password with username and current password verification."""
+    #     # Get credentials from request
+    #     username = request.data.get('username')
+    #     current_password = request.data.get('current_password')
+    #     new_password = request.data.get('new_password')
+        
+
+        
+    #     print(f"🔐 Password reset attempt for username: {username}")
+        
+    #     # Validate input
+    #     if not username or not current_password or not new_password:
+    #         return Response({
+    #             "error": "Username, current_password, and new_password are required."
+    #         }, status=status.HTTP_400_BAD_REQUEST)
+        
+    #     # Try to authenticate user with username and current password
+    #     try:
+    #         user = User.objects.get(username=username)
+    #     except User.DoesNotExist:
+    #         return Response({
+    #             "error": "Invalid username or password."
+    #         }, status=status.HTTP_400_BAD_REQUEST)
+        
+    #     # Verify current password
+    #     if not user.check_password(current_password):
+    #         return Response({
+    #             "error": "Invalid username or password."
+    #         }, status=status.HTTP_400_BAD_REQUEST)
+        
+    #     # Check if user is active
+    #     if not user.is_active:
+    #         return Response({
+    #             "error": "User account is inactive."
+    #         }, status=status.HTTP_400_BAD_REQUEST)
+        
+    #     # Validate new password (same as current)
+    #     if current_password == new_password:
+    #         return Response({
+    #             "error": "New password must be different from current password."
+    #         }, status=status.HTTP_400_BAD_REQUEST)
+        
+    #     try:
+    #         # Set new password
+    #         user.set_password(new_password)
+    #         user.must_change_password = False
+    #         user.password_changed_at = timezone.now()
+    #         user.save()
+            
+    #         # Verify the password was set correctly
+    #         user.refresh_from_db()
+    #         if not user.check_password(new_password):
+    #             raise Exception("Password verification failed after save")
+            
+    #         # Log password reset
+    #         print(f"\n🔐 PASSWORD RESET by user: {user.username}")
+    #         print(f"Email: {user.email}")
+    #         print(f"Reset at: {timezone.now()}")
+    #         print(f"New password verification: ✅")
+    #         print(f"Database save: ✅\n")
+            
+    #         return Response({
+    #             "message": "Password reset successfully.",
+    #             "user": user.username,
+    #             "timestamp": timezone.now(),
+    #             "success": True
+    #         })
+            
+    #     except Exception as e:
+    #         print(f"❌ Error during password reset: {e}")
+    #         return Response({
+    #             "error": "Failed to reset password. Please try again."
+    #         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+
     @action(detail=False, methods=['post'])
     def reset_password(self, request):
-        """Reset user's password with username and current password verification."""
-        # Get credentials from request
-        username = request.data.get('username')
-        current_password = request.data.get('current_password')
-        new_password = request.data.get('new_password')
-        
-        print(f"🔐 Password reset attempt for username: {username}")
-        
+        """Reset user's password with username or email and current password verification."""
+        username_or_email = request.data.get('username')
+        current_password   = request.data.get('current_password')
+        new_password       = request.data.get('new_password')
+
+        print(f"🔐 Password reset attempt for identifier: {username_or_email}")
+
         # Validate input
-        if not username or not current_password or not new_password:
+        if not username_or_email or not current_password or not new_password:
             return Response({
-                "error": "Username, current_password, and new_password are required."
+                "error": "username (or email), current_password, and new_password are required."
             }, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Try to authenticate user with username and current password
+
+        # Determine whether this is an email or a username
+        is_email = True
         try:
-            user = User.objects.get(username=username)
+            validate_email(username_or_email)
+        except ValidationError:
+            is_email = False
+
+        # Lookup user
+        try:
+            if is_email:
+                user = User.objects.get(email=username_or_email)
+            else:
+                user = User.objects.get(username=username_or_email)
         except User.DoesNotExist:
             return Response({
-                "error": "Invalid username or password."
+                "error": "Invalid username/email or password."
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Verify current password
         if not user.check_password(current_password):
             return Response({
-                "error": "Invalid username or password."
+                "error": "Invalid username/email or password."
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Check if user is active
         if not user.is_active:
             return Response({
                 "error": "User account is inactive."
             }, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Validate new password (same as current)
+
+        # Prevent reusing the same password
         if current_password == new_password:
             return Response({
                 "error": "New password must be different from current password."
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
         try:
-            # Set new password
+            # Apply new password and flags
             user.set_password(new_password)
             user.must_change_password = False
             user.password_changed_at = timezone.now()
             user.save()
-            
-            # Verify the password was set correctly
+
+            # Double-check
             user.refresh_from_db()
             if not user.check_password(new_password):
                 raise Exception("Password verification failed after save")
-            
-            # Log password reset
+
+            # Log success
             print(f"\n🔐 PASSWORD RESET by user: {user.username}")
             print(f"Email: {user.email}")
             print(f"Reset at: {timezone.now()}")
             print(f"New password verification: ✅")
             print(f"Database save: ✅\n")
-            
+
             return Response({
                 "message": "Password reset successfully.",
                 "user": user.username,
                 "timestamp": timezone.now(),
                 "success": True
             })
-            
+
         except Exception as e:
             print(f"❌ Error during password reset: {e}")
             return Response({
                 "error": "Failed to reset password. Please try again."
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+
     @action(detail=True, methods=['post'])
     def admin_reset_password(self, request, pk=None):
         """Admin password reset for any user."""
