@@ -43,7 +43,7 @@ class CustomLoginView(LoginView):
                         return Response({
                             "error": "You must change your password before logging in.",
                             "must_reset_password": True,
-                            "redirect_url": "/enter-key"
+                            "redirect_url": "/set-password"
                         }, status=status.HTTP_403_FORBIDDEN)
             except User.DoesNotExist:
                 pass  # Let default authentication handle the error

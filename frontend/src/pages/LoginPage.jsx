@@ -103,7 +103,7 @@ export default function LoginPage() {
         // Store username and password for the reset flow
         sessionStorage.setItem('resetUsername', values.username);
         sessionStorage.setItem('resetCurrentPassword', values.password);
-        navigate('/enter-key');
+        navigate('/set-password');
         return;
       }
       
