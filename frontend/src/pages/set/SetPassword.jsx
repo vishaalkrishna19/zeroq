@@ -56,7 +56,7 @@ export default function SetPassword() {
     
     if (!storedUsername || !storedCurrentPassword) {
 
-      navigate('/enter-key');
+      navigate('/login');
       return;
     }
     
@@ -254,6 +254,11 @@ export default function SetPassword() {
                 size="md"
                 disabled={loading || success}
               />
+              {form.errors.confirmPassword && (
+                <Text color="red" size="xs" mt={-8} mb={8}>
+                  {form.errors.confirmPassword}
+                </Text>
+              )}
               <Button
                 fullWidth
                 radius="md"
