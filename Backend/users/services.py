@@ -41,60 +41,14 @@ class EmailService:
                 'user': user,
                 'password': password,
                 'created_by': created_by,
-                'site_url': 'http://127.0.0.1:8000',  # Update for production
+                'site_url': 'http://localhost:5173',  # Vite runs on port 5173
                 'support_email': settings.ADMIN_EMAIL,
             }
-            # Create simple text email content
-            text_content = f"""Dear {user.get_full_name() or user.username},
-Welcome to ZeroQueue! Your account has been successfully created.
-Login Credentials:
-Username: {user.username}
-Email: {user.email}
-Temporary Password: {password}
-Please log in and change your password at your earliest convenience.
-Best regards,
-ZeroQueue Team
-Support: {settings.ADMIN_EMAIL}"""
-            # Send simple text email
-            send_mail(
-                subject=subject,
-                message=text_content,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False,
-            )
-            logger.info(f"User credentials email sent successfully to {user.email}")
-            print(f":white_check_mark: User credentials email sent successfully to {user.email}")
-            return True
-        except Exception as e:
-            logger.error(f"Failed to send user credentials email to {user.email}: {str(e)}")
-            print(f":x: Failed to send user credentials email to {user.email}: {str(e)}")
-            return False
-    @staticmethod
-    def send_password_reset_notification(user, new_password, reset_by=None):
-        """
-        Send email notification when admin resets user password.
-        Args:
-            user: User instance
-            new_password: New plain text password
-            reset_by: User who reset the password (optional)
-        Returns:
-            bool: True if email sent successfully, False otherwise
-        """
-        try:
-            subject = "ZeroQueue - Password Reset Notification"
-            context = {
-                'user': user,
-                'password': new_password,
-                'reset_by': reset_by,
-                'site_url': 'http://127.0.0.1:8000',
-                'support_email': settings.ADMIN_EMAIL,
-            }
-            # For now, use the same template as user creation
-            # You can create a separate template for password reset
+            # Render HTML and text templates
             html_content = render_to_string('emails/user_created.html', context)
             text_content = render_to_string('emails/user_created.txt', context)
-            # Create email message
+            
+            # Create email message with HTML alternative
             email = EmailMultiAlternatives(
                 subject=subject,
                 body=text_content,
@@ -103,11 +57,12 @@ Support: {settings.ADMIN_EMAIL}"""
             )
             email.attach_alternative(html_content, "text/html")
             email.send()
-            logger.info(f"Password reset notification sent successfully to {user.email}")
+            
+            logger.info(f"User credentials email sent successfully to {user.email}")
+            print(f":white_check_mark: User credentials email sent successfully to {user.email}")
             return True
         except Exception as e:
-            logger.error(f"Failed to send password reset notification to {user.email}: {str(e)}")
+            logger.error(f"Failed to send user credentials email to {user.email}: {str(e)}")
+            print(f":x: Failed to send user credentials email to {user.email}: {str(e)}")
             return False
-        except Exception as e:
-            logger.error(f"Failed to send password reset notification to {user.email}: {str(e)}")
-            return False
+
