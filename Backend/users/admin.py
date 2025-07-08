@@ -7,9 +7,96 @@ from django.utils import timezone
 from django import forms
 import secrets
 import string
-from .models import User, UserAccount
+from .models import User, UserAccount, JobTitle
 
 from .services import EmailService
+
+@admin.register(JobTitle)
+class JobTitleAdmin(admin.ModelAdmin):
+    """Admin for Job Titles."""
+    
+    list_display = [
+        'title',
+        'department',
+        'boarding_template_title',
+        'user_count_display',
+        'is_active',
+        'created_at'
+    ]
+    
+    list_filter = [
+        'is_active',
+        'department',
+        'created_at'
+    ]
+    
+    search_fields = [
+        'title',
+        'description',
+        'department',
+        'boarding_template_title'
+    ]
+    
+    readonly_fields = [
+        'id',
+        'user_count_display',
+        'created_at',
+        'updated_at'
+    ]
+    
+    fieldsets = (
+        ('Job Title Information', {
+            'fields': (
+                'title',
+                'description',
+                'department'
+            )
+        }),
+        ('Boarding Configuration', {
+            'fields': (
+                'boarding_template_title',
+            ),
+            'description': 'This title will be used for onboarding template mapping'
+        }),
+        ('Settings', {
+            'fields': (
+                'is_active',
+                'created_by'
+            )
+        }),
+        ('Statistics', {
+            'fields': (
+                'user_count_display',
+            ),
+            'classes': ('collapse',)
+        }),
+        ('Metadata', {
+            'fields': (
+                'id',
+                'created_at',
+                'updated_at'
+            ),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    ordering = ['title']
+    
+    def user_count_display(self, obj):
+        count = obj.user_count
+        return format_html(
+            '<span style="color: {};">{}</span>',
+            'green' if count > 0 else 'gray',
+            count
+        )
+    user_count_display.short_description = 'Active Users'
+    
+    def save_model(self, request, obj, form, change):
+        """Override to set created_by for new objects."""
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
 
 class CustomUserCreationForm(forms.ModelForm):
     """Custom user creation form for admin - No password fields."""
@@ -25,6 +112,9 @@ class CustomUserCreationForm(forms.ModelForm):
         self.fields['email'].required = True
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
+        
+        # Filter job titles to only active ones
+        self.fields['job_title'].queryset = JobTitle.objects.filter(is_active=True)
         
         # Add help text for password
         self.fields['username'].help_text = 'Username for login. A strong password will be auto-generated.'
@@ -91,7 +181,7 @@ class UserAdmin(BaseUserAdmin):
         'last_name', 
         'email',
         'employee_id',
-        'job_title',
+        'job_title__title',
         'department'
     ]
     
@@ -176,7 +266,6 @@ class UserAdmin(BaseUserAdmin):
         }),
         ('Employment Details', {
             'fields': (
-
                 'job_title',
                 'department',
                 'hire_date',
@@ -476,7 +565,7 @@ class UserAdmin(BaseUserAdmin):
         return render(request, 'admin/users/user/reset_password.html', context)
     
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related('account', 'role')
+        return super().get_queryset(request).select_related('account', 'role', 'job_title')
 
 
 @admin.register(UserAccount)
