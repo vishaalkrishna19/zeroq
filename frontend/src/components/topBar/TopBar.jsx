@@ -96,6 +96,7 @@ export function TopBar() {
                     src="https://s3.us-west-2.amazonaws.com/assets.www.happyfox.com/media/images/Slack.original.svg"
                     className={styles.companyLogo}
                     alt="Company Logo"
+                    
                   />
                   <Text className={styles.companyText}>Company account</Text>
                   <IconChevronDown size={12} />
