@@ -1,6 +1,8 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -31,25 +33,45 @@ class CustomLoginView(LoginView):
         # Get credentials from request
         username = request.data.get('username')
         password = request.data.get('password')
-        
+        is_email=True
         if username and password:
-            # Try to find the user first
+            is_email = True
             try:
-                user = User.objects.get(username=username)
-                # Check if user exists and password is correct
-                if user.check_password(password) and user.is_active:
-                    # If user must change password, prevent login and redirect to reset flow
-                    if user.must_change_password:
-                        return Response({
-                            "error": "You must change your password before logging in.",
-                            "must_reset_password": True,
-                            "redirect_url": "/set-password"
-                        }, status=status.HTTP_403_FORBIDDEN)
+                validate_email(username)
+            except ValidationError:
+                is_email = False
+            try:
+                if is_email==True:
+                    user = User.objects.get(email=username)
+                    # Check if user exists and password is correct
+                    if user.check_password(password) and user.is_active:
+                        # If user must change password, prevent login and redirect to reset flow
+                        if user.must_change_password:
+                            return Response({
+                                "error": "You must change your password before logging in.",
+                                "must_reset_password": True,
+                                "redirect_url": "/set-password"
+                            }, status=status.HTTP_403_FORBIDDEN)
+                        
+                elif is_email==False:
+                    user = User.objects.get(username=username)
+                    # Check if user exists and password is correct
+                    if user.check_password(password) and user.is_active:
+                        # If user must change password, prevent login and redirect to reset flow
+                        if user.must_change_password:
+                            return Response({
+                                "error": "You must change your password before logging in.",
+                                "must_reset_password": True,
+                                "redirect_url": "/set-password"
+                            }, status=status.HTTP_403_FORBIDDEN)
             except User.DoesNotExist:
-                pass  # Let default authentication handle the error
+                pass  # Let default authentication handle the error   
+        
+       
         
         # If no must_change_password issue, proceed with normal login
         return super().post(request, *args, **kwargs)
+
 
 
 class UserViewSet(viewsets.ModelViewSet):
