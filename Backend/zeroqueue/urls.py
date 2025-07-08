@@ -14,21 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-<<<<<<< Updated upstream
-from django.urls import path, include
-=======
 from django.urls import path, include  
 from users.views import csrf, custom_login
->>>>>>> Stashed changes
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('dj_rest_auth.urls')),
-<<<<<<< Updated upstream
-=======
     path('api/auth/csrf/', csrf, name='csrf'), 
     path('api/auth/custom-login/', custom_login, name='custom_login'),
->>>>>>> Stashed changes
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('api/accounts/', include('accounts.urls')),
     path('api/users/', include('users.urls')),

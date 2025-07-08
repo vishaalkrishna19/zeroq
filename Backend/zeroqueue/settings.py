@@ -155,8 +155,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
 
-<<<<<<< Updated upstream
-=======
 # CORS Configuration for React Frontend
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React development server
@@ -204,7 +202,6 @@ PASSWORD_RESET_FLOW = {
     'REQUIRE_CURRENT_PASSWORD': True,  # Require current password for reset
 }
 
->>>>>>> Stashed changes
 # Django Allauth Configuration
 SITE_ID = 1
 

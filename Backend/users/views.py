@@ -15,12 +15,9 @@ from .serializers import (
     PasswordChangeSerializer
 )
 from .services import EmailService
-<<<<<<< Updated upstream
-=======
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
->>>>>>> Stashed changes
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -400,9 +397,6 @@ class UserAccountViewSet(viewsets.ModelViewSet):
         )
         
         serializer = self.get_serializer(queryset, many=True)
-<<<<<<< Updated upstream
-        return Response(serializer.data)
-=======
         return Response(serializer.data)
 
 @ensure_csrf_cookie
@@ -483,4 +477,3 @@ def custom_login(request):
     return Response({
         "error": "Authentication failed."
     }, status=status.HTTP_400_BAD_REQUEST)
->>>>>>> Stashed changes
