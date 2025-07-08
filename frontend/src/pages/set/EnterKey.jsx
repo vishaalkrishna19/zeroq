@@ -17,10 +17,10 @@ const getCSRFToken = () => {
   return match ? match[1] : '';
 };
 
-// API service for password reset
-const resetPassword = async (username, currentPassword, newPassword) => {
+// API service for credential verification using Django's built-in login
+const verifyCredentials = async (username, currentPassword) => {
   const csrfToken = getCSRFToken();
-  const response = await fetch('http://localhost:8000/api/users/reset_password/', {
+  const response = await fetch('http://localhost:8000/api/auth/login/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -29,14 +29,13 @@ const resetPassword = async (username, currentPassword, newPassword) => {
     credentials: 'include',
     body: JSON.stringify({
       username: username,
-      current_password: currentPassword,
-      new_password: newPassword,
+      password: currentPassword,
     }),
   });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Password reset failed');
+    throw new Error(error.error || error.detail || 'Invalid username or password');
   }
 
   return response.json();
@@ -46,40 +45,37 @@ export default function EnterKey() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
 
   const form = useForm({
     initialValues: { 
       username: "",
-      current_password: "", 
-      new_password: "" 
+      current_password: ""
     },
     validate: {
       username: (v) => (v.length >= 1 ? null : "Username is required"),
       current_password: (v) => (v.length >= 1 ? null : "Current password is required"),
-      new_password: (v) => (v.length >= 6 ? null : "New password must be ≥ 6 chars"),
     },
   });
 
   const handleSubmit = async (values) => {
     setLoading(true);
     setError(null);
-    setSuccess(false);
 
     try {
-      console.log("Resetting password:", values);
-      const result = await resetPassword(values.username, values.current_password, values.new_password);
+      console.log("Verifying credentials:", values.username);
+      const result = await verifyCredentials(values.username, values.current_password);
       
-      console.log("Password reset successful:", result);
-      setSuccess(true);
+      console.log("Credentials verified successfully:", result);
       
-      // Redirect to login after a short delay
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      // Store username in sessionStorage for the next page
+      sessionStorage.setItem('resetUsername', values.username);
+      sessionStorage.setItem('resetCurrentPassword', values.current_password);
+      
+      // Redirect to set password page
+      navigate('/set-password');
       
     } catch (err) {
-      console.error("Password reset error:", err);
+      console.error("Credential verification error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -146,21 +142,15 @@ export default function EnterKey() {
           </Stack>
 
           <Title order={2} mb={8} style={{ fontWeight: 500, color: "#222" }}>
-            Reset Your Password
+            Verify Your Identity
           </Title>
           <Text size="sm" color="dimmed" mb={24}>
-            Enter your current password and new password
+            Enter your username and current password to continue
           </Text>
 
           {error && (
             <Alert icon={<IconX size="1rem" />} color="red" mb="md">
               {error}
-            </Alert>
-          )}
-
-          {success && (
-            <Alert icon={<IconCheck size="1rem" />} color="green" mb="md">
-              Password reset successful! Redirecting to login...
             </Alert>
           )}
 
@@ -173,7 +163,7 @@ export default function EnterKey() {
                 {...form.getInputProps("username")}
                 radius="md"
                 size="md"
-                disabled={loading || success}
+                disabled={loading}
               />
               <PasswordInput
                 label="Current Password"
@@ -182,25 +172,16 @@ export default function EnterKey() {
                 {...form.getInputProps("current_password")}
                 radius="md"
                 size="md"
-                disabled={loading || success}
-              />
-              <PasswordInput
-                label="New Password"
-                placeholder="Enter your new password"
-                required
-                {...form.getInputProps("new_password")}
-                radius="md"
-                size="md"
-                disabled={loading || success}
+                disabled={loading}
               />
               <Button
                 fullWidth
                 radius="md"
                 size="md"
                 type="submit"
-                disabled={loading || success}
+                disabled={loading}
                 style={{
-                  background: success ? "#51cf66" : "oklch(62.3% .214 259.815)",
+                  background: "oklch(62.3% .214 259.815)",
                   color: "#fff",
                   fontWeight: 600,
                   marginTop: 8,
@@ -210,12 +191,10 @@ export default function EnterKey() {
                 {loading ? (
                   <>
                     <Loader size="sm" mr="sm" />
-                    Resetting Password...
+                    Verifying...
                   </>
-                ) : success ? (
-                  "Password Reset Successfully!"
                 ) : (
-                  "Reset Password"
+                  "Continue"
                 )}
               </Button>
             </Stack>
@@ -265,12 +244,10 @@ export default function EnterKey() {
             transform: "translate(-50%, -50%)",
             width: "150px",
             height: "150px",
-
             borderRadius: "16px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-         
           }}>
             <img 
               src="https://zeroq.hfapp.net/logo.svg" 
