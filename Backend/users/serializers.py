@@ -1,7 +1,22 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from .models import User, UserAccount
+from .models import User, UserAccount, JobTitle
 from .admin import generate_strong_password
+
+
+class JobTitleSerializer(serializers.ModelSerializer):
+    """Serializer for Job Titles."""
+    
+    user_count = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = JobTitle
+        fields = [
+            'id', 'title', 'description', 'department',
+            'boarding_template_title', 'is_active',
+            'user_count', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'user_count', 'created_at', 'updated_at']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,12 +25,15 @@ class UserSerializer(serializers.ModelSerializer):
     account_count = serializers.SerializerMethodField()
     is_employed = serializers.ReadOnlyField()
     days_since_hire = serializers.ReadOnlyField()
+    job_title_name = serializers.ReadOnlyField()
+    boarding_template_title = serializers.ReadOnlyField()
     
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-            'employee_id', 'hire_date', 'termination_date', 'job_title', 'department',
+            'employee_id', 'hire_date', 'termination_date', 'job_title', 'job_title_name',
+            'boarding_template_title', 'department',
             'employment_status', 'is_active', 'is_staff',
             'is_superuser', 'must_change_password', 'two_factor_enabled',
             'account_count', 'is_employed',
@@ -24,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'id', 'date_joined', 'last_login', 'updated_at',
             'password_changed_at', 'account_count', 'is_employed',
-            'days_since_hire'
+            'days_since_hire', 'job_title_name', 'boarding_template_title'
         ]
         extra_kwargs = {
             'password': {'write_only': True}
@@ -40,12 +58,13 @@ class UserListSerializer(serializers.ModelSerializer):
     
     account_count = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField()
+    job_title_name = serializers.ReadOnlyField()
     
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'full_name', 'employee_id',
-            'job_title', 'department', 'employment_status',
+            'job_title', 'job_title_name', 'department', 'employment_status',
             'is_active', 'account_count', 'date_joined'
         ]
     
@@ -67,6 +86,12 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'employee_id', 'hire_date', 'job_title', 'department',
             'employment_status', 'is_active', 'is_staff'
         ]
+    
+    def validate_job_title(self, value):
+        """Ensure job title is active."""
+        if value and not value.is_active:
+            raise serializers.ValidationError("Selected job title is not active.")
+        return value
     
     def create(self, validated_data):
         # Generate strong password

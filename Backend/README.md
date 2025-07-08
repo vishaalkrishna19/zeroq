@@ -7,6 +7,7 @@ Django-based application for managing employee onboarding and offboarding proces
 - **Multi-tenant Architecture**: Support for multiple company accounts
 - **User Management**: Complete CRUD operations for users
 - **Role-Based Permissions**: Granular permission system with admin/staff roles
+- **Job Title Management**: Predefined job titles with boarding template mapping
 - **Authentication**: Django Allauth integration with password reset
 - **Onboarding/Offboarding**: Workflow management for employee lifecycle
 - **Admin Interface**: Full Django admin integration with CRUD operations
@@ -55,10 +56,16 @@ Visit: http://127.0.0.1:8000/admin/
 ### Users  
 - **User**: Extended Django user model
   - Basic auth fields (username, email, password)
-  - Employee info (employee_id, job_title, department)
+  - Employee info (employee_id, job_title FK, department)
   - Employment status and dates
   - Manager relationship, address fields
   - Security settings (2FA, password policies)
+
+### Job Titles
+- **JobTitle**: Predefined job titles with boarding template mapping
+  - title, description, department
+  - boarding_template_title for onboarding workflow mapping
+  - is_active flag and user count tracking
 
 ### Roles & Permissions
 - **Permission**: Granular permissions by category and level
@@ -86,6 +93,10 @@ Visit: http://127.0.0.1:8000/admin/
 - `/api/users/{id}/reset_password/` - Admin password reset
 - `/api/users/{id}/accounts/` - User's accounts
 
+### Job Titles
+- `/api/users/job-titles/` - List/create job titles
+- `/api/users/job-titles/{id}/` - Job title detail/update/delete
+
 ### Accounts
 - `/api/accounts/` - List/create accounts
 - `/api/accounts/{id}/` - Account detail/update/delete
@@ -108,8 +119,14 @@ Visit: http://127.0.0.1:8000/admin/
 ### User Management
 - Create users with auto-generated strong passwords
 - Password printed to terminal for secure sharing
-- Employee information management
+- Employee information management with predefined job titles
 - Role assignment per account
+
+### Job Title Management
+- Create and manage predefined job titles
+- Map job titles to boarding template titles for onboarding
+- Track user count per job title
+- Department categorization
 
 ### Account Management  
 - Company account creation and configuration
@@ -131,6 +148,16 @@ Visit: http://127.0.0.1:8000/admin/
 - **Audit Logging**: Creation timestamps and user tracking
 
 ## Default Setup
+
+### Job Titles Created
+- Software Engineer → Technical Onboarding - Engineer
+- Senior Software Engineer → Technical Onboarding - Senior Engineer
+- Product Manager → Product Team Onboarding
+- Designer → Creative Team Onboarding
+- Marketing Manager → Marketing Team Onboarding
+- Sales Representative → Sales Team Onboarding
+- HR Manager → HR Team Onboarding
+- System Administrator → IT Infrastructure Onboarding
 
 ### Permissions Created
 - User Management: view, create, edit, delete users
@@ -165,6 +192,7 @@ Visit: http://127.0.0.1:8000/admin/
 - User creation always generates strong passwords
 - Passwords are printed to terminal (secure in dev environment)
 - Default admin user created automatically with migrations
+- Job titles are predefined and mapped to boarding templates
 - All models use UUID primary keys for security
 - Comprehensive admin interface with filtering and search
 - API includes pagination and filtering capabilities

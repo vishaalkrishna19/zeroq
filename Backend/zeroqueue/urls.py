@@ -26,5 +26,6 @@ urlpatterns = [
     path('api/accounts/', include('accounts.urls')),
     path('api/users/', include('users.urls')),
     path('api/roles/', include('roles_permissions.urls')),
+    path('api/boarding/', include('boarding.urls')),
     path('accounts/', include('allauth.urls')),
 ]
