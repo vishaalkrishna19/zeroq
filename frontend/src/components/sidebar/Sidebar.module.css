@@ -3,7 +3,7 @@
   background-color: rgba(21, 23, 26, 0.94);
   border-right: 1px solid #3a3d41;
   position: relative;
-  padding: 16px 10px;
+  padding: 12px 10px;
   flex-shrink: 0;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: visible;
@@ -32,7 +32,7 @@
 }
 
 .header {
-  padding: 2px 0;
+  padding: 0px 0;
   margin-left: -16px;
   margin-right: -16px;
   padding-left: 20px;
@@ -65,6 +65,11 @@
   font-size: 14px;
   margin-bottom: 16px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.askAnything .ask-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .askAnything:hover {
@@ -120,6 +125,11 @@
 .sidebarCollapsed .chevronIcon {
   opacity: 0;
   transform: scale(0.8);
+}
+
+.sidebarCollapsed .ask-icon {
+  width: 20px;
+  height: 20px;
 }
 
 /* Enhanced text fade animations - target Text components directly */

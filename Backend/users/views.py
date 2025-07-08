@@ -311,6 +311,13 @@ class UserViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def userdata(self, request):
+        """Get current user's information with admin fields."""
+        user = request.user
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
 
 
 class UserAccountViewSet(viewsets.ModelViewSet):

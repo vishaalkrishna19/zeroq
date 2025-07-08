@@ -172,10 +172,9 @@ export function Sidebar({ collapsed, onToggle }) {
         </Group>
       </Box>
 
-      {/* Ask Anything / Search Icon */}
       <UnstyledButton onClick={() => setSearchModalOpened(true)} className={styles.askAnything}>
         <Group gap="sm" justify={collapsed ? "center" : undefined}>
-          <IconSearch size={18} />
+          <IconSearch className='ask-icon' size={20} style={{ minWidth: 20, minHeight: 20 }} />
           {!collapsed && <Text size="sm">Ask Anything</Text>}
         </Group>
       </UnstyledButton>

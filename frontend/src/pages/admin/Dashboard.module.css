@@ -6,7 +6,7 @@
 
 .content {
   flex: 1;
-  background-color: #f8f9fa;
+  background-color: #eeeef0;
   padding: 24px 36px;
   overflow: auto;
 }
@@ -16,9 +16,9 @@
 }
 
 .title {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 400;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: var(--mantine-color-dark-9);
 }
 
@@ -36,15 +36,15 @@
 }
 
 .logoText {
-  font-size: 48px;
+  font-size: 60px;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 26px;
   color: var(--mantine-color-dark-9);
 }
 
 .greetingText {
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 36px;
+  font-weight: 400;
   margin-bottom: 8px;
   color: var(--mantine-color-dark-9);
 }

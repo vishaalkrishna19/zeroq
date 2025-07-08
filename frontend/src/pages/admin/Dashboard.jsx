@@ -19,7 +19,7 @@ export default function Dashboard() {
         return;
       }
     
-      fetch('http://localhost:8000/api/auth/user/', {
+      fetch('http://localhost:8000/api/users/userdata', {
         method: 'GET',
         headers: {
           'Authorization': `Token ${authToken}`,
@@ -47,7 +47,7 @@ export default function Dashboard() {
         <Box className={styles.content}>
           <Box className={styles.headerSection}>
             <Text className={styles.title}>
-              Dashboard
+              Admin Dashboard
             </Text>
             <Text className={styles.subtitle}>
               Welcome to your ZeroQ dashboard

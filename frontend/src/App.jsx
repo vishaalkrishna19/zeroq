@@ -9,9 +9,10 @@ import { Sidebar } from "./components/sidebar/Sidebar";
 import ResetPassword from "./pages/reset/ResetPassword";
 import SetPassword from "./pages/set/SetPassword";
 import EnterKey from "./pages/set/EnterKey";
+import UserPanel from "./pages/user/UserPanel";
 
 function AppContent() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const location = useLocation();
   
   const showSidebar = location.pathname !== "/" && location.pathname !== "/login" && location.pathname !== "/reset-password" && location.pathname !== "/set-password" && location.pathname !== "/enter-key";
@@ -33,6 +34,7 @@ function AppContent() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/set-password" element={<SetPassword />} />
           <Route path="/enter-key" element={<EnterKey />} />
+          <Route path="/user-panel" element={<UserPanel />} />
         </Routes>
       </Box>
     </Box>
