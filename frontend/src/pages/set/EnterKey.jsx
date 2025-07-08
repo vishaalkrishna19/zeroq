@@ -5,65 +5,55 @@ import {
   Alert, Loader
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconBrandApple, IconBrandGoogle, IconX } from "@tabler/icons-react";
+import { IconBrandApple, IconBrandGoogle, IconCheck, IconX } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
 const bgGradient = "#fff";
 const cardRadius = 15;
 
-const getCSRFToken = async () => {
-  // Try to get from cookie first
+// Helper to get CSRF token from cookie
+const getCSRFToken = () => {
   const match = document.cookie.match(/csrftoken=([^;]+)/);
-  if (match) return match[1];
+  return match ? match[1] : '';
+};
 
-  // If not found, fetch from API and try again
-  await fetch('http://localhost:8000/api/auth/csrf/', {
-    method: 'GET',
+// API service for credential verification using Django's built-in login
+const verifyCredentials = async (username, currentPassword) => {
+  const csrfToken = getCSRFToken();
+  const response = await fetch('http://localhost:8000/api/auth/login/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken,
+    },
     credentials: 'include',
+    body: JSON.stringify({
+      username: username,
+      password: currentPassword,
+    }),
   });
-  const newMatch = document.cookie.match(/csrftoken=([^;]+)/);
-  return newMatch ? newMatch[1] : '';
-};
 
-const loginUser = async (username, password) => {
-  try {
-    const csrfToken = await getCSRFToken();
-    console.log("CSRF Token:", csrfToken);
-    const response = await fetch('http://localhost:8000/api/auth/login/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': csrfToken,
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.non_field_errors?.[0] || error.detail || 'Login failed');
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error('Login request failed:', error);
-    throw error;
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || error.detail || 'Invalid username or password');
   }
+
+  return response.json();
 };
 
-export default function LoginPage() {
+export default function EnterKey() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const form = useForm({
-    initialValues: { username: "", password: "" },
+    initialValues: { 
+      username: "",
+      current_password: ""
+    },
     validate: {
       username: (v) => (v.length >= 1 ? null : "Username is required"),
-      password: (v) => (v.length >= 1 ? null : "Password is required"),
+      current_password: (v) => (v.length >= 1 ? null : "Current password is required"),
     },
   });
 
@@ -72,21 +62,20 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      console.log("Logging in:", values);
-      const result = await loginUser(values.username, values.password);
+      console.log("Verifying credentials:", values.username);
+      const result = await verifyCredentials(values.username, values.current_password);
       
-      console.log("Login successful:", result);
+      console.log("Credentials verified successfully:", result);
       
-      if (result.key || result.token) {
-        localStorage.setItem('authToken', result.key || result.token);
-      }
+      // Store username in sessionStorage for the next page
+      sessionStorage.setItem('resetUsername', values.username);
+      sessionStorage.setItem('resetCurrentPassword', values.current_password);
       
-      localStorage.setItem('username', values.username);
-      
-      navigate('/dashboard');
+      // Redirect to set password page
+      navigate('/set-password');
       
     } catch (err) {
-      console.error("Login error:", err);
+      console.error("Credential verification error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -151,12 +140,12 @@ export default function LoginPage() {
               </Title>
             </div>
           </Stack>
-          
+
           <Title order={2} mb={8} style={{ fontWeight: 500, color: "#222" }}>
-            Sign in to your account
+            Verify Your Identity
           </Title>
           <Text size="sm" color="dimmed" mb={24}>
-            Enter your credentials
+            Enter your username and current password to continue
           </Text>
 
           {error && (
@@ -177,10 +166,10 @@ export default function LoginPage() {
                 disabled={loading}
               />
               <PasswordInput
-                label="Password"
-                placeholder="Your password"
+                label="Current Password"
+                placeholder="Enter your current password"
                 required
-                {...form.getInputProps("password")}
+                {...form.getInputProps("current_password")}
                 radius="md"
                 size="md"
                 disabled={loading}
@@ -202,22 +191,22 @@ export default function LoginPage() {
                 {loading ? (
                   <>
                     <Loader size="sm" mr="sm" />
-                    Signing In...
+                    Verifying...
                   </>
                 ) : (
-                  "Sign In"
+                  "Continue"
                 )}
               </Button>
             </Stack>
           </form>
 
           <Group position="center" mt="md" style={{ fontSize: 13 }}>
-            <Anchor component="button" type="button" color="gray">
-              Terms & Conditions
+            <Anchor component="button" type="button" color="gray" onClick={() => navigate('/login')}>
+              Back to Login
             </Anchor>
           </Group>
         </Box>
-        
+
         {/* Right: Image */}
         <Box
           style={{
@@ -247,6 +236,7 @@ export default function LoginPage() {
               borderBottomRightRadius: cardRadius,
             }}
           />
+          {/* Centered Logo Overlay */}
           <div style={{
             position: "absolute",
             top: "50%",

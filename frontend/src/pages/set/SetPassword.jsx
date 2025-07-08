@@ -1,30 +1,107 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Paper, PasswordInput, Button,
-  Stack, Title, Text, Box, Image
+  Stack, Title, Text, Box, Image, Alert, Loader
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useNavigate } from "react-router-dom";
+import { IconCheck, IconX } from "@tabler/icons-react";
 
 const bgGradient = "#fff";
 const cardRadius = 15;
 
+// Helper to get CSRF token from cookie
+const getCSRFToken = () => {
+  const match = document.cookie.match(/csrftoken=([^;]+)/);
+  return match ? match[1] : '';
+};
+
+// API service for password reset
+const resetPassword = async (username, currentPassword, newPassword) => {
+  const csrfToken = getCSRFToken();
+  const response = await fetch('http://localhost:8000/api/users/reset_password/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken,
+    },
+    credentials: 'include',
+    body: JSON.stringify({
+      username: username,
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Password reset failed');
+  }
+
+  return response.json();
+};
+
 export default function SetPassword() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [username, setUsername] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+
+  useEffect(() => {
+   
+    const storedUsername = sessionStorage.getItem('resetUsername');
+    const storedCurrentPassword = sessionStorage.getItem('resetCurrentPassword');
+    
+    if (!storedUsername || !storedCurrentPassword) {
+
+      navigate('/enter-key');
+      return;
+    }
+    
+    setUsername(storedUsername);
+    setCurrentPassword(storedCurrentPassword);
+  }, [navigate]);
+
   const form = useForm({
     initialValues: { 
-      currentPassword: "", 
       newPassword: "", 
       confirmPassword: "" 
     },
     validate: {
-
       newPassword: (v) => (v.length >= 6 ? null : "Password must be ≥ 6 chars"),
       confirmPassword: (value, values) => 
         value !== values.newPassword ? "Passwords did not match" : null,
     },
   });
 
-  const handleSubmit = (values) => {
-    console.log("Resetting password:", values);
+  const handleSubmit = async (values) => {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      console.log("Setting new password for:", username);
+      const result = await resetPassword(username, currentPassword, values.newPassword);
+      
+      console.log("Password reset successful:", result);
+      setSuccess(true);
+      
+     
+      sessionStorage.removeItem('resetUsername');
+      sessionStorage.removeItem('resetCurrentPassword');
+      
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+      
+    } catch (err) {
+      console.error("Password reset error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -139,15 +216,26 @@ export default function SetPassword() {
           </Stack>
           
           <Title order={2} mb={8} style={{ fontWeight: 500, color: "#222" }}>
-            Set your password
+            Set Your New Password
           </Title>
           <Text size="sm" color="dimmed" mb={24}>
-            Enter your current password and choose a new one
+            Choose a strong password for your account
           </Text>
+
+          {error && (
+            <Alert icon={<IconX size="1rem" />} color="red" mb="md">
+              {error}
+            </Alert>
+          )}
+
+          {success && (
+            <Alert icon={<IconCheck size="1rem" />} color="green" mb="md">
+              Password set successfully! Redirecting to login...
+            </Alert>
+          )}
           
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack spacing="md">
-             
               <PasswordInput
                 label="New Password"
                 placeholder="Enter your new password"
@@ -155,6 +243,7 @@ export default function SetPassword() {
                 {...form.getInputProps("newPassword")}
                 radius="md"
                 size="md"
+                disabled={loading || success}
               />
               <PasswordInput
                 label="Confirm New Password"
@@ -163,21 +252,32 @@ export default function SetPassword() {
                 {...form.getInputProps("confirmPassword")}
                 radius="md"
                 size="md"
+                disabled={loading || success}
               />
               <Button
                 fullWidth
                 radius="md"
                 size="md"
                 type="submit"
+                disabled={loading || success}
                 style={{
-                  background: "oklch(62.3% .214 259.815)",
+                  background: success ? "#51cf66" : "oklch(62.3% .214 259.815)",
                   color: "#fff",
                   fontWeight: 600,
                   marginTop: 8,
                   marginBottom: 8,
                 }}
               >
-                Set Password
+                {loading ? (
+                  <>
+                    <Loader size="sm" mr="sm" />
+                    Setting Password...
+                  </>
+                ) : success ? (
+                  "Password Set Successfully!"
+                ) : (
+                  "Set Password"
+                )}
               </Button>
             </Stack>
           </form>

@@ -155,6 +155,47 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
 
+# CORS Configuration for React Frontend
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React development server
+    "http://127.0.0.1:3000",  # Alternative localhost
+    "http://localhost:5173",  # Vite development server (if using Vite)
+]
+
+# Alternative: Allow all origins for development (less secure)
+# CORS_ALLOW_ALL_ORIGINS = True  # Uncomment for development only
+
+# CORS settings
+CORS_ALLOW_CREDENTIALS = True  # Allow cookies/authentication
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-csrf-token',
+    'x-requested-with',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# CSRF Configuration for React
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+]
+
 # Django Allauth Configuration
 SITE_ID = 1
 
@@ -241,7 +282,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Session expires when browser closes
 
 # CSRF Protection
 CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
-CSRF_COOKIE_HTTPONLY = True  # Prevents JavaScript access to CSRF token
+CSRF_COOKIE_HTTPONLY = False  # Prevents JavaScript access to CSRF token
 
 # Logging Configuration
 LOGGING = {

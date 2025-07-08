@@ -8,12 +8,13 @@ import Dashboard from "./pages/admin/Dashboard";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import ResetPassword from "./pages/reset/ResetPassword";
 import SetPassword from "./pages/set/SetPassword";
+import EnterKey from "./pages/set/EnterKey";
 
 function AppContent() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
   
-  const showSidebar = location.pathname !== "/" && location.pathname !== "/login" && location.pathname !== "/reset-password" && location.pathname !== "/set-password";
+  const showSidebar = location.pathname !== "/" && location.pathname !== "/login" && location.pathname !== "/reset-password" && location.pathname !== "/set-password" && location.pathname !== "/enter-key";
 
   return (
     <Box style={{ display: 'flex', height: '100vh' }}>
@@ -31,6 +32,7 @@ function AppContent() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/set-password" element={<SetPassword />} />
+          <Route path="/enter-key" element={<EnterKey />} />
         </Routes>
       </Box>
     </Box>
