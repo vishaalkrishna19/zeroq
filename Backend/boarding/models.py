@@ -9,7 +9,7 @@ User = get_user_model()
 class JourneyTemplate(models.Model):
     """
     Template for onboarding/offboarding journeys.
-    Defines the steps and process for specific job titles or departments.
+    Defines the structure and steps for employee boarding processes.
     """
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -23,14 +23,13 @@ class JourneyTemplate(models.Model):
     journey_type = models.CharField(
         max_length=20,
         choices=JOURNEY_TYPE_CHOICES,
-        default='onboarding',
-        help_text='Type of journey this template represents'
+        help_text='Type of journey template'
     )
     
     # Journey details
     title = models.CharField(
         max_length=200,
-        help_text='Display title for this journey template'
+        help_text='Title of the journey template (e.g., Software Engineer Onboarding)'
     )
     
     description = models.TextField(
@@ -38,7 +37,7 @@ class JourneyTemplate(models.Model):
         help_text='Brief description of the boarding process'
     )
     
-    # Job title relationship
+    # Organizational details - Updated to use JobTitle
     job_title = models.ForeignKey(
         'users.JobTitle',
         on_delete=models.SET_NULL,
@@ -48,7 +47,6 @@ class JourneyTemplate(models.Model):
         help_text='Job title this template applies to'
     )
     
-    # Organizational details
     department = models.CharField(
         max_length=100,
         blank=True,
@@ -104,10 +102,11 @@ class JourneyTemplate(models.Model):
         verbose_name = 'Journey Template'
         verbose_name_plural = 'Journey Templates'
         ordering = ['journey_type', 'department', 'title']
-        unique_together = ['account', 'journey_type', 'title']
+        unique_together = ['account', 'journey_type', 'job_title', 'title']
         
     def __str__(self):
-        return f"{self.get_journey_type_display()}: {self.title}"
+        job_title_str = f" - {self.job_title.title}" if self.job_title else ""
+        return f"{self.get_journey_type_display()}: {self.title}{job_title_str}"
     
     def clean(self):
         # Auto-fill department from job title if available
@@ -587,4 +586,5 @@ class JourneyStepInstance(models.Model):
         # Check if journey is complete
         if self.journey.completed_steps >= self.journey.total_steps:
             self.journey.complete_journey(completed_by)
-            return True
+        
+        return True

@@ -32,6 +32,12 @@ class JobTitle(models.Model):
         help_text='Whether this job title is available for selection'
     )
     
+    boarding_template_title = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text='Corresponding boarding template title for onboarding'
+    )
+    
     # Audit fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -56,7 +62,7 @@ class JobTitle(models.Model):
     @property
     def user_count(self):
         """Return number of users with this job title."""
-        return self.users.count()
+        return self.users.filter(is_active=True).count()
 
 
 class User(AbstractUser):
@@ -68,18 +74,21 @@ class User(AbstractUser):
     # Override the primary key to use UUID
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
-    # Employee information
+    # Enhanced user information
     employee_id = models.CharField(
         max_length=50,
-        blank=True,
-        null=True,
         unique=True,
+        null=True,
+        blank=True,
         help_text='Company employee ID'
     )
     
+    # Profile information removed - keeping minimal user data
+    
+    # Employment information
     hire_date = models.DateField(
-        blank=True,
         null=True,
+        blank=True,
         help_text='Date when the employee was hired'
     )
     
@@ -89,7 +98,7 @@ class User(AbstractUser):
         help_text='Date when the employee was terminated (if applicable)'
     )
     
-    # Job information
+    # Job information - Updated to use ForeignKey
     job_title = models.ForeignKey(
         JobTitle,
         on_delete=models.SET_NULL,
@@ -120,6 +129,12 @@ class User(AbstractUser):
         choices=EMPLOYMENT_STATUS_CHOICES,
         default='active',
         help_text='Current employment status'
+    )
+    
+    # Security and access
+    is_staff = models.BooleanField(
+        default=False,
+        help_text='Designates whether the user can log into this admin site.'
     )
     
     # Password management
@@ -208,24 +223,14 @@ class User(AbstractUser):
     @property
     def is_employed(self):
         """Return True if user is currently employed."""
-        return self.employment_status == 'active'
+        return self.employment_status == 'active' and self.is_active
     
     @property
     def days_since_hire(self):
-        """Calculate days since hire date."""
+        """Return number of days since hire date."""
         if self.hire_date:
             return (timezone.now().date() - self.hire_date).days
         return None
-    
-    @property
-    def job_title_name(self):
-        """Return job title name."""
-        return self.job_title.title if self.job_title else None
-    
-    @property
-    def boarding_template_title(self):
-        """Return boarding template title from job title."""
-        return None  # Removed boarding template reference
     
     @property
     def account_memberships(self):
@@ -248,7 +253,8 @@ class User(AbstractUser):
         """Check if user has a specific role in an account."""
         return (self.account == account and 
                 self.role and 
-                self.role.name == role_name)
+                self.role.name == role_name and 
+                self.is_active)
     
     def is_admin_in_account(self, account):
         """Check if user is admin in a specific account."""
@@ -256,7 +262,7 @@ class User(AbstractUser):
     
     def get_permissions_for_account(self, account):
         """Get all permissions for user in a specific account."""
-        if self.account == account and self.role:
+        if self.account == account and self.role and self.is_active:
             return self.role.rolepermission_set.filter(is_granted=True).values_list(
                 'permission__codename', flat=True
             )
@@ -270,6 +276,11 @@ class User(AbstractUser):
     
     def save(self, *args, **kwargs):
         """Override save to ensure proper database transactions."""
+        # Ensure employee_id is uppercase if provided
+        if self.employee_id:
+            self.employee_id = self.employee_id.upper()
+        
+        # Call parent save method
         super().save(*args, **kwargs)
 
 
