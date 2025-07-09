@@ -25,6 +25,8 @@ class JourneyTemplateViewSet(viewsets.ModelViewSet):
             return JourneyTemplateListSerializer
         elif self.action == 'create':
             return JourneyTemplateCreateSerializer
+        elif self.action == 'update' or self.action == 'partial_update':
+            return JourneyTemplateCreateSerializer
         return JourneyTemplateSerializer
     
     def get_queryset(self):
@@ -185,6 +187,19 @@ class JourneyTemplateViewSet(viewsets.ModelViewSet):
             is_active=True
         ).distinct().values('id', 'title', 'department')
         return Response(list(job_titles))
+    
+    def update(self, request, *args, **kwargs):
+        """Override update to handle steps_data."""
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        
+        # The serializer's update method will handle steps_data
+        self.perform_update(serializer)
+        
+        # Return the updated instance with full serializer
+        return Response(JourneyTemplateSerializer(instance).data)
 
 
 class JourneyStepViewSet(viewsets.ModelViewSet):

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Modal,
   Box,
@@ -15,6 +15,7 @@ import {
 } from '@mantine/core';
 import { IconX, IconTrash, IconPlus } from '@tabler/icons-react';
 import styles from './OnBoardingForm.module.css';
+import ApiService from '../../../utils/api';
 
 const departmentOptions = [
   { value: 'engineering', label: 'Engineering' },
@@ -42,7 +43,7 @@ const responsiblePartyOptions = [
   { value: 'hr_team', label: 'HR Team' },
 ];
 
-const OnBoardingForm = ({ opened, onClose }) => {
+const OnBoardingForm = ({ opened, onClose, onTemplateCreated }) => {
   const [formData, setFormData] = useState({
     journeyTitle: '',
     jobTitle: '',
@@ -62,6 +63,27 @@ const OnBoardingForm = ({ opened, onClose }) => {
       dueDays: 1,
     },
   ]);
+
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (opened) {
+      fetchAccounts();
+    }
+  }, [opened]);
+
+  const fetchAccounts = async () => {
+    try {
+      const response = await ApiService.getAccounts();
+      setAccounts(response.results || response);
+    } catch (error) {
+      console.error('Failed to fetch accounts:', error);
+      // Use default account
+      setAccounts([{ id: 'default', name: 'Default Account' }]);
+    }
+  };
 
   const handleAddStep = () => {
     const newStep = {
@@ -87,14 +109,132 @@ const OnBoardingForm = ({ opened, onClose }) => {
     ));
   };
 
-  const handleSubmit = () => {
-    // Handle form submission
-    console.log('Form Data:', formData);
-    console.log('Steps:', steps);
-    onClose();
+  const mapStepTypeToBackend = (frontendType) => {
+    const mapping = {
+      'documentation': 'documentation',
+      'orientation': 'orientation', 
+      'integration': 'training'
+    };
+    return mapping[frontendType] || 'other';
   };
 
-return (
+  const mapResponsiblePartyToRole = (party) => {
+    const mapping = {
+      'manager': 'Manager',
+      'it_team': 'IT Administrator',
+      'hr_team': 'HR Manager'
+    };
+    return mapping[party] || party;
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      // Validate required fields
+      if (!formData.journeyTitle.trim()) {
+        throw new Error('Journey title is required');
+      }
+      
+      if (steps.some(step => !step.stepTitle.trim())) {
+        throw new Error('All steps must have a title');
+      }
+
+      // Get account - use first account or create a default ID
+      let accountId = 'default';
+      if (accounts.length > 0) {
+        accountId = accounts[0].id;
+      }
+
+      // Map form data to API format
+      const apiData = {
+        journey_type: 'onboarding',
+        title: formData.journeyTitle,
+        description: formData.journeyDescription,
+        job_title: null,
+        department: formData.department,
+        business_unit: formData.businessUnit,
+        estimated_duration_days: formData.estimatedDuration,
+        account: accountId,
+        is_active: true,
+        is_default: false,
+        steps_data: steps.filter(step => step.stepTitle.trim()).map((step, index) => ({
+          title: step.stepTitle,
+          description: step.stepDescription,
+          step_type: mapStepTypeToBackend(step.stepType),
+          responsible_role: mapResponsiblePartyToRole(step.responsibleParty),
+          due_days_from_start: step.dueDays,
+          order: index + 1,
+          is_mandatory: true,
+          is_blocking: false,
+          requires_approval: false,
+          auto_assign: true,
+          estimated_duration_hours: 4,
+          notes: ''
+        }))
+      };
+
+      console.log('Submitting template data:', apiData);
+
+      try {
+        // Try to submit to API first
+        const newTemplate = await ApiService.createJourneyTemplate(apiData);
+        console.log('Template created successfully:', newTemplate);
+        
+        // Notify parent component with real API response
+        if (onTemplateCreated) {
+          onTemplateCreated(newTemplate);
+        }
+
+        // Reset form
+        setFormData({
+          journeyTitle: '',
+          jobTitle: '',
+          department: '',
+          businessUnit: '',
+          estimatedDuration: 30,
+          journeyDescription: '',
+        });
+        
+        setSteps([{
+          id: 1,
+          stepTitle: '',
+          stepDescription: '',
+          stepType: '',
+          responsibleParty: '',
+          dueDays: 1,
+        }]);
+
+        onClose();
+        
+      } catch (apiError) {
+        console.error('API submission failed:', apiError);
+        
+        // Show specific error message
+        if (apiError.message.includes('403')) {
+          setError('Permission denied. Please check your authentication.');
+        } else if (apiError.message.includes('CSRF')) {
+          setError('Security token error. Please refresh the page and try again.');
+        } else if (apiError.message.includes('400')) {
+          setError('Invalid data submitted. Please check your form fields.');
+        } else {
+          setError(`Failed to create template: ${apiError.message}`);
+        }
+        
+        // Don't create mock data if API fails - let user fix the issue
+        return;
+      }
+
+    } catch (error) {
+      console.error('Failed to create template:', error);
+      setError(error.message || 'Failed to create template. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
     <Modal
         opened={opened}
         onClose={onClose}
@@ -128,6 +268,18 @@ return (
                     <IconX size={18} />
                 </ActionIcon>
             </Group>
+
+            {error && (
+              <Box mb="md" style={{ 
+                color: 'red', 
+                fontSize: '14px', 
+                backgroundColor: '#fee2e2', 
+                padding: '8px', 
+                borderRadius: '4px' 
+              }}>
+                {error}
+              </Box>
+            )}
 
             {/* Form Content */}
             <Stack gap="lg">
@@ -282,6 +434,7 @@ return (
                     onClick={onClose}
                     className={styles.cancelButton}
                     size="sm"
+                    disabled={loading}
                 >
                     Cancel
                 </Button>
@@ -289,13 +442,14 @@ return (
                     onClick={handleSubmit}
                     className={styles.createButton}
                     size="sm"
+                    loading={loading}
                 >
                     Create Onboarding Journey
                 </Button>
             </Group>
         </Box>
     </Modal>
-);
+  );
 };
 
 export default OnBoardingForm;
