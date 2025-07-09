@@ -75,6 +75,24 @@ class JourneyTemplateCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Selected job title is not active.")
         return value
     
+    def validate(self, data):
+        """Custom validation for unique constraints during update."""
+        if self.instance:  # This is an update
+            # Check for unique constraint violations
+            existing_template = JourneyTemplate.objects.filter(
+                account=data.get('account', self.instance.account),
+                journey_type=data.get('journey_type', self.instance.journey_type),
+                job_title=data.get('job_title', self.instance.job_title),
+                title=data.get('title', self.instance.title)
+            ).exclude(pk=self.instance.pk)
+            
+            if existing_template.exists():
+                raise serializers.ValidationError(
+                    "A template with this combination already exists."
+                )
+        
+        return data
+    
     def create(self, validated_data):
         steps_data = validated_data.pop('steps_data', [])
         template = JourneyTemplate.objects.create(**validated_data)
@@ -88,7 +106,7 @@ class JourneyTemplateCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         steps_data = validated_data.pop('steps_data', None)
         
-        # Update template
+        # Update template fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()

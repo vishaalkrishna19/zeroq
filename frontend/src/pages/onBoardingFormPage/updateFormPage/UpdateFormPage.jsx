@@ -1,0 +1,532 @@
+import { useState, useEffect, useRef } from 'react';
+import {
+  Box,
+  Group,
+  Text,
+  TextInput,
+  Select,
+  NumberInput,
+  Textarea,
+  Button,
+  ActionIcon,
+  Stack,
+  ScrollArea,
+  Title,
+} from '@mantine/core';
+import { IconTrash, IconPlus } from '@tabler/icons-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+import { TopBar } from '../../../components/topbar/Topbar';
+import UpdateFormHeader from '../../../components/onBoarding/updateFormHeader/UpdateFormHeader';
+import ApiService from '../../../utils/api';
+import styles from '../OnBoardingFormPage.module.css';
+
+const departmentOptions = [
+  { value: 'Engineering', label: 'Engineering' },
+  { value: 'Sales', label: 'Sales' },
+  { value: 'Marketing', label: 'Marketing' },
+  { value: 'HR', label: 'HR' },
+];
+
+const businessUnitOptions = [
+  { value: 'India', label: 'India' },
+  { value: 'UK', label: 'UK' },
+  { value: 'USA', label: 'USA' },
+  { value: 'Canada', label: 'Canada' },
+];
+
+const stepTypeOptions = [
+  { value: 'documentation', label: 'Documentation' },
+  { value: 'orientation', label: 'Orientation' },
+  { value: 'integration', label: 'Integration' },
+];
+
+const responsiblePartyOptions = [
+  { value: 'manager', label: 'Manager' },
+  { value: 'it_team', label: 'IT Team' },
+  { value: 'hr_team', label: 'HR Team' },
+];
+
+const UpdateFormPage = () => {
+  const navigate = useNavigate();
+  const { templateId } = useParams();
+  const stepRefs = useRef({});
+  const [formData, setFormData] = useState({
+    journeyTitle: '',
+    department: '',
+    businessUnit: '',
+    estimatedDuration: 30,
+    journeyDescription: '',
+  });
+
+  const [steps, setSteps] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [account, setAccount] = useState(null);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const accountData = await ApiService.getAccounts();
+        console.log('Fetched account data:', accountData);
+        setAccount(accountData);
+        
+        if (templateId) {
+          await fetchTemplateData();
+        }
+      } catch (error) {
+        console.error('Failed to fetch initial data:', error);
+        setError('Failed to load account data');
+      }
+    };
+    
+    fetchInitialData();
+  }, [templateId]);
+
+  const fetchTemplateData = async () => {
+    try {
+      setFetchLoading(true);
+      
+      console.log('Fetching template with ID:', templateId);
+      
+      // Use ApiService instead of direct fetch for consistency
+      const template = await ApiService.getJourneyTemplate(templateId);
+      console.log('Fetched template:', template);
+      
+      // Validate that we got a valid template
+      if (!template || !template.id) {
+        throw new Error('Invalid template data received');
+      }
+      
+      // Pre-fill form data
+      setFormData({
+        journeyTitle: template.title || '',
+        department: template.department || '',
+        businessUnit: template.business_unit || '',
+        estimatedDuration: template.estimated_duration_days || 30,
+        journeyDescription: template.description || '',
+      });
+
+      // Pre-fill steps data
+      if (template.steps && Array.isArray(template.steps) && template.steps.length > 0) {
+        const mappedSteps = template.steps.map((step, index) => ({
+          id: step.id || Date.now() + index,
+          stepTitle: step.title || '',
+          stepDescription: step.description || '',
+          stepType: mapBackendToStepType(step.step_type),
+          responsibleParty: mapRoleToResponsibleParty(step.responsible_role),
+          dueDays: step.due_days_from_start || 1,
+        }));
+        setSteps(mappedSteps);
+      } else {
+        // Default single step if no steps exist
+        setSteps([{
+          id: 1,
+          stepTitle: '',
+          stepDescription: '',
+          stepType: '',
+          responsibleParty: '',
+          dueDays: 1,
+        }]);
+      }
+      
+    } catch (error) {
+      console.error('Failed to fetch template data:', error);
+      setError(`Failed to load template data: ${error.message}`);
+    } finally {
+      setFetchLoading(false);
+    }
+  };
+
+  const mapBackendToStepType = (backendType) => {
+    const mapping = {
+      'documentation': 'documentation',
+      'orientation': 'orientation',
+      'training': 'integration',
+      'other': 'documentation'
+    };
+    return mapping[backendType] || 'documentation';
+  };
+
+  const mapRoleToResponsibleParty = (role) => {
+    const mapping = {
+      'Manager': 'manager',
+      'IT Administrator': 'it_team',
+      'HR Manager': 'hr_team'
+    };
+    return mapping[role] || 'manager';
+  };
+
+  const handleAddStep = () => {
+    const newStep = {
+      id: Date.now(),
+      stepTitle: '',
+      stepDescription: '',
+      stepType: '',
+      responsibleParty: '',
+      dueDays: 1,
+    };
+    setSteps(prevSteps => {
+      const updatedSteps = [...prevSteps, newStep];
+      
+      setTimeout(() => {
+        const newStepElement = stepRefs.current[newStep.id];
+        if (newStepElement) {
+          newStepElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+          });
+          
+          newStepElement.style.transform = 'scale(1.02)';
+          newStepElement.style.transition = 'transform 0.3s ease';
+          setTimeout(() => {
+            newStepElement.style.transform = 'scale(1)';
+          }, 300);
+        }
+      }, 100);
+      
+      return updatedSteps;
+    });
+  };
+
+  const handleRemoveStep = (stepId) => {
+    if (steps.length > 1) {
+      setSteps(steps.filter(step => step.id !== stepId));
+    }
+  };
+
+  const handleStepChange = (stepId, field, value) => {
+    setSteps(steps.map(step => 
+      step.id === stepId ? { ...step, [field]: value } : step
+    ));
+  };
+
+  const mapStepTypeToBackend = (frontendType) => {
+    const mapping = {
+      'documentation': 'documentation',
+      'orientation': 'orientation', 
+      'integration': 'training'
+    };
+    return mapping[frontendType] || 'other';
+  };
+
+  const mapResponsiblePartyToRole = (party) => {
+    const mapping = {
+      'manager': 'Manager',
+      'it_team': 'IT Administrator',
+      'hr_team': 'HR Manager'
+    };
+    return mapping[party] || party;
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      // Validate required fields
+      if (!formData.journeyTitle.trim()) {
+        throw new Error('Journey title is required');
+      }
+      
+      if (steps.some(step => !step.stepTitle.trim())) {
+        throw new Error('All steps must have a title');
+      }
+
+      if (!account) {
+        throw new Error('Account data not loaded');
+      }
+
+      let accountId = 'default';
+      if (account.length > 0) {
+        accountId = account[0].id;
+      }
+
+      // Map form data to API format
+      const apiData = {
+        title: formData.journeyTitle,
+        description: formData.journeyDescription,
+        department: formData.department,
+        business_unit: formData.businessUnit,
+        estimated_duration_days: formData.estimatedDuration,
+        journey_type: 'onboarding',
+        account: accountId,
+        steps_data: steps.filter(step => step.stepTitle.trim()).map((step, index) => ({
+          title: step.stepTitle,
+          description: step.stepDescription,
+          step_type: mapStepTypeToBackend(step.stepType),
+          responsible_role: mapResponsiblePartyToRole(step.responsibleParty),
+          due_days_from_start: step.dueDays,
+          order: index + 1,
+          is_mandatory: true,
+          is_blocking: false,
+          requires_approval: false,
+          auto_assign: true,
+          estimated_duration_hours: 4,
+          notes: ''
+        }))
+      };
+
+      console.log('Updating template data:', apiData);
+
+      const updatedTemplate = await ApiService.updateJourneyTemplate(templateId, apiData);
+      console.log('Template updated successfully:', updatedTemplate);
+    
+    toast.success('Onboarding journey updated successfully!', {
+      duration: 3000,
+      position: 'top-center',
+      style: {
+        background: 'white',
+        color: '#111',
+        fontWeight: '400',
+        padding: '16px 25px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        width: '420px', 
+        maxWidth: '90vw',
+      },
+    });
+
+      // Navigate back to templates page after a short delay
+      setTimeout(() => {
+        navigate('/dashboard/employee-journeys');
+      }, 1000);
+        
+    } catch (error) {
+      console.error('Failed to update template:', error);
+      if (error.message.includes('403')) {
+        setError('Permission denied. Please check your authentication.');
+      } else if (error.message.includes('400')) {
+        setError('Invalid data submitted. Please check your form fields.');
+      } else {
+        setError(error.message || 'Failed to update template. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBack = () => {
+    navigate('/dashboard/employee-journeys');
+  };
+
+  if (fetchLoading) {
+    return (
+      <>
+        <TopBar />
+        <Box className={styles.container}>
+          <Text>Loading template data...</Text>
+        </Box>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Toaster />
+      <TopBar />
+      <Box className={styles.formHeader}>
+        <UpdateFormHeader />
+      </Box>
+      <Box className={styles.container}>
+        {error && (
+          <Box className={styles.errorMessage}>
+            {error}
+          </Box>
+        )}
+
+        {/* Main Content */}
+        <Box className={styles.mainContent}>
+          {/* Left Side - Journey Details */}
+          <Box className={styles.leftSection}>
+            <Box className={styles.sectionCard}>
+              <Title order={3} className={styles.sectionTitle}>
+                Journey Details
+              </Title>
+              <Text className={styles.sectionSubtitle}>
+                Update the core details for this onboarding journey.
+              </Text>
+
+              <Stack gap="lg" mt="xl">
+                <TextInput
+                  label="Journey Title"
+                  placeholder="e.g., Software Engineer Onboarding"
+                  value={formData.journeyTitle}
+                  onChange={(event) => setFormData({ ...formData, journeyTitle: event.target.value })}
+                  className={styles.input}
+                  size="sm"
+                />
+
+                <Group grow align="flex-start">
+                  <Select
+                    label="Department"
+                    placeholder="Select department"
+                    data={departmentOptions}
+                    value={formData.department}
+                    onChange={(value) => setFormData({ ...formData, department: value })}
+                    className={styles.select}
+                    size="sm"
+                  />
+                  <Select
+                    label="Business Unit"
+                    placeholder="Select business unit"
+                    data={businessUnitOptions}
+                    value={formData.businessUnit}
+                    onChange={(value) => setFormData({ ...formData, businessUnit: value })}
+                    className={styles.select}
+                    size="sm"
+                  />
+                  <NumberInput
+                    label="Estimated Duration (days)"
+                    placeholder="e.g., 30"
+                    value={formData.estimatedDuration}
+                    onChange={(value) => setFormData({ ...formData, estimatedDuration: value })}
+                    min={1}
+                    max={365}
+                    className={styles.numberInput}
+                    size="sm"
+                  />
+                </Group>
+
+                <Textarea
+                  label="Journey Description"
+                  placeholder="Brief description of the onboarding process..."
+                  value={formData.journeyDescription}
+                  onChange={(event) => setFormData({ ...formData, journeyDescription: event.target.value })}
+                  rows={4}
+                  className={styles.textarea}
+                  size="sm"
+                />
+              </Stack>
+            </Box>
+          </Box>
+
+          {/* Right Side - Onboarding Steps */}
+          <Box className={styles.rightSection}>
+            <Box className={styles.sectionCard}>
+              <Group justify="space-between" align="center" mb="md">
+                <Box>
+                  <Title order={3} className={styles.sectionTitle}>
+                    Onboarding Steps
+                  </Title>
+                  <Text className={styles.sectionSubtitle}>
+                    Update the steps for this journey.
+                  </Text>
+                </Box>
+                <Button
+                  variant="outline"
+                  leftSection={<IconPlus size={16} />}
+                  onClick={handleAddStep}
+                  className={styles.addStepButton}
+                  size="sm"
+                >
+                  Add Step
+                </Button>
+              </Group>
+
+              <ScrollArea className={styles.stepsScrollArea}>
+                <Stack gap="lg">
+                  {steps.map((step, index) => (
+                    <Box 
+                      key={step.id} 
+                      className={styles.stepContainer}
+                      ref={(el) => stepRefs.current[step.id] = el}
+                    >
+                      <Group justify="space-between" align="center" mb="md">
+                        <Text className={styles.stepTitle}>Step {index + 1}</Text>
+                        {steps.length > 1 && (
+                          <ActionIcon
+                            variant="subtle"
+                            color="red"
+                            size="sm"
+                            onClick={() => handleRemoveStep(step.id)}
+                          >
+                            <IconTrash size={16} />
+                          </ActionIcon>
+                        )}
+                      </Group>
+
+                      <Stack gap="md">
+                        <TextInput
+                          label="Step Title"
+                          placeholder="e.g., Complete HR Orientation"
+                          value={step.stepTitle}
+                          onChange={(event) => handleStepChange(step.id, 'stepTitle', event.target.value)}
+                          size="sm"
+                        />
+
+                        <Textarea
+                          label="Step Description (Optional)"
+                          placeholder="Detailed instructions for this step..."
+                          value={step.stepDescription}
+                          onChange={(event) => handleStepChange(step.id, 'stepDescription', event.target.value)}
+                          rows={2}
+                          size="sm"
+                        />
+
+                        <Group grow>
+                          <Select
+                            label="Step Type"
+                            placeholder="Select type"
+                            data={stepTypeOptions}
+                            value={step.stepType}
+                            onChange={(value) => handleStepChange(step.id, 'stepType', value)}
+                            size="sm"
+                          />
+                          <Select
+                            label="Responsible Party"
+                            placeholder="Select assignee"
+                            data={responsiblePartyOptions}
+                            value={step.responsibleParty}
+                            onChange={(value) => handleStepChange(step.id, 'responsibleParty', value)}
+                            size="sm"
+                          />
+                          <NumberInput
+                            label="Due (days from start)"
+                            placeholder="e.g., 1"
+                            value={step.dueDays}
+                            onChange={(value) => handleStepChange(step.id, 'dueDays', value)}
+                            min={1}
+                            max={365}
+                            size="sm"
+                          />
+                        </Group>
+                      </Stack>
+                    </Box>
+                  ))}
+                </Stack>
+              </ScrollArea>
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Footer */}
+        <Box className={styles.footer}>
+          <Group justify="flex-end">
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              className={styles.cancelButton}
+              size="sm"
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              className={styles.createButton}
+              size="sm"
+              loading={loading}
+            >
+              Update Journey
+            </Button>
+          </Group>
+        </Box>
+      </Box>
+    </>
+  );
+};
+
+export default UpdateFormPage;
