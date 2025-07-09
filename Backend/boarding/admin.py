@@ -21,7 +21,7 @@ class JourneyTemplateAdmin(admin.ModelAdmin):
     list_display = [
         'title',
         'journey_type',
-        'job_title_display',
+        'job_title',
         'department',
         'business_unit',
         'estimated_duration_days',
@@ -75,8 +75,7 @@ class JourneyTemplateAdmin(admin.ModelAdmin):
                 'job_title',
                 'department',
                 'business_unit'
-            ),
-            'description': 'Select job title first - department will auto-populate if available.'
+            )
         }),
         ('Settings', {
             'fields': (
@@ -124,14 +123,8 @@ class JourneyTemplateAdmin(admin.ModelAdmin):
             print(f"❌ Error saving Journey Template: {e}")
             raise
     
-    def job_title_display(self, obj):
-        if obj.job_title:
-            return obj.job_title.title
-        return "No Job Title"
-    job_title_display.short_description = 'Job Title'
-    
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related('account', 'created_by', 'job_title')
+        return super().get_queryset(request).select_related('account', 'job_title', 'created_by')
 
 
 @admin.register(JourneyStep)
@@ -489,7 +482,14 @@ class JourneyStepInstanceAdmin(admin.ModelAdmin):
         updated = queryset.filter(status='pending').update(status='in_progress')
         self.message_user(request, f"Marked {updated} steps as in progress.")
     mark_in_progress.short_description = "Mark selected steps as in progress"
-    
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'journey__user', 'journey__template', 'step_template', 
+            'assigned_to', 'completed_by'
+        )
+    mark_in_progress.short_description = "Mark selected steps as in progress"
+
     def get_queryset(self, request):
         return super().get_queryset(request).select_related(
             'journey__user', 'journey__template', 'step_template', 

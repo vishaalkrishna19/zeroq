@@ -62,9 +62,8 @@ Visit: http://127.0.0.1:8000/admin/
   - Security settings (2FA, password policies)
 
 ### Job Titles
-- **JobTitle**: Predefined job titles with boarding template mapping
+- **JobTitle**: Predefined job titles
   - title, description, department
-  - boarding_template_title for onboarding workflow mapping
   - is_active flag and user count tracking
 
 ### Roles & Permissions
@@ -124,7 +123,6 @@ Visit: http://127.0.0.1:8000/admin/
 
 ### Job Title Management
 - Create and manage predefined job titles
-- Map job titles to boarding template titles for onboarding
 - Track user count per job title
 - Department categorization
 
@@ -150,14 +148,14 @@ Visit: http://127.0.0.1:8000/admin/
 ## Default Setup
 
 ### Job Titles Created
-- Software Engineer → Technical Onboarding - Engineer
-- Senior Software Engineer → Technical Onboarding - Senior Engineer
-- Product Manager → Product Team Onboarding
-- Designer → Creative Team Onboarding
-- Marketing Manager → Marketing Team Onboarding
-- Sales Representative → Sales Team Onboarding
-- HR Manager → HR Team Onboarding
-- System Administrator → IT Infrastructure Onboarding
+- Software Engineer
+- Senior Software Engineer
+- Product Manager
+- Designer
+- Marketing Manager
+- Sales Representative
+- HR Manager
+- System Administrator
 
 ### Permissions Created
 - User Management: view, create, edit, delete users
@@ -192,7 +190,7 @@ Visit: http://127.0.0.1:8000/admin/
 - User creation always generates strong passwords
 - Passwords are printed to terminal (secure in dev environment)
 - Default admin user created automatically with migrations
-- Job titles are predefined and mapped to boarding templates
+- Job titles are predefined
 - All models use UUID primary keys for security
 - Comprehensive admin interface with filtering and search
 - API includes pagination and filtering capabilities
