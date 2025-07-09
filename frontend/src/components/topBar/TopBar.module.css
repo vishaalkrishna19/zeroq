@@ -1,7 +1,7 @@
 .topBar {
   height: 60px;
   background-color: #eeeef0;
-  padding: 0 36px;
+  padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -87,7 +87,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 6px;
   border-radius: 6px;
   transition: background-color 0.2s ease;
 }
@@ -124,4 +124,5 @@
 
 .profileAvatar {
   border-radius: 50%;
+  font-weight: 300;
 }

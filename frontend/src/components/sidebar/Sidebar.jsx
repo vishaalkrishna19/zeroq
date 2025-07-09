@@ -32,6 +32,7 @@ import {
   IconQuestionMark,
   IconBell,
 } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import { SearchModal } from '../searchModal/SearchModal';
 
@@ -98,6 +99,7 @@ export function Sidebar({ collapsed, onToggle }) {
   const [activeLabel, setActiveLabel] = useState('Home');
   const [activeSubItem, setActiveSubItem] = useState(null);
   const [searchModalOpened, setSearchModalOpened] = useState(false);
+  const navigate = useNavigate();
 
   const handleHover = (label) => {
     if (label) {
@@ -114,6 +116,11 @@ export function Sidebar({ collapsed, onToggle }) {
     setActiveLabel(parentLabel);
     setActiveSubItem(subLabel);
     setHoveredItem(null);
+    // Navigation logic for Employee Journeys
+    if (parentLabel === 'HR' && subLabel === 'Employee Journeys') {
+      navigate('/dashboard/employee-journeys');
+    }
+    // Add more navigation logic for other subitems if needed
   };
 
   const links = mockdata.map((item) => (
@@ -130,6 +137,10 @@ export function Sidebar({ collapsed, onToggle }) {
             ? () => {
                 setActiveLabel(item.label);
                 setActiveSubItem(null);
+                if (item.label === 'Home') {
+                  navigate('/');
+                }
+                // Add more navigation logic for other main links if needed
               }
             : undefined
         }

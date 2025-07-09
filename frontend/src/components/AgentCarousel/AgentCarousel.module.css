@@ -1,0 +1,138 @@
+.container {
+  background: #e6e7f5;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+ 
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6366f1;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.arrowButton {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.arrowButtonEnabled {
+  background: white;
+  color: #6b7280;
+}
+
+.arrowButtonDisabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.swiper {
+  width: 100%;
+  padding: 10px 0;
+  overflow: hidden;
+}
+
+.swiperSlide {
+  width: auto !important;
+  min-width: 280px;
+  max-width: 320px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.card {
+  background: white;
+  border-radius: 6px;
+  padding: 24px;
+  width: 285px;
+  min-height: 140px;
+  display: flex;
+  cursor: pointer;
+  flex-direction: column;
+  border: 1px solid #e5e7eb;
+  transition: box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.iconContainer {
+  margin-bottom: 12px;
+  background-color: #6365f137;
+  width: fit-content;
+  border-radius: 50%;
+  height: 28px;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 8px;
+  line-height: 1.2;
+  margin: 0 0 8px 0;
+}
+
+.cardDescription {
+  font-size: 14px;
+  color: #37393d;
+  line-height: 1.4;
+  flex: 1;
+  margin: 0;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Responsive card sizes */
+@media (min-width: 1200px) {
+  .swiperSlide {
+    min-width: 300px;
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .swiperSlide {
+    min-width: 250px;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .swiperSlide {
+    min-width: 220px;
+    max-width: 250px;
+  }
+}

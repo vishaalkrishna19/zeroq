@@ -54,7 +54,7 @@ export function TopBar() {
       <Box className={styles.topBar}>
         {/* Left Section - Logo */}
         <Box className={styles.leftSection}>
-          <Text className={styles.logo}>ZeroQ</Text>
+          <Text className={styles.logo}>Zero Q</Text>
         </Box>
 
         {/* Center Section - Search Button */}

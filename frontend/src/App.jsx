@@ -10,6 +10,7 @@ import ResetPassword from "./pages/reset/ResetPassword";
 import SetPassword from "./pages/set/SetPassword";
 import EnterKey from "./pages/set/EnterKey";
 import UserPanel from "./pages/user/UserPanel";
+import EmployeeJourneys from "./pages/employeeJourneys/EmployeeJourneys";
 
 function ProtectedRoute({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -57,7 +58,14 @@ function AppContent() {
         />
       )}
       
-      <Box style={{ flex: 1 }}>
+      <Box style={{ 
+        flex: 1, 
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        height: '100vh',
+        width: showSidebar ? (sidebarCollapsed ? 'calc(100vw - 55px)' : 'calc(100vw - 260px)') : '100vw',
+        transition: 'width 0.3s ease'
+      }}>
         <Routes>
           <Route path="/" element={<PublicRoute><LoginPage /></PublicRoute>} />
           <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
@@ -66,6 +74,7 @@ function AppContent() {
           <Route path="/set-password" element={<SetPassword />} />
           <Route path="/enter-key" element={<EnterKey />} />
           <Route path="/user-panel" element={<ProtectedRoute><UserPanel /></ProtectedRoute>} />
+          <Route path="/dashboard/employee-journeys" element={<EmployeeJourneys />} />
         </Routes>
       </Box>
     </Box>
