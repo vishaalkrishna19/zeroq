@@ -54,7 +54,7 @@ const OnBoardingFormPage = () => {
     journeyTitle: '',
     department: '',
     businessUnit: '',
-    estimatedDuration: 30,
+    estimatedDuration: 0,
     journeyDescription: '',
   });
 
