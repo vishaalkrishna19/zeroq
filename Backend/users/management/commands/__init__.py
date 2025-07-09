@@ -1,4 +1,4 @@
-# Commands directory
+# Management commands
 
 __all__ = [
 ]

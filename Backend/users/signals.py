@@ -30,9 +30,21 @@ def create_default_admin_user(sender, **kwargs):
         return
     
     User = apps.get_model('users', 'User')
+    JobTitle = apps.get_model('users', 'JobTitle')
     
     # Create superuser if none exists
     if not User.objects.filter(is_superuser=True).exists():
+        # Get or create System Administrator job title
+        admin_job_title, created = JobTitle.objects.get_or_create(
+            title='System Administrator',
+            defaults={
+                'description': 'Manages IT infrastructure and systems',
+                'department': 'IT',
+                'boarding_template_title': 'IT Infrastructure Onboarding',
+                'is_active': True
+            }
+        )
+        
         admin_user = User.objects.create_user(
             username='admin',
             email='admin@zeroqueue.com',
@@ -41,7 +53,7 @@ def create_default_admin_user(sender, **kwargs):
             is_staff=True,
             is_superuser=True,
             employee_id='ADMIN001',
-            job_title='System Administrator',
+            job_title=admin_job_title,
             department='IT',
             employment_status='active'
         )
@@ -55,5 +67,6 @@ def create_default_admin_user(sender, **kwargs):
         print(f"Username: admin")
         print(f"Password: admin123")
         print(f"Email: admin@zeroqueue.com")
+        print(f"Job Title: {admin_job_title.title}")
         print("⚠️  CHANGE PASSWORD IMMEDIATELY IN PRODUCTION!")
         print("="*60 + "\n")

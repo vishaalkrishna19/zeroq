@@ -4,6 +4,67 @@ from django.utils import timezone
 import uuid
 
 
+class JobTitle(models.Model):
+    """
+    Predefined job titles for users and boarding template mapping.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
+    title = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text='Job title name'
+    )
+    
+    description = models.TextField(
+        blank=True,
+        help_text='Description of the job title and responsibilities'
+    )
+    
+    department = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text='Primary department for this job title'
+    )
+    
+    is_active = models.BooleanField(
+        default=True,
+        help_text='Whether this job title is available for selection'
+    )
+    
+    boarding_template_title = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text='Corresponding boarding template title for onboarding'
+    )
+    
+    # Audit fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(
+        'User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_job_titles',
+        help_text='User who created this job title'
+    )
+    
+    class Meta:
+        db_table = 'job_titles'
+        verbose_name = 'Job Title'
+        verbose_name_plural = 'Job Titles'
+        ordering = ['title']
+        
+    def __str__(self):
+        return self.title
+    
+    @property
+    def user_count(self):
+        """Return number of users with this job title."""
+        return self.users.filter(is_active=True).count()
+
+
 class User(AbstractUser):
     """
     Custom User model extending Django's AbstractUser.
@@ -37,11 +98,13 @@ class User(AbstractUser):
         help_text='Date when the employee was terminated (if applicable)'
     )
     
-    # Job information
-    job_title = models.CharField(
-        max_length=100,
-        blank=True,
+    # Job information - Updated to use ForeignKey
+    job_title = models.ForeignKey(
+        JobTitle,
+        on_delete=models.SET_NULL,
         null=True,
+        blank=True,
+        related_name='users',
         help_text='Current job title'
     )
     
@@ -115,6 +178,14 @@ class User(AbstractUser):
     can_access_admin = models.BooleanField(
         default=False,
         help_text='Whether user can access admin features'
+    )
+    
+    # Custom permissions - Use our custom permission system
+    custom_permissions = models.ManyToManyField(
+        'roles_permissions.Permission',
+        blank=True,
+        related_name='users_with_permission',
+        help_text='Additional permissions granted directly to this user'
     )
     
     # Audit fields (inherited: date_joined, last_login)

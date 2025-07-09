@@ -1,1 +1,1 @@
-# Create __init__.py for management commands
+# Management commands for users app
