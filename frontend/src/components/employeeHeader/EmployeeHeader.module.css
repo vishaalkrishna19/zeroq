@@ -12,13 +12,13 @@
   font-size: 1.5rem;
   font-weight: 400;
   color: #212529;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   line-height: 1.2;
 }
 
 .subtitle {
   font-size: 13px;
-  color: #6c757d;
+  color: #4b4d4f;
   line-height: 1.5;
   max-width: 600px;
 }

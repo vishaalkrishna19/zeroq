@@ -58,7 +58,14 @@ function AppContent() {
         />
       )}
       
-      <Box style={{ flex: 1 }}>
+      <Box style={{ 
+        flex: 1, 
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        height: '100vh',
+        width: showSidebar ? (sidebarCollapsed ? 'calc(100vw - 55px)' : 'calc(100vw - 260px)') : '100vw',
+        transition: 'width 0.3s ease'
+      }}>
         <Routes>
           <Route path="/" element={<PublicRoute><LoginPage /></PublicRoute>} />
           <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
