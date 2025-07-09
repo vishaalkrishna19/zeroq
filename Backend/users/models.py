@@ -180,6 +180,14 @@ class User(AbstractUser):
         help_text='Whether user can access admin features'
     )
     
+    # Custom permissions - Use our custom permission system
+    custom_permissions = models.ManyToManyField(
+        'roles_permissions.Permission',
+        blank=True,
+        related_name='users_with_permission',
+        help_text='Additional permissions granted directly to this user'
+    )
+    
     # Audit fields (inherited: date_joined, last_login)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(

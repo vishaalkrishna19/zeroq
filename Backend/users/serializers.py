@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from .models import User, UserAccount, JobTitle
 from .admin import generate_strong_password
+from roles_permissions.serializers import PermissionSerializer
 
 
 class JobTitleSerializer(serializers.ModelSerializer):
@@ -27,16 +28,16 @@ class UserSerializer(serializers.ModelSerializer):
     days_since_hire = serializers.ReadOnlyField()
     job_title_name = serializers.ReadOnlyField()
     boarding_template_title = serializers.ReadOnlyField()
+    custom_permissions = PermissionSerializer(many=True, read_only=True)
     
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-            'employee_id', 'hire_date', 'termination_date', 'job_title', 'job_title_name',
-            'boarding_template_title', 'department',
+            'employee_id', 'hire_date', 'termination_date', 'job_title', 'department',
             'employment_status', 'is_active', 'is_staff',
             'is_superuser', 'must_change_password', 'two_factor_enabled',
-            'account_count', 'is_employed',
+            'account_count', 'is_employed', 'custom_permissions',
             'days_since_hire', 'date_joined', 'last_login', 'updated_at'
         ]
         read_only_fields = [
