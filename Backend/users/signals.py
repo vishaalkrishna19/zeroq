@@ -40,6 +40,7 @@ def create_default_admin_user(sender, **kwargs):
             defaults={
                 'description': 'Manages IT infrastructure and systems',
                 'department': 'IT',
+                'boarding_template_title': 'IT Infrastructure Onboarding',
                 'is_active': True
             }
         )

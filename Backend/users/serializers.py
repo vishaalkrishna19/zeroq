@@ -14,7 +14,7 @@ class JobTitleSerializer(serializers.ModelSerializer):
         model = JobTitle
         fields = [
             'id', 'title', 'description', 'department',
-            'is_active',
+            'boarding_template_title', 'is_active',
             'user_count', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'user_count', 'created_at', 'updated_at']
@@ -27,6 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
     is_employed = serializers.ReadOnlyField()
     days_since_hire = serializers.ReadOnlyField()
     job_title_name = serializers.ReadOnlyField()
+    boarding_template_title = serializers.ReadOnlyField()
     custom_permissions = PermissionSerializer(many=True, read_only=True)
     
     class Meta:
@@ -42,7 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'id', 'date_joined', 'last_login', 'updated_at',
             'password_changed_at', 'account_count', 'is_employed',
-            'days_since_hire', 'job_title_name'
+            'days_since_hire', 'job_title_name', 'boarding_template_title'
         ]
         extra_kwargs = {
             'password': {'write_only': True}
