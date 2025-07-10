@@ -58,7 +58,8 @@ LOCAL_APPS = [
     'accounts',
     'users',
     'roles_permissions',
-    'boarding',   
+    'boarding',
+    'agent', 
 ]
 SITE_ID = 1  # Required for django-allauth
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
