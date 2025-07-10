@@ -1,0 +1,92 @@
+.container {
+    padding: 8px 40px 32px;
+  }
+  
+  .title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    color: #1a1a1a;
+  }
+  
+  .rowStats {
+    margin-bottom: 1.5rem;
+  }
+  
+  .chartsGrid {
+    gap: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .chartColumn {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chartPaper {
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    height: 400px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chartTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+  }
+  
+  .chartSubtitle {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+  }
+  
+  .chartContainer {
+    position: relative;
+    width: 250px;
+    height: 250px;
+  }
+  
+  .centerLabel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  
+  .centerLabelText {
+    font-size: 0.75rem;
+    color: #6c757d;
+  }
+  
+  .centerLabelValue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  
+  .funnelContainer {
+    height: 280px;
+    width: 100%;
+  }
+  
+  .dropdownContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  
+  .dropdownInfo {
+    flex: 1;
+  }
+  
+  .dropdown {
+    width: 280px;
+  }
+  

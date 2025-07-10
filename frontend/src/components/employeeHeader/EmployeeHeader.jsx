@@ -2,10 +2,17 @@ import { useState } from 'react';
 import { Box, Text, Group } from '@mantine/core';
 import styles from './EmployeeHeader.module.css';
 
-const EmployeeHeader = () => {
+const EmployeeHeader = ({ onChipChange }) => {
   const [activeChip, setActiveChip] = useState('On-boarding');
 
   const chips = ['On-boarding', 'Health Check', 'Internal Mobility', 'Off-boarding'];
+
+  const handleChipClick = (chip) => {
+    setActiveChip(chip);
+    if (onChipChange) {
+      onChipChange(chip);
+    }
+  };
 
   return (
     <Box className={styles.container}>
@@ -21,7 +28,7 @@ const EmployeeHeader = () => {
           <button
             key={chip}
             className={`${styles.chip} ${activeChip === chip ? styles.active : ''}`}
-            onClick={() => setActiveChip(chip)}
+            onClick={() => handleChipClick(chip)}
           >
             {chip}
           </button>

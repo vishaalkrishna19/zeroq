@@ -42,7 +42,7 @@ function PublicRoute({ children }) {
     return <div>Loading...</div>;
   }
   
-  return isAuthenticated ? <Navigate to="/dashboard" replace /> : children;
+  return isAuthenticated ? <Navigate to="/user-panel" replace /> : children;
 }
 
 function AppContent() {

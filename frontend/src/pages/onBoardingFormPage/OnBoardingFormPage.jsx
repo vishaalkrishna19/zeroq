@@ -77,6 +77,10 @@ const OnBoardingFormPage = () => {
     fetchAccounts();
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const fetchAccounts = async () => {
     try {
       const response = await ApiService.getAccounts();

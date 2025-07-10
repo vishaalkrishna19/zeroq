@@ -93,7 +93,7 @@ export default function LoginPage() {
       
       localStorage.setItem('username', values.username);
       
-      navigate('/dashboard');
+      navigate('/user-panel');
       
     } catch (err) {
       console.error("Login error:", err);

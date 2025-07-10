@@ -1,0 +1,118 @@
+.modal {
+  --modal-radius: 12px;
+}
+
+.container {
+  padding: 24px 28px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1b1e;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #696d74;
+  margin-top: 4px;
+}
+
+.closeButton {
+  background-color: #f6f8faf4;
+}
+
+.closeButton:hover {
+  background-color: #f3f4f6;
+}
+
+.input input,
+.select input,
+.textarea textarea {
+  border: 1px solid #e1e5e9;
+  border-radius: 5px;
+  background-color: #ffffff;
+}
+
+.numberInput input {
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  background-color: #ffffff;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1a1b1e;
+}
+
+.stepContainer {
+  background-color: #f9fbfd;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+}
+
+.stepTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #2b2c2e;
+}
+
+.addStepButton {
+  border: 1px solid #e6e9edf9;
+  color: #343638;
+  background-color: transparent;
+  border-radius: 6px;
+}
+
+.addStepButton:hover {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.footer {
+  border-top: 1px solid #e9ecef;
+}
+
+.cancelButton {
+  border: 1px solid #ced4da;
+  color: #6c757d;
+  background-color: white;
+}
+
+.cancelButton:hover {
+  background-color: #f8f9fa;
+}
+
+.createButton {
+  background: #254cc3;
+  color: white;
+  border: none;
+}
+
+.createButton:hover {
+  background-color: #3b5bdb;
+}
+
+.input label,
+.select label,
+.textarea label,
+.numberInput label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-height: 90vh;
+  }
+  
+  .stepContainer {
+    padding: 16px;
+  }
+}

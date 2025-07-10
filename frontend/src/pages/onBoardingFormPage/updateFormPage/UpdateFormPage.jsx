@@ -84,6 +84,10 @@ const UpdateFormPage = () => {
     fetchInitialData();
   }, [templateId]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const fetchTemplateData = async () => {
     try {
       setFetchLoading(true);
