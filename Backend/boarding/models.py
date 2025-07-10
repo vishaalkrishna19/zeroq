@@ -38,14 +38,14 @@ class JourneyTemplate(models.Model):
     )
     
     # Organizational details - Updated to use JobTitle
-    job_title = models.ForeignKey(
-        'users.JobTitle',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='journey_templates',
-        help_text='Job title this template applies to'
-    )
+    # job_title = models.ForeignKey(
+    #     'users.JobTitle',
+    #     on_delete=models.SET_NULL,
+    #     null=True,
+    #     blank=True,
+    #     related_name='journey_templates',
+    #     help_text='Job title this template applies to'
+    # )
     
     department = models.CharField(
         max_length=100,
@@ -102,31 +102,31 @@ class JourneyTemplate(models.Model):
         verbose_name = 'Journey Template'
         verbose_name_plural = 'Journey Templates'
         ordering = ['journey_type', 'department', 'title']
-        unique_together = ['account', 'journey_type', 'job_title', 'title']
+        unique_together = ['account', 'journey_type', 'title']
         
-    def __str__(self):
-        job_title_str = f" - {self.job_title.title}" if self.job_title else ""
-        return f"{self.get_journey_type_display()}: {self.title}{job_title_str}"
+    # def __str__(self):
+    #     job_title_str = f" - {self.job_title.title}" if self.job_title else ""
+    #     return f"{self.get_journey_type_display()}: {self.title}{job_title_str}"
     
-    def clean(self):
-        # Auto-fill department from job title if available
-        if self.job_title and not self.department:
-            self.department = self.job_title.department
+    # def clean(self):
+    #     # Auto-fill department from job title if available
+    #     if self.job_title and not self.department:
+    #         self.department = self.job_title.department
             
-        # Ensure only one default template per account/journey_type/job_title
-        if self.is_default:
-            existing_default = JourneyTemplate.objects.filter(
-                account=self.account,
-                journey_type=self.journey_type,
-                job_title=self.job_title,
-                is_default=True
-            ).exclude(pk=self.pk)
+    #     # Ensure only one default template per account/journey_type/job_title
+    #     if self.is_default:
+    #         existing_default = JourneyTemplate.objects.filter(
+    #             account=self.account,
+    #             journey_type=self.journey_type,
+    #             job_title=self.job_title,
+    #             is_default=True
+    #         ).exclude(pk=self.pk)
             
-            if existing_default.exists():
-                job_title_str = f" for {self.job_title.title}" if self.job_title else ""
-                raise ValidationError(
-                    f'A default {self.journey_type} template already exists{job_title_str}.'
-                )
+    #         if existing_default.exists():
+    #             job_title_str = f" for {self.job_title.title}" if self.job_title else ""
+    #             raise ValidationError(
+    #                 f'A default {self.journey_type} template already exists{job_title_str}.'
+    #             )
     
     def save(self, *args, **kwargs):
         self.clean()

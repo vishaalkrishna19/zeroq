@@ -28,7 +28,6 @@ class AccountViewSet(viewsets.ModelViewSet):
         if search:
             queryset = queryset.filter(
                 Q(account_name__icontains=search) |
-                Q(account_id__icontains=search) |
                 Q(contact_email__icontains=search)
             )
         
@@ -38,9 +37,9 @@ class AccountViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(is_active=is_active.lower() == 'true')
         
         # Filter by subscription type
-        subscription_type = self.request.query_params.get('subscription_type', None)
-        if subscription_type:
-            queryset = queryset.filter(subscription_type=subscription_type)
+        # subscription_type = self.request.query_params.get('subscription_type', None)
+        # if subscription_type:
+        #     queryset = queryset.filter(subscription_type=subscription_type)
         
         return queryset.order_by('account_name')
     

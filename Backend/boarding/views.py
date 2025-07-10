@@ -30,7 +30,7 @@ class JourneyTemplateViewSet(viewsets.ModelViewSet):
         return JourneyTemplateSerializer
     
     def get_queryset(self):
-        queryset = JourneyTemplate.objects.prefetch_related('steps').select_related('job_title')
+        queryset = JourneyTemplate.objects.prefetch_related('steps')
         
         # Filter by search query
         search = self.request.query_params.get('search', None)
@@ -38,7 +38,6 @@ class JourneyTemplateViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 Q(title__icontains=search) |
                 Q(description__icontains=search) |
-                Q(job_title__title__icontains=search) |
                 Q(department__icontains=search) |
                 Q(business_unit__icontains=search)
             )
@@ -49,9 +48,9 @@ class JourneyTemplateViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(journey_type=journey_type)
         
         # Filter by job title
-        job_title_id = self.request.query_params.get('job_title_id', None)
-        if job_title_id:
-            queryset = queryset.filter(job_title_id=job_title_id)
+        # job_title_id = self.request.query_params.get('job_title_id', None)
+        # if job_title_id:
+        #     queryset = queryset.filter(job_title_id=job_title_id)
         
         # Filter by department
         department = self.request.query_params.get('department', None)
@@ -73,7 +72,7 @@ class JourneyTemplateViewSet(viewsets.ModelViewSet):
         if account_id:
             queryset = queryset.filter(account_id=account_id)
         
-        return queryset.order_by('journey_type', 'job_title__title', 'title')
+        return queryset.order_by('journey_type',  'title')
     
     def create(self, request, *args, **kwargs):
         """Override create to set created_by."""
@@ -178,15 +177,15 @@ class JourneyTemplateViewSet(viewsets.ModelViewSet):
         business_units = JourneyTemplate.objects.values_list('business_unit', flat=True).distinct()
         return Response([unit for unit in business_units if unit])
     
-    @action(detail=False, methods=['get'])
-    def job_titles(self, request):
-        """Get all job titles with templates."""
-        from users.models import JobTitle
-        job_titles = JobTitle.objects.filter(
-            journey_templates__isnull=False,
-            is_active=True
-        ).distinct().values('id', 'title', 'department')
-        return Response(list(job_titles))
+    # @action(detail=False, methods=['get'])
+    # def job_titles(self, request):
+    #     """Get all job titles with templates."""
+    #     from users.models import JobTitle
+    #     job_titles = JobTitle.objects.filter(
+    #         journey_templates__isnull=False,
+    #         is_active=True
+    #     ).distinct().values('id', 'title', 'department')
+    #     return Response(list(job_titles))
     
     def update(self, request, *args, **kwargs):
         """Override update to handle steps_data."""

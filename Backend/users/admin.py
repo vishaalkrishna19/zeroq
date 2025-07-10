@@ -92,7 +92,7 @@ class JobTitleAdmin(admin.ModelAdmin):
     list_display = [
         'title',
         'department',
-        'boarding_template_title',
+        
         'user_count_display',
         'is_active',
         'created_at'
@@ -107,8 +107,8 @@ class JobTitleAdmin(admin.ModelAdmin):
     search_fields = [
         'title',
         'description',
-        'department',
-        'boarding_template_title'
+        'department'
+        
     ]
     
     readonly_fields = [
@@ -123,14 +123,8 @@ class JobTitleAdmin(admin.ModelAdmin):
             'fields': (
                 'title',
                 'description',
-                'department'
+                'department',
             )
-        }),
-        ('Boarding Configuration', {
-            'fields': (
-                'boarding_template_title',
-            ),
-            'description': 'This title will be used for onboarding template mapping'
         }),
         ('Settings', {
             'fields': (
@@ -177,8 +171,8 @@ class CustomUserCreationForm(forms.ModelForm):
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'employee_id', 
-                 'job_title', 'department', 'hire_date', 'employment_status')
+        fields = ('username', 'email', 'first_name', 'last_name',  
+                 'job_title', 'department', 'employment_status')
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -256,7 +250,6 @@ class UserAdmin(BaseUserAdmin):
         'first_name', 
         'last_name', 
         'email',
-        'employee_id',
         'job_title__title',
         'department'
     ]
@@ -290,10 +283,8 @@ class UserAdmin(BaseUserAdmin):
         }),
         ('Employment Information', {
             'fields': (
-                'employee_id',
                 'job_title',
                 'department',
-                'hire_date',
                 'termination_date',
                 'employment_status',
                 'account',
@@ -344,7 +335,6 @@ class UserAdmin(BaseUserAdmin):
             'fields': (
                 'job_title',
                 'department',
-                'hire_date',
                 'account',
                 'role'
             ),
@@ -521,7 +511,7 @@ class UserAdmin(BaseUserAdmin):
                 print(f"Email: {obj.email}")
                 print(f"Full Name: {obj.get_full_name()}")
                 print(f"Generated Password: {password}")
-                print(f"Employee ID: {obj.employee_id or 'Not set'}")
+                # print(f"Employee ID: {obj.employee_id or 'Not set'}")
                 print(f"Job Title: {obj.job_title or 'Not set'}")
                 print(f"Department: {obj.department or 'Not set'}")
                 print(f"Database ID: {obj.id}")
