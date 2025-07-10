@@ -31,12 +31,12 @@ class JourneyStepCreateSerializer(serializers.ModelSerializer):
 class JourneyTemplateSerializer(serializers.ModelSerializer):
     steps = JourneyStepSerializer(many=True, read_only=True)
     step_count = serializers.ReadOnlyField()
-    job_title_name = serializers.CharField(source='job_title.title', read_only=True)
+    # job_title_name = serializers.CharField(source='job_title.title', read_only=True)
     
     class Meta:
         model = JourneyTemplate
         fields = [
-            'id', 'journey_type', 'title', 'description', 'job_title', 'job_title_name',
+            'id', 'journey_type', 'title', 'description', 
             'department', 'business_unit', 'estimated_duration_days', 'account',
             'is_active', 'is_default', 'step_count', 'steps',
             'created_at', 'updated_at', 'created_by'
@@ -47,12 +47,12 @@ class JourneyTemplateSerializer(serializers.ModelSerializer):
 class JourneyTemplateListSerializer(serializers.ModelSerializer):
     step_count = serializers.ReadOnlyField()
     account_name = serializers.CharField(source='account.account_name', read_only=True)
-    job_title_name = serializers.CharField(source='job_title.title', read_only=True)
+    # job_title_name = serializers.CharField(source='job_title.title', read_only=True)
     
     class Meta:
         model = JourneyTemplate
         fields = [
-            'id', 'journey_type', 'title', 'job_title_name', 'department', 'business_unit',
+            'id', 'journey_type', 'title',  'department', 'business_unit',
             'estimated_duration_days', 'account_name', 'is_active',
             'is_default', 'step_count', 'created_at'
         ]
@@ -64,16 +64,16 @@ class JourneyTemplateCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = JourneyTemplate
         fields = [
-            'journey_type', 'title', 'description', 'job_title', 'department',
+            'journey_type', 'title', 'description',  'department',
             'business_unit', 'estimated_duration_days', 'account',
             'is_active', 'is_default', 'steps_data'
         ]
     
-    def validate_job_title(self, value):
-        """Ensure job title is active."""
-        if value and not value.is_active:
-            raise serializers.ValidationError("Selected job title is not active.")
-        return value
+    # def validate_job_title(self, value):
+    #     """Ensure job title is active."""
+    #     if value and not value.is_active:
+    #         raise serializers.ValidationError("Selected job title is not active.")
+    #     return value
     
     def validate(self, data):
         """Custom validation for unique constraints during update."""
@@ -82,7 +82,7 @@ class JourneyTemplateCreateSerializer(serializers.ModelSerializer):
             existing_template = JourneyTemplate.objects.filter(
                 account=data.get('account', self.instance.account),
                 journey_type=data.get('journey_type', self.instance.journey_type),
-                job_title=data.get('job_title', self.instance.job_title),
+                
                 title=data.get('title', self.instance.title)
             ).exclude(pk=self.instance.pk)
             

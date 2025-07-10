@@ -14,7 +14,7 @@ class JobTitleSerializer(serializers.ModelSerializer):
         model = JobTitle
         fields = [
             'id', 'title', 'description', 'department',
-            'boarding_template_title', 'is_active',
+             'is_active',
             'user_count', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'user_count', 'created_at', 'updated_at']
@@ -27,7 +27,6 @@ class UserSerializer(serializers.ModelSerializer):
     is_employed = serializers.ReadOnlyField()
     days_since_hire = serializers.ReadOnlyField()
     job_title_name = serializers.ReadOnlyField()
-    boarding_template_title = serializers.ReadOnlyField()
     custom_permissions = PermissionSerializer(many=True, read_only=True)
     role_name = serializers.CharField(source='role.display_name', read_only=True)
 
@@ -36,16 +35,16 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-            'employee_id', 'hire_date', 'termination_date', 'job_title', 'department',
+             'hire_date', 'termination_date', 'job_title', 'department',
             'employment_status', 'is_active', 'is_staff',
             'is_superuser', 'must_change_password', 'two_factor_enabled',
             'account_count', 'is_employed', 'custom_permissions',
-            'days_since_hire', 'date_joined', 'last_login', 'updated_at','job_title_name', 'boarding_template_title','role_name'
+            'days_since_hire', 'date_joined', 'last_login', 'updated_at','job_title_name','role_name'
         ]
         read_only_fields = [
             'id', 'date_joined', 'last_login', 'updated_at',
             'password_changed_at', 'account_count', 'is_employed',
-            'days_since_hire', 'job_title_name', 'boarding_template_title'
+            'days_since_hire', 'job_title_name'
         ]
         extra_kwargs = {
             'password': {'write_only': True}
@@ -85,7 +84,6 @@ class UserListSerializer(serializers.ModelSerializer):
     is_employed = serializers.ReadOnlyField()
     days_since_hire = serializers.ReadOnlyField()
     job_title_name = serializers.ReadOnlyField()
-    boarding_template_title = serializers.ReadOnlyField()
     custom_permissions = PermissionSerializer(many=True, read_only=True)
     role_name = serializers.CharField(source='role.display_name', read_only=True)
 
@@ -94,16 +92,16 @@ class UserListSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-            'employee_id', 'hire_date', 'termination_date', 'job_title', 'department',
+             'hire_date', 'termination_date', 'job_title', 'department',
             'employment_status', 'is_active', 'is_staff',
             'is_superuser', 'must_change_password', 'two_factor_enabled',
             'account_count', 'is_employed', 'custom_permissions',
-            'days_since_hire', 'date_joined', 'last_login', 'updated_at','job_title_name', 'boarding_template_title','role_name'
+            'days_since_hire', 'date_joined', 'last_login', 'updated_at','job_title_name','role_name'
         ]
         read_only_fields = [
             'id', 'date_joined', 'last_login', 'updated_at',
             'password_changed_at', 'account_count', 'is_employed',
-            'days_since_hire', 'job_title_name', 'boarding_template_title'
+            'days_since_hire', 'job_title_name'
         ]
 
     
@@ -127,7 +125,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'username', 'email', 'first_name', 'last_name',
-            'employee_id', 'hire_date', 'job_title', 'department',
+             'hire_date', 'job_title', 'department',
             'employment_status', 'is_active', 'is_staff'
         ]
     

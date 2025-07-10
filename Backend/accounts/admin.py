@@ -6,9 +6,8 @@ from .models import Account
 class AccountAdmin(admin.ModelAdmin):
     list_display = [
         'account_name', 
-        'account_id', 
+        
         'timezone', 
-        'subscription_type',
         'user_count',
         'is_active', 
         'created_at'
@@ -16,14 +15,14 @@ class AccountAdmin(admin.ModelAdmin):
     
     list_filter = [
         'is_active', 
-        'subscription_type', 
+        
         'timezone', 
         'created_at'
     ]
     
     search_fields = [
         'account_name', 
-        'account_id', 
+        
         'contact_email'
     ]
     
@@ -38,7 +37,7 @@ class AccountAdmin(admin.ModelAdmin):
         ('Basic Information', {
             'fields': (
                 'account_name', 
-                'account_id', 
+                 
                 'timezone', 
                 'is_active'
             )
@@ -62,8 +61,7 @@ class AccountAdmin(admin.ModelAdmin):
         }),
         ('Account Settings', {
             'fields': (
-                'max_users', 
-                'subscription_type'
+                'max_users',
             )
         }),
         ('Metadata', {
@@ -89,7 +87,7 @@ class AccountAdmin(admin.ModelAdmin):
             obj.refresh_from_db()
             
             action = "created" if not change else "updated"
-            print(f"✅ Account {action}: {obj.account_name} ({obj.account_id})")
+            print(f"✅ Account {action}: {obj.account_name}")
             
         except Exception as e:
             print(f"❌ Error saving Account: {e}")

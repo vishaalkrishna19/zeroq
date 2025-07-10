@@ -32,11 +32,11 @@ class JobTitle(models.Model):
         help_text='Whether this job title is available for selection'
     )
     
-    boarding_template_title = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text='Corresponding boarding template title for onboarding'
-    )
+    # boarding_template_title = models.CharField(
+    #     max_length=100,
+    #     blank=True,
+    #     help_text='Corresponding boarding template title for onboarding'
+    # )
     
     # Audit fields
     created_at = models.DateTimeField(auto_now_add=True)
@@ -75,22 +75,22 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     
     # Enhanced user information
-    employee_id = models.CharField(
-        max_length=50,
-        unique=True,
-        null=True,
-        blank=True,
-        help_text='Company employee ID'
-    )
+    # employee_id = models.CharField(
+    #     max_length=50,
+    #     unique=True,
+    #     null=True,
+    #     blank=True,
+    #     help_text='Company employee ID'
+    # )
     
     # Profile information removed - keeping minimal user data
     
     # Employment information
-    hire_date = models.DateField(
-        null=True,
-        blank=True,
-        help_text='Date when the employee was hired'
-    )
+    # hire_date = models.DateField(
+    #     null=True,
+    #     blank=True,
+    #     help_text='Date when the employee was hired'
+    # )
     
     termination_date = models.DateField(
         null=True,
@@ -225,12 +225,12 @@ class User(AbstractUser):
         """Return True if user is currently employed."""
         return self.employment_status == 'active' and self.is_active
     
-    @property
-    def days_since_hire(self):
-        """Return number of days since hire date."""
-        if self.hire_date:
-            return (timezone.now().date() - self.hire_date).days
-        return None
+    # @property
+    # def days_since_hire(self):
+    #     """Return number of days since hire date."""
+    #     if self.hire_date:
+    #         return (timezone.now().date() - self.hire_date).days
+    #     return None
     
     @property
     def account_memberships(self):
@@ -274,14 +274,14 @@ class User(AbstractUser):
         self.password_changed_at = timezone.now()
         self.must_change_password = False
     
-    def save(self, *args, **kwargs):
-        """Override save to ensure proper database transactions."""
-        # Ensure employee_id is uppercase if provided
-        if self.employee_id:
-            self.employee_id = self.employee_id.upper()
+    # def save(self, *args, **kwargs):
+    #     """Override save to ensure proper database transactions."""
+    #     # Ensure employee_id is uppercase if provided
+    #     if self.employee_id:
+    #         self.employee_id = self.employee_id.upper()
         
-        # Call parent save method
-        super().save(*args, **kwargs)
+    #     # Call parent save method
+    #     super().save(*args, **kwargs)
 
 
 class UserAccount(models.Model):
