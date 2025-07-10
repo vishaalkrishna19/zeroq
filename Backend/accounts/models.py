@@ -11,15 +11,15 @@ class Account(models.Model):
     
     # Unique identifiers
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    account_id = models.CharField(
-        max_length=20, 
-        unique=True,
-        validators=[RegexValidator(
-            regex=r'^[A-Z0-9]{3,20}$',
-            message='Account ID must be 3-20 characters, uppercase letters and numbers only'
-        )],
-        help_text='Unique account identifier (e.g., COMP001, ACME123)'
-    )
+    # account_id = models.CharField(
+    #     max_length=20, 
+    #     unique=True,
+    #     validators=[RegexValidator(
+    #         regex=r'^[A-Z0-9]{3,20}$',
+    #         message='Account ID must be 3-20 characters, uppercase letters and numbers only'
+    #     )],
+    #     help_text='Unique account identifier (e.g., COMP001, ACME123)'
+    # )
     
     # Basic account information
     account_name = models.CharField(
@@ -87,16 +87,16 @@ class Account(models.Model):
         help_text='Maximum number of users allowed for this account'
     )
     
-    subscription_type = models.CharField(
-        max_length=50,
-        choices=[
-            ('trial', 'Trial'),
-            ('basic', 'Basic'),
-            ('professional', 'Professional'),
-            ('enterprise', 'Enterprise'),
-        ],
-        default='trial'
-    )
+    # subscription_type = models.CharField(
+    #     max_length=50,
+    #     choices=[
+    #         ('trial', 'Trial'),
+    #         ('basic', 'Basic'),
+    #         ('professional', 'Professional'),
+    #         ('enterprise', 'Enterprise'),
+    #     ],
+    #     default='trial'
+    # )
     
     class Meta:
         db_table = 'accounts'
@@ -104,14 +104,14 @@ class Account(models.Model):
         verbose_name_plural = 'Accounts'
         ordering = ['account_name']
         
-    def __str__(self):
-        return f"{self.account_name} ({self.account_id})"
+    # def __str__(self):
+    #     return f"{self.account_name} ({self.account_id})"
     
-    def save(self, *args, **kwargs):
-        # Ensure account_id is uppercase
-        if self.account_id:
-            self.account_id = self.account_id.upper()
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # Ensure account_id is uppercase
+    #     if self.account_id:
+    #         self.account_id = self.account_id.upper()
+    #     super().save(*args, **kwargs)
     
     @property
     def user_count(self):

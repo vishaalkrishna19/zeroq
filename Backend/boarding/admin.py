@@ -21,7 +21,6 @@ class JourneyTemplateAdmin(admin.ModelAdmin):
     list_display = [
         'title',
         'journey_type',
-        'job_title_display',
         'department',
         'business_unit',
         'estimated_duration_days',
@@ -33,7 +32,6 @@ class JourneyTemplateAdmin(admin.ModelAdmin):
     
     list_filter = [
         'journey_type',
-        'job_title',
         'department',
         'business_unit',
         'is_active',
@@ -45,7 +43,6 @@ class JourneyTemplateAdmin(admin.ModelAdmin):
     search_fields = [
         'title',
         'description',
-        'job_title__title',
         'department',
         'business_unit'
     ]
@@ -72,7 +69,7 @@ class JourneyTemplateAdmin(admin.ModelAdmin):
         ('Organization', {
             'fields': (
                 'account',
-                'job_title',
+                
                 'department',
                 'business_unit'
             ),
@@ -124,14 +121,14 @@ class JourneyTemplateAdmin(admin.ModelAdmin):
             print(f"❌ Error saving Journey Template: {e}")
             raise
     
-    def job_title_display(self, obj):
-        if obj.job_title:
-            return obj.job_title.title
-        return "No Job Title"
-    job_title_display.short_description = 'Job Title'
+    # def job_title_display(self, obj):
+    #     if obj.job_title:
+    #         return obj.job_title.title
+    #     return "No Job Title"
+    # job_title_display.short_description = 'Job Title'
     
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related('account', 'created_by', 'job_title')
+        return super().get_queryset(request).select_related('account', 'created_by')
 
 
 @admin.register(JourneyStep)

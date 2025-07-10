@@ -10,7 +10,7 @@ class AccountSerializer(serializers.ModelSerializer):
         model = Account
         fields = [
             'id', 
-            'account_id', 
+            
             'account_name', 
             'timezone', 
             'is_active',
@@ -23,7 +23,6 @@ class AccountSerializer(serializers.ModelSerializer):
             'postal_code', 
             'country',
             'max_users', 
-            'subscription_type',
             'user_count', 
             'can_add_users',
             'created_at', 
@@ -31,13 +30,13 @@ class AccountSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
     
-    def validate_account_id(self, value):
-        """Ensure account_id is uppercase and unique."""
-        if value:
-            value = value.upper()
-            if Account.objects.filter(account_id=value).exclude(pk=self.instance.pk if self.instance else None).exists():
-                raise serializers.ValidationError("Account ID must be unique.")
-        return value
+    # def validate_account_id(self, value):
+    #     """Ensure account_id is uppercase and unique."""
+    #     if value:
+    #         value = value.upper()
+    #         if Account.objects.filter(account_id=value).exclude(pk=self.instance.pk if self.instance else None).exists():
+    #             raise serializers.ValidationError("Account ID must be unique.")
+    #     return value
 
 
 class AccountListSerializer(serializers.ModelSerializer):
@@ -48,11 +47,10 @@ class AccountListSerializer(serializers.ModelSerializer):
         model = Account
         fields = [
             'id', 
-            'account_id', 
+             
             'account_name', 
             'timezone', 
             'is_active',
-            'subscription_type',
             'user_count',
             'created_at'
         ]
