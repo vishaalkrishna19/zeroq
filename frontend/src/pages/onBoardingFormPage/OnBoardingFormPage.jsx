@@ -54,7 +54,7 @@ const OnBoardingFormPage = () => {
     journeyTitle: '',
     department: '',
     businessUnit: '',
-    estimatedDuration: 30,
+    estimatedDuration: 0,
     journeyDescription: '',
   });
 
@@ -152,7 +152,7 @@ const OnBoardingFormPage = () => {
     return mapping[party] || party;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (isDraft = false) => {
     setLoading(true);
     setError('');
     
@@ -182,7 +182,7 @@ const OnBoardingFormPage = () => {
         business_unit: formData.businessUnit,
         estimated_duration_days: formData.estimatedDuration,
         account: accountId,
-        is_active: true,
+        is_active: !isDraft, // <-- set false if draft
         is_default: false,
         steps_data: steps.filter(step => step.stepTitle.trim()).map((step, index) => ({
           title: step.stepTitle,
@@ -207,17 +207,30 @@ const OnBoardingFormPage = () => {
         console.log('Template created successfully:', newTemplate);
         
         // Show success toast
-        toast.success('Onboarding journey created successfully!', {
+        toast.success(isDraft ? 'Draft saved successfully!' : 'Onboarding journey created successfully!', {
           duration: 3000,
           position: 'top-center',
-          style: {
-            background: '#10b981',
-            color: 'white',
-            fontWeight: '500',
-            padding: '16px 20px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          },
+          style: isDraft
+            ? {
+                background: '#facc15',
+                color: '#111',
+                fontWeight: '500',
+                padding: '16px 25px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                width: '420px',
+                maxWidth: '90vw',
+              }
+            : {
+                background: 'white',
+                color: '#111',
+                fontWeight: '400',
+                padding: '16px 25px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                width: '420px',
+                maxWidth: '90vw',
+              },
         });
 
         // Navigate back to templates page after a short delay
@@ -447,8 +460,24 @@ const OnBoardingFormPage = () => {
             >
               Cancel
             </Button>
+            {/* Save Draft Button */}
             <Button
-              onClick={handleSubmit}
+              variant="outline"
+              style={{
+                borderColor: '#facc15',
+                color: '#b45309',
+                background: '#fefce8',
+                fontWeight: 500,
+                marginRight: 8,
+              }}
+              onClick={() => handleSubmit(true)}
+              size="sm"
+              disabled={loading}
+            >
+              Save Draft
+            </Button>
+            <Button
+              onClick={() => handleSubmit(false)}
               className={styles.createButton}
               size="sm"
               loading={loading}

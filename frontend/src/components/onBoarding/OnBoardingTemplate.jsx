@@ -10,8 +10,10 @@ import {
   Text,
   Title,
   Menu,
+  Modal,
+  Stack,
 } from '@mantine/core';
-import { IconDotsVertical, IconPlus } from '@tabler/icons-react';
+import { IconDotsVertical, IconPlus, IconTrash, IconAlertTriangle } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 import styles from './OnBoardingTemplate.module.css';
@@ -27,6 +29,8 @@ const OnBoardingTemplate = () => {
   const [formOpened, setFormOpened] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState(null);
   const [departmentOptions, setDepartmentOptions] = useState([
     { value: 'all', label: 'All Departments' }
   ]);
@@ -278,43 +282,56 @@ const rows = filteredData.map((item) => (
   };
 
   const handleDelete = async (templateId, templateTitle) => {
-    if (window.confirm(`Are you sure you want to delete "${templateTitle}"? This action cannot be undone.`)) {
-      try {
-        await ApiService.deleteJourneyTemplate(templateId);
-        
-        // Remove from local state
-        const updatedTemplates = templates.filter(template => template.id !== templateId);
-        setTemplates(updatedTemplates);
-        filterTemplates(updatedTemplates, selectedDepartment, selectedBusinessUnit);
-        
-        toast.success('Template deleted successfully!', {
-          duration: 3000,
-          position: 'top-center',
-          style: {
-            background: '#ef4444',
-            color: 'white',
-            fontWeight: '500',
-            padding: '16px 20px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          },
-        });
-      } catch (error) {
-        console.error('Failed to delete template:', error);
-        toast.error('Failed to delete template. Please try again.', {
-          duration: 3000,
-          position: 'top-center',
-          style: {
-            background: '#ef4444',
-            color: 'white',
-            fontWeight: '500',
-            padding: '16px 20px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          },
-        });
-      }
+    setTemplateToDelete({ id: templateId, title: templateTitle });
+    setDeleteModalOpened(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!templateToDelete) return;
+    
+    try {
+      await ApiService.deleteJourneyTemplate(templateToDelete.id);
+      
+      // Remove from local state
+      const updatedTemplates = templates.filter(template => template.id !== templateToDelete.id);
+      setTemplates(updatedTemplates);
+      filterTemplates(updatedTemplates, selectedDepartment, selectedBusinessUnit);
+      
+      toast.success('Template deleted successfully!', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          background: '#ef4444',
+          color: 'white',
+          fontWeight: '500',
+          padding: '16px 20px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        },
+      });
+    } catch (error) {
+      console.error('Failed to delete template:', error);
+      toast.error('Failed to delete template. Please try again.', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          background: '#ef4444',
+          color: 'white',
+          fontWeight: '500',
+          padding: '16px 20px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        },
+      });
+    } finally {
+      setDeleteModalOpened(false);
+      setTemplateToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteModalOpened(false);
+    setTemplateToDelete(null);
   };
 
   if (loading) {
@@ -402,6 +419,47 @@ const rows = filteredData.map((item) => (
         onClose={() => setFormOpened(false)}
         onTemplateCreated={handleTemplateCreated}
       />
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        opened={deleteModalOpened}
+        onClose={cancelDelete}
+        title={
+          <Group gap="sm">
+            <IconAlertTriangle size={20} color="red" />
+            <Text fw={600} size="md">Confirm Delete</Text>
+          </Group>
+        }
+        centered
+        size="sm"
+        style={
+            { borderRadius: '8px', }
+        }   
+      >
+        <Stack gap="md">
+          <Text size="sm">
+            Are you sure you want to delete "{templateToDelete?.title}"? This action cannot be undone.
+          </Text>
+          
+          <Group justify="flex-end" gap="sm">
+            <Button
+              variant="outline"
+              onClick={cancelDelete}
+              size="sm"
+            >
+              Cancel
+            </Button>
+            <Button
+              color="red"
+              onClick={confirmDelete}
+              size="sm"
+              leftSection={<IconTrash size={16} />}
+            >
+              Delete
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </Box>
   );
 };

@@ -9,36 +9,94 @@ export default function Dashboard() {
     const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [userId, setUserId] = useState(null);
   
     useEffect(() => {
       const authToken = localStorage.getItem('authToken');
       const storedUsername = localStorage.getItem('username');
-    
+      let storedUserId = localStorage.getItem('userId');
+  
       if (!authToken) {
         navigate('/login');
         return;
       }
-    
-      fetch('http://localhost:8000/api/users/userdata', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Token ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      })
-        .then(res => res.json())
-        .then(data => {
-          console.log('User data:', data); 
-          setUsername(data.username || storedUsername || 'User');
-          setFirstName(data.first_name || '');
-          setLastName(data.last_name || '');
+  
+      if (storedUserId) {
+        fetch(`http://localhost:8000/api/users/${storedUserId}/`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${authToken}`,
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
         })
-        .catch(err => {
-          console.error('Failed to fetch user info:', err);
- 
-          setUsername(storedUsername || 'User');
-        });
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(data => {
+            console.log('User data:', data); 
+            setUsername(data.username || storedUsername || 'User');
+            setFirstName(data.first_name || '');
+            setLastName(data.last_name || '');
+          })
+          .catch(err => {
+            console.error('Failed to fetch user info:', err);
+            setUsername(storedUsername || 'User');
+          });
+      } else {
+
+        fetch('http://localhost:8000/api/auth/user/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${authToken}`,
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        })
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(data => {
+            console.log('Auth user data:', data);
+            if (data.pk) {
+              localStorage.setItem('userId', data.pk);
+              setUserId(data.pk);
+              
+              return fetch(`http://localhost:8000/api/users/${data.pk}/`, {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Token ${authToken}`,
+                  'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+              });
+            } else {
+              throw new Error('No user ID in response');
+            }
+          })
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(data => {
+            console.log('User data:', data); 
+            setUsername(data.username || storedUsername || 'User');
+            setFirstName(data.first_name || '');
+            setLastName(data.last_name || '');
+          })
+          .catch(err => {
+            console.error('Failed to fetch user info:', err);
+            setUsername(storedUsername || 'User');
+          });
+      }
     }, [navigate]);
   
     return (

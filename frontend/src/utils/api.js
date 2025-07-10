@@ -166,6 +166,10 @@ static async getCSRFToken() {
     return this.request('/boarding/templates/business_units/');
   }
 
+  static async getUserData() {
+    return this.request('/users/userdata/');
+  }
+
   // Authentication
   static async login(credentials) {
     return this.request('/auth/login/', {

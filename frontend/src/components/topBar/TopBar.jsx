@@ -12,6 +12,11 @@ import {
   IconSearch,
   IconHelp,
   IconChevronDown,
+  IconSwitchHorizontal,
+  IconPlus,
+  IconSettings,
+  IconLogout,
+  IconDashboard,
 } from '@tabler/icons-react';
 import styles from './TopBar.module.css';
 import { SearchModal } from '../searchModal/SearchModal';
@@ -84,11 +89,38 @@ export function TopBar() {
             <IconHelp size={28} />
           </ActionIcon>
 
-          <Avatar size={32} className={styles.profileAvatar}>
-            U
-          </Avatar>
-
+          {/* User Profile Avatar Dropdown */}
           <Menu shadow="md" width={200}>
+            <Menu.Target>
+              <Avatar size={32} className={styles.profileAvatar} style={{ cursor: 'pointer' }}>
+                U
+              </Avatar>
+            </Menu.Target>
+            <Menu.Dropdown className={styles.menuDropdown}>
+              <Menu.Item 
+                className={styles.menuItem}
+                leftSection={<IconDashboard size={16} />}
+              >
+                Dashboard
+              </Menu.Item>
+              <Menu.Item 
+                className={styles.menuItem}
+                leftSection={<IconSettings size={16} />}
+              >
+                Settings
+              </Menu.Item>
+              <Menu.Item 
+                className={styles.menuItem}
+                leftSection={<IconLogout size={16} />}
+                onClick={handleSignOut}
+              >
+                Sign out
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+
+          {/* Company Account Dropdown */}
+          <Menu shadow="md" width={240}>
             <Menu.Target>
               <UnstyledButton className={styles.profileSection}>
                 <Group gap={8}>
@@ -96,16 +128,38 @@ export function TopBar() {
                     src="https://s3.us-west-2.amazonaws.com/assets.www.happyfox.com/media/images/Slack.original.svg"
                     className={styles.companyLogo}
                     alt="Company Logo"
-                    
                   />
                   <Text className={styles.companyText}>Company account</Text>
                   <IconChevronDown size={12} />
                 </Group>
               </UnstyledButton>
             </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item>Account settings</Menu.Item>
-              <Menu.Item onClick={handleSignOut}>Sign out</Menu.Item>
+            <Menu.Dropdown className={styles.menuDropdown}>
+              <Menu.Item 
+                className={styles.menuItem}
+                leftSection={<IconSwitchHorizontal size={16} />}
+              >
+                Switch workspace
+              </Menu.Item>
+              <Menu.Item 
+                className={styles.menuItem}
+                leftSection={<IconPlus size={16} />}
+              >
+                Add workspace
+              </Menu.Item>
+              <Menu.Item 
+                className={styles.menuItem}
+                leftSection={<IconSettings size={16} />}
+              >
+                Settings
+              </Menu.Item>
+              <Menu.Item 
+                className={styles.menuItem}
+                leftSection={<IconLogout size={16} />}
+                onClick={handleSignOut}
+              >
+                Sign out
+              </Menu.Item>
             </Menu.Dropdown>
           </Menu>
         </Box>

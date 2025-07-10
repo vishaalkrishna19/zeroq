@@ -126,3 +126,31 @@
   border-radius: 50%;
   font-weight: 300;
 }
+
+.menuDropdown {
+  background-color: #1e1f29 !important;
+  border: 1px solid #2d2e3f !important;
+  border-radius: 8px !important;
+  padding: 4px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+.menuItem {
+  color: #ffffff !important;
+  padding: 8px 12px !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.menuItem:hover {
+  background-color: #2d2e3f !important;
+}
+
+.menuItem[data-hovered] {
+  background-color: #2d2e3f !important;
+}
+
+.menuItem svg {
+  color: #9ca3af !important;
+}

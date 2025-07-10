@@ -49,7 +49,7 @@ function AppContent() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const location = useLocation();
   
-  const showSidebar = location.pathname !== "/" && location.pathname !== "/login" && location.pathname !== "/reset-password" && location.pathname !== "/set-password" && location.pathname !== "/enter-key";
+  const showSidebar = location.pathname !== "/" && location.pathname !== "/login" && location.pathname !== "/reset-password" && location.pathname !== "/set-password" && location.pathname !== "/user-panel";
 
   return (
     <Box style={{ display: 'flex', height: '100vh' }}>
