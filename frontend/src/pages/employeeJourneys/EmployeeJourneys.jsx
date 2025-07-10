@@ -6,6 +6,9 @@ import EmployeeHeader from '../../components/employeeHeader/EmployeeHeader';
 import styles from './EmployeeJourneys.module.css';
 import AgentCarousel from '../../components/AgentCarousel/AgentCarousel';
 import OnBoardingTemplate from '../../components/onBoarding/OnBoardingTemplate';
+import StatsContainer from '../../components/onBoardingStats/statsContainer';
+import OffBoardingTemplate from '../../components/offBoarding/OffBoardingTemplate';
+import OffBoardingStatsContainer from '../../components/offBoardingStats/OffBoardingStatsContainer';
 
 function GradientSparkleIcon() {
   return (
@@ -21,10 +24,13 @@ function GradientSparkleIcon() {
   );
 }
 
+
+
 const EmployeeJourneys = () => {
   const [carouselRef, setCarouselRef] = useState(null);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(true);
+  const [selectedJourney, setSelectedJourney] = useState('On-boarding');
 
   const handlePrev = () => {
     if (carouselRef) carouselRef.slidePrev();
@@ -39,13 +45,34 @@ const EmployeeJourneys = () => {
     setCanScrollNext(!swiper.isEnd);
   };
 
+  const handleChipChange = (chip) => {
+    setSelectedJourney(chip);
+  };
+
+  const renderTemplate = () => {
+    switch(selectedJourney) {
+      case 'On-boarding':
+        return <OnBoardingTemplate />;
+      case 'Off-boarding':
+        return <OffBoardingTemplate />;
+      case 'Health Check':
+        // You can add other components here when they're created
+        return <OnBoardingTemplate />; // Placeholder
+      case 'Internal Mobility':
+        // You can add other components here when they're created
+        return <OnBoardingTemplate />; // Placeholder
+      default:
+        return <OnBoardingTemplate />;
+    }
+  };
+
   return (
     <>
-        <TopBar />
-        <Box className={styles.container}>
+      <TopBar />
+      <Box className={styles.container}>
         
         <Box className={styles.employeeHeader}>
-            <EmployeeHeader />
+          <EmployeeHeader onChipChange={handleChipChange} />
         </Box>
         
         <Box className={styles.carouselBackground}>
@@ -85,8 +112,11 @@ const EmployeeJourneys = () => {
           />
         </Box>
         
-        <OnBoardingTemplate />
-        </Box>
+        {renderTemplate()}
+
+        {selectedJourney === 'On-boarding' && <StatsContainer />}
+        {selectedJourney === 'Off-boarding' && <OffBoardingStatsContainer />}
+      </Box>
     </>
   );
 };

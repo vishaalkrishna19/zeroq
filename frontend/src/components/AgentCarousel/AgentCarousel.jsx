@@ -100,6 +100,7 @@ const AgentCarousel = ({ onSwiperInit, onSlideChange }) => {
 			}}
 			freeMode={false}
 			watchSlidesProgress={true}
+			loop={false} // Prevent looping
 		>
 			{agentData.map((agent, index) => (
 				<SwiperSlide key={index} className={styles.swiperSlide}>

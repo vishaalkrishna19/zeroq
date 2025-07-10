@@ -1,0 +1,110 @@
+.container {
+  padding: 24px;
+  border-radius: 8px;
+  margin: 0px 24px 20px 24px;
+  box-sizing: border-box;
+  width: calc(100% - 48px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1a1b1e;
+  margin: 0;
+}
+
+.dropdown {
+  min-width: 180px;
+  border: none;
+}
+
+.dropdown :focus {
+  outline: none;
+  border: none;
+}
+
+.createButton {
+  background: #254cc3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.createButton:hover {
+  background: #3b5bdb;
+}
+
+.table {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background-color: white;
+  overflow: hidden;
+}
+
+.table thead tr {
+  background-color: #f8f9fa;
+}
+
+.table th {
+  color: #495057;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #dedfe1;
+}
+
+.table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e5e9;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.journeyName {
+  color: #17181a;
+  font-weight: 500;
+}
+
+.statusBadge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .container {
+    padding: 16px;
+  }
+  
+  .table {
+    font-size: 14px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 8px 12px;
+  }
+}

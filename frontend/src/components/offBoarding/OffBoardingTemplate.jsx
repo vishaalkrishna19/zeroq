@@ -16,11 +16,11 @@ import {
 import { IconDotsVertical, IconPlus, IconTrash, IconAlertTriangle } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
-import styles from './OnBoardingTemplate.module.css';
-import OnBoardingForm from './onBoardingForm/OnBoardingForm';
+import styles from './OffBoardingTemplate.module.css';
+import OffBoardingForm from './offBoardingForm/OffBoardingForm';
 import ApiService from '../../utils/api';
 
-const OnBoardingTemplate = () => {
+const OffBoardingTemplate = () => {
   const navigate = useNavigate();
   const [selectedDepartment, setSelectedDepartment] = useState('all');
   const [selectedBusinessUnit, setSelectedBusinessUnit] = useState('all');
@@ -48,33 +48,30 @@ const OnBoardingTemplate = () => {
       setLoading(true);
       setError(null);
       const response = await ApiService.getJourneyTemplates({
-        journey_type: 'onboarding'
+        journey_type: 'offboarding'
       });
       
-      // Handle both paginated and non-paginated responses
       const templates = response.results || response;
       setTemplates(templates);
-      console.log('Fetched templates:', templates);
       setFilteredData(templates);
       
     } catch (error) {
       console.error('Failed to fetch templates:', error);
       setError('Failed to load templates. Using offline data.');
       
-      // Use mock data as fallback
       const mockData = [
         {
           id: 1,
-          title: 'Software Engineer Onboarding',
+          title: 'Software Engineer Offboarding',
           department: 'Engineering',
           business_unit: 'India',
-          step_count: 5,
+          step_count: 4,
           is_active: true,
           created_at: new Date().toISOString(),
         },
         {
           id: 2,
-          title: 'Sales Representative Onboarding',
+          title: 'Sales Representative Offboarding',
           department: 'Sales',
           business_unit: 'US',
           step_count: 3,
@@ -91,17 +88,14 @@ const OnBoardingTemplate = () => {
 
   const fetchFilterOptions = async () => {
     try {
-      // Try to fetch from API, but don't fail if it doesn't work
       const [departments, businessUnits] = await Promise.all([
         ApiService.getDepartments().catch(() => ['Engineering', 'Sales', 'Marketing', 'HR']),
         ApiService.getBusinessUnits().catch(() => ['India', 'UK', 'USA', 'Canada'])
       ]);
 
-      // Remove duplicates and ensure unique values
       const uniqueDepartments = [...new Set(Array.isArray(departments) ? departments : ['Engineering', 'Sales', 'Marketing', 'HR'])];
       const uniqueBusinessUnits = [...new Set(Array.isArray(businessUnits) ? businessUnits : ['India', 'UK', 'USA', 'Canada'])];
 
-      // Create unique options with proper deduplication
       const departmentOptionsMap = new Map();
       departmentOptionsMap.set('all', 'All Departments');
       
@@ -122,7 +116,6 @@ const OnBoardingTemplate = () => {
         }
       });
 
-      // Convert maps to arrays
       setDepartmentOptions(
         Array.from(departmentOptionsMap.entries()).map(([value, label]) => ({
           value,
@@ -140,7 +133,6 @@ const OnBoardingTemplate = () => {
     } catch (error) {
       console.error('Failed to fetch filter options:', error);
       
-      // Use default options with guaranteed unique values
       setDepartmentOptions([
         { value: 'all', label: 'All Departments' },
         { value: 'engineering', label: 'Engineering' },
@@ -160,20 +152,10 @@ const OnBoardingTemplate = () => {
   };
 
   const handleTemplateCreated = (newTemplate) => {
-    console.log('New template received:', newTemplate);
-    
-    // Add new template to the beginning of the list
     const updatedTemplates = [newTemplate, ...templates];
     setTemplates(updatedTemplates);
-    
-    // Re-apply current filters
     filterTemplates(updatedTemplates, selectedDepartment, selectedBusinessUnit);
-    
-    // Clear any errors
     setError(null);
-    
-    // Optionally show success message
-    console.log('Template successfully added to database:', newTemplate.title);
   };
 
   const filterTemplates = (templateList, department, businessUnit) => {
@@ -216,70 +198,70 @@ const OnBoardingTemplate = () => {
     }).toUpperCase();
   };
 
-const capitalize = (str) => {
+  const capitalize = (str) => {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
-};
+  };
 
-const rows = filteredData.map((item) => (
+  const rows = filteredData.map((item) => (
     <Table.Tr key={item.id}>
-        <Table.Td>
-            <Text fw={500} size="sm" className={styles.journeyName}>
-                {item.title}
-            </Text>
-        </Table.Td>
-        <Table.Td>
-            <Text size="sm">
-                {item.department ? capitalize(item.department) : 'N/A'}
-            </Text>
-        </Table.Td>
-        <Table.Td>
-            <Text size="sm">
-                {item.business_unit ? capitalize(item.business_unit) : 'N/A'}
-            </Text>
-        </Table.Td>
-        <Table.Td>
-            <Text size="sm" fw={500}>
-                {item.step_count || 0}
-            </Text>
-        </Table.Td>
-        <Table.Td>
-            <Badge
-                variant="light"
-                color={getBadgeColor(item.is_active)}
-                size="sm"
-                className={styles.statusBadge}
-            >
-                {item.is_active ? 'Active' : 'Draft'}
-            </Badge>
-        </Table.Td>
-        <Table.Td>
-            <Text size="sm">
-                {formatDate(item.created_at)}
-            </Text>
-        </Table.Td>
-        <Table.Td>
-            <Menu withinPortal position="bottom-end" shadow="md" width={140}>
-                <Menu.Target>
-                    <ActionIcon variant="subtle" color="black/50" size="sm">
-                        <IconDotsVertical size={16} />
-                    </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                    <Menu.Item onClick={() => handleEdit(item.id)}>
-                        Edit
-                    </Menu.Item>
-                    <Menu.Item color="red" onClick={() => handleDelete(item.id, item.title)}>
-                        Delete
-                    </Menu.Item>
-                </Menu.Dropdown>
-            </Menu>
-        </Table.Td>
+      <Table.Td>
+        <Text fw={500} size="sm" className={styles.journeyName}>
+          {item.title}
+        </Text>
+      </Table.Td>
+      <Table.Td>
+        <Text size="sm">
+          {item.department ? capitalize(item.department) : 'N/A'}
+        </Text>
+      </Table.Td>
+      <Table.Td>
+        <Text size="sm">
+          {item.business_unit ? capitalize(item.business_unit) : 'N/A'}
+        </Text>
+      </Table.Td>
+      <Table.Td>
+        <Text size="sm" fw={500}>
+          {item.step_count || 0}
+        </Text>
+      </Table.Td>
+      <Table.Td>
+        <Badge
+          variant="light"
+          color={getBadgeColor(item.is_active)}
+          size="sm"
+          className={styles.statusBadge}
+        >
+          {item.is_active ? 'Active' : 'Draft'}
+        </Badge>
+      </Table.Td>
+      <Table.Td>
+        <Text size="sm">
+          {formatDate(item.created_at)}
+        </Text>
+      </Table.Td>
+      <Table.Td>
+        <Menu withinPortal position="bottom-end" shadow="md" width={140}>
+          <Menu.Target>
+            <ActionIcon variant="subtle" color="black/50" size="sm">
+              <IconDotsVertical size={16} />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item onClick={() => handleEdit(item.id)}>
+              Edit
+            </Menu.Item>
+            <Menu.Item color="red" onClick={() => handleDelete(item.id, item.title)}>
+              Delete
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Table.Td>
     </Table.Tr>
-));
+  ));
 
   const handleEdit = (templateId) => {
-    navigate(`/onboarding-form/update/${templateId}`);
+    navigate(`/offboarding-form/update/${templateId}`);
   };
 
   const handleDelete = async (templateId, templateTitle) => {
@@ -293,7 +275,6 @@ const rows = filteredData.map((item) => (
     try {
       await ApiService.deleteJourneyTemplate(templateToDelete.id);
       
-      // Remove from local state
       const updatedTemplates = templates.filter(template => template.id !== templateToDelete.id);
       setTemplates(updatedTemplates);
       filterTemplates(updatedTemplates, selectedDepartment, selectedBusinessUnit);
@@ -312,18 +293,7 @@ const rows = filteredData.map((item) => (
       });
     } catch (error) {
       console.error('Failed to delete template:', error);
-      toast.error('Failed to delete template. Please try again.', {
-        duration: 3000,
-        position: 'top-center',
-        style: {
-          background: '#ef4444',
-          color: 'white',
-          fontWeight: '500',
-          padding: '16px 20px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        },
-      });
+      toast.error('Failed to delete template. Please try again.');
     } finally {
       setDeleteModalOpened(false);
       setTemplateToDelete(null);
@@ -354,7 +324,7 @@ const rows = filteredData.map((item) => (
       
       <Box className={styles.header}>
         <Title order={3} className={styles.title}>
-          Onboarding Journey Templates
+          Offboarding Journey Templates
         </Title>
         
         <Group gap="md">
@@ -393,7 +363,7 @@ const rows = filteredData.map((item) => (
             size="sm"
             rightSection={<IconPlus size={16} />}
             className={styles.createButton}
-            onClick={() => navigate('/onboarding-form')}
+            onClick={() => navigate('/offboarding-form')}
           >
             Create
           </Button>
@@ -415,13 +385,12 @@ const rows = filteredData.map((item) => (
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
 
-      <OnBoardingForm
+      <OffBoardingForm
         opened={formOpened}
         onClose={() => setFormOpened(false)}
         onTemplateCreated={handleTemplateCreated}
       />
 
-      {/* Delete Confirmation Modal */}
       <Modal
         opened={deleteModalOpened}
         onClose={cancelDelete}
@@ -433,9 +402,7 @@ const rows = filteredData.map((item) => (
         }
         centered
         size="sm"
-        style={
-            { borderRadius: '8px', }
-        }   
+        style={{ borderRadius: '8px' }}   
       >
         <Stack gap="md">
           <Text size="sm">
@@ -443,19 +410,10 @@ const rows = filteredData.map((item) => (
           </Text>
           
           <Group justify="flex-end" gap="sm">
-            <Button
-              variant="outline"
-              onClick={cancelDelete}
-              size="sm"
-            >
+            <Button variant="outline" onClick={cancelDelete} size="sm">
               Cancel
             </Button>
-            <Button
-              color="red"
-              onClick={confirmDelete}
-              size="sm"
-              leftSection={<IconTrash size={16} />}
-            >
+            <Button color="red" onClick={confirmDelete} size="sm" leftSection={<IconTrash size={16} />}>
               Delete
             </Button>
           </Group>
@@ -465,4 +423,4 @@ const rows = filteredData.map((item) => (
   );
 };
 
-export default OnBoardingTemplate;
+export default OffBoardingTemplate;
