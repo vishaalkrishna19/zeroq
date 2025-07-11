@@ -52,7 +52,6 @@ def create_default_admin_user(sender, **kwargs):
             last_name='Administrator',
             is_staff=True,
             is_superuser=True,
-            employee_id='ADMIN001',
             job_title=admin_job_title,
             department='IT',
             employment_status='active'

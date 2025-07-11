@@ -85,8 +85,8 @@ class UserViewSet(viewsets.ModelViewSet):
     
     def get_permissions(self):
         """Override permissions for specific actions."""
-        if self.action == 'reset_password':
-            # Allow unauthenticated access for password reset
+        if self.action in ['reset_password', 'verify_credentials']:
+            # Allow unauthenticated access for password reset and credential verification
             permission_classes = [AllowAny]
         else:
             permission_classes = self.permission_classes
@@ -266,6 +266,58 @@ class UserViewSet(viewsets.ModelViewSet):
     
     
 
+    @action(detail=False, methods=['post'])
+    def verify_credentials(self, request):
+        """Verify user credentials (username and password) without logging in."""
+        username_or_email = request.data.get('username')
+        password = request.data.get('password')
+        
+        print(f"🔍 Credential verification attempt for: {username_or_email}")
+        
+        # Validate input
+        if not username_or_email or not password:
+            return Response({
+                "error": "Username and password are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Determine whether this is an email or username
+        is_email = True
+        try:
+            validate_email(username_or_email)
+        except ValidationError:
+            is_email = False
+        
+        # Look up user
+        try:
+            if is_email:
+                user = User.objects.get(email=username_or_email)
+            else:
+                user = User.objects.get(username=username_or_email)
+        except User.DoesNotExist:
+            return Response({
+                "error": "Invalid username or password."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verify password
+        if not user.check_password(password):
+            return Response({
+                "error": "Invalid username or password."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if user is active
+        if not user.is_active:
+            return Response({
+                "error": "User account is inactive."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Success - credentials are valid
+        print(f"✅ Credentials verified successfully for: {user.username}")
+        return Response({
+            "message": "Credentials verified successfully.",
+            "user": user.username,
+            "must_change_password": user.must_change_password
+        })
+    
     @action(detail=False, methods=['post'])
     def reset_password(self, request):
         """Reset user's password with username or email and current password verification."""
