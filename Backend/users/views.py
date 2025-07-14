@@ -43,6 +43,9 @@ class CustomLoginView(LoginView):
             try:
                 if is_email==True:
                     user = User.objects.get(email=username)
+                    print("-0---------------")
+                    print("Got an email")
+                    
                     # Check if user exists and password is correct
                     if user.check_password(password) and user.is_active:
                         # If user must change password, prevent login and redirect to reset flow

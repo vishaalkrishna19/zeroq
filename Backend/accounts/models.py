@@ -104,8 +104,8 @@ class Account(models.Model):
         verbose_name_plural = 'Accounts'
         ordering = ['account_name']
         
-    # def __str__(self):
-    #     return f"{self.account_name} ({self.account_id})"
+    def __str__(self):
+        return f"{self.account_name}"
     
     # def save(self, *args, **kwargs):
     #     # Ensure account_id is uppercase

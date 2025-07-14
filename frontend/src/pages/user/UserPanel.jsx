@@ -43,9 +43,10 @@ function UserPanel() {
       })
         .then(res => res.ok ? res.json() : Promise.reject())
         .then(data => {
-          if (data.id) {
-            localStorage.setItem('userId', data.id);
-            fetchUser(data.id);
+          if (data) {
+            console.log('Fetched user data:', data);
+            localStorage.setItem('userId', data.pk);
+            fetchUser(data.pk);
           }
         })
         .catch(() => {});

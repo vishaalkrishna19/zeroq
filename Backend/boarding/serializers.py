@@ -38,11 +38,19 @@ class JourneyTemplateSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'journey_type', 'title', 'description', 
             'department', 'business_unit', 'estimated_duration_days', 'account',
-            'is_active', 'is_default', 'step_count', 'steps',
+            'is_active', 'is_default', 'step_count', 'steps','user_count',
+            
             'created_at', 'updated_at', 'created_by'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+    def get_step_count(self, obj):
+        return obj.steps.count()
 
+    def get_user_count(self, obj):
+        # Assumes User model has a ForeignKey to JourneyTemplate as 'template'
+        return obj.assigned_users.count()
+
+    
 
 class JourneyTemplateListSerializer(serializers.ModelSerializer):
     step_count = serializers.ReadOnlyField()

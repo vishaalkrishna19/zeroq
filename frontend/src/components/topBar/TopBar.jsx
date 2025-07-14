@@ -34,6 +34,7 @@ export function TopBar() {
   
       // Try to get userId from localStorage, else fetch from /api/auth/user/
       let userId = localStorage.getItem('userId');
+      console.log("User ID from localStorage:", userId);
       const fetchUser = (id) => {
         fetch(`http://localhost:8000/api/users/${id}/`, {
           method: 'GET',
@@ -45,6 +46,7 @@ export function TopBar() {
         })
           .then(res => res.ok ? res.json() : Promise.reject())
           .then(data => {
+            console.log('Fetched user data:', data);
             setRole(data.role_name || '');
             setFirstName(data.first_name || '');
           })
@@ -144,7 +146,7 @@ export function TopBar() {
               </Avatar>
             </Menu.Target>
             <Menu.Dropdown className={styles.menuDropdown}>
-            {role.toLowerCase() === 'administrator' && (
+            {role.toLowerCase() === 'admin' && (
               <Menu.Item 
                 className={styles.menuItem}
                 leftSection={<IconDashboard size={16} />}

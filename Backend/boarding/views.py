@@ -1,5 +1,5 @@
 from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action,api_view, permission_classes
 from rest_framework.response import Response
 from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
@@ -9,7 +9,40 @@ from .serializers import (
     JourneyStepSerializer, JourneyInstanceSerializer, JourneyInstanceListSerializer,
     JourneyInstanceCreateSerializer, JourneyStepInstanceSerializer
 )
+from rest_framework.permissions import IsAuthenticated
 
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def analytics_dashboard(request):
+    # Total templates by type
+    onboarding_templates = JourneyTemplate.objects.filter(journey_type='onboarding').count()
+    offboarding_templates = JourneyTemplate.objects.filter(journey_type='offboarding').count()
+    
+    # Total journeys by type and status
+    completed_onboarding = JourneyInstance.objects.filter(
+        template__journey_type='onboarding', status='completed'
+    ).count()
+    completed_offboarding = JourneyInstance.objects.filter(
+        template__journey_type='offboarding', status='completed'
+    ).count()
+    
+    # Steps completed for a particular onboarding template (example: template_id from query param)
+    template_id = request.query_params.get('template_id')
+    steps_completed = None
+    if template_id:
+        steps_completed = JourneyStepInstance.objects.filter(
+            journey__template_id=template_id, status='completed'
+        ).count()
+    
+    return Response({
+        "onboarding_template_count": onboarding_templates,
+        "offboarding_template_count": offboarding_templates,
+        "completed_onboarding_journeys": completed_onboarding,
+        "completed_offboarding_journeys": completed_offboarding,
+        "steps_completed_for_template": steps_completed,
+    })
 
 class JourneyTemplateViewSet(viewsets.ModelViewSet):
     """

@@ -63,7 +63,10 @@ class UserAdminForm(forms.ModelForm):
         # Filter job titles to only active ones
         if 'job_title' in self.fields:
             self.fields['job_title'].queryset = JobTitle.objects.filter(is_active=True)
-        
+         # Filter templates to only active ones (optional)
+        if 'template' in self.fields:
+            from boarding.models import JourneyTemplate
+            self.fields['template'].queryset = JourneyTemplate.objects.filter(is_active=True)
         # Group permissions by category for better UX
         permissions = self.fields['custom_permissions'].queryset
         grouped_choices = []
@@ -288,7 +291,8 @@ class UserAdmin(BaseUserAdmin):
                 'termination_date',
                 'employment_status',
                 'account',
-                'role'
+                'role',
+                'template',  # New field for journey template
             )
         }),
         ('Permissions & Access', {
@@ -336,7 +340,8 @@ class UserAdmin(BaseUserAdmin):
                 'job_title',
                 'department',
                 'account',
-                'role'
+                'role',
+                'template',  # New field for journey template
             ),
         }),
         ('Account Settings', {

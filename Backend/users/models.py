@@ -91,7 +91,15 @@ class User(AbstractUser):
     #     blank=True,
     #     help_text='Date when the employee was hired'
     # )
-    
+    template = models.ForeignKey(
+        'boarding.JourneyTemplate',  # Use app_label.ModelName as a string
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='assigned_users',
+        help_text='Journey template assigned to this user'
+    )
+
     termination_date = models.DateField(
         null=True,
         blank=True,
