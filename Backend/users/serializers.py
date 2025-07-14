@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from .models import User, UserAccount, JobTitle
-from .admin import generate_strong_password
+from .utils import generate_strong_password
 from roles_permissions.serializers import PermissionSerializer
 
 
@@ -23,8 +23,8 @@ class JobTitleSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     """Full User serializer with all fields."""
     
-    account_count = serializers.SerializerMethodField()
-    is_employed = serializers.ReadOnlyField()
+    
+    
     days_since_hire = serializers.ReadOnlyField()
     job_title_name = serializers.ReadOnlyField()
     custom_permissions = PermissionSerializer(many=True, read_only=True)
@@ -36,24 +36,21 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
               'termination_date', 'job_title', 'department',
-            'employment_status', 'is_active', 'is_staff',
-            'is_superuser', 'must_change_password', 'two_factor_enabled',
-            'account_count', 'is_employed', 'custom_permissions',
+            'employment_status', 'is_active', 
+             'must_change_password', 'two_factor_enabled',
+              'custom_permissions',
             'days_since_hire', 'date_joined', 'last_login', 'updated_at','job_title_name','role_name'
         ]
         read_only_fields = [
             'id', 'date_joined', 'last_login', 'updated_at',
-            'password_changed_at', 'account_count', 'is_employed',
+            'password_changed_at', 
             'days_since_hire', 'job_title_name'
         ]
         extra_kwargs = {
             'password': {'write_only': True}
         }
     
-    def get_account_count(self, obj):
-        # User now has only one account, return 1 if account exists, 0 otherwise
-        return 1 if obj.account else 0
-
+   
 
 # class UserListSerializer(serializers.ModelSerializer):
 #     """Lightweight User serializer for listing."""
@@ -77,45 +74,52 @@ class UserSerializer(serializers.ModelSerializer):
 #     def get_full_name(self, obj):
 #         return obj.get_full_name()
     
-class UserListSerializer(serializers.ModelSerializer):
-    """Lightweight User serializer for listing."""
+# class UserListSerializer(serializers.ModelSerializer):
+#     """Lightweight User serializer for listing."""
     
-    account_count = serializers.SerializerMethodField()
-    is_employed = serializers.ReadOnlyField()
-    days_since_hire = serializers.ReadOnlyField()
-    job_title_name = serializers.ReadOnlyField()
-    custom_permissions = PermissionSerializer(many=True, read_only=True)
-    role_name = serializers.CharField(source='role.display_name', read_only=True)
+#     account_count = serializers.SerializerMethodField()
+#     is_employed = serializers.ReadOnlyField()
+#     days_since_hire = serializers.ReadOnlyField()
+#     job_title_name = serializers.ReadOnlyField()
+#     custom_permissions = PermissionSerializer(many=True, read_only=True)
+#     role_name = serializers.CharField(source='role.display_name', read_only=True)
 
+
+#     class Meta:
+#         model = User
+#         fields = [
+#             'id', 'username', 'email', 'first_name', 'last_name',
+#               'termination_date', 'job_title', 'department',
+#             'employment_status', 'is_active', 'is_staff',
+#             'is_superuser', 'must_change_password', 'two_factor_enabled',
+#             'account_count', 'is_employed', 'custom_permissions',
+#             'days_since_hire', 'date_joined', 'last_login', 'updated_at','job_title_name','role_name'
+#         ]
+#         read_only_fields = [
+#             'id', 'date_joined', 'last_login', 'updated_at',
+#             'password_changed_at', 'account_count', 'is_employed',
+#             'days_since_hire', 'job_title_name'
+#         ]
+
+    
+#     def get_account_count(self, obj):
+#         # User now has only one account, return 1 if account exists, 0 otherwise  
+#         return 1 if obj.account else 0
+    
+#     def get_full_name(self, obj):
+#         return obj.get_full_name()
+
+class UserListSerializer(serializers.ModelSerializer):
+    """Lightweight User serializer for listing (id, username, email, first_name, last_name only)."""
 
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'first_name', 'last_name',
-              'termination_date', 'job_title', 'department',
-            'employment_status', 'is_active', 'is_staff',
-            'is_superuser', 'must_change_password', 'two_factor_enabled',
-            'account_count', 'is_employed', 'custom_permissions',
-            'days_since_hire', 'date_joined', 'last_login', 'updated_at','job_title_name','role_name'
+            'id', 'username', 'email', 'first_name', 'last_name','is_active'
         ]
         read_only_fields = [
-            'id', 'date_joined', 'last_login', 'updated_at',
-            'password_changed_at', 'account_count', 'is_employed',
-            'days_since_hire', 'job_title_name'
+            'id', 'username', 'email', 'first_name', 'last_name','is_active'
         ]
-
-    
-    def get_account_count(self, obj):
-        # User now has only one account, return 1 if account exists, 0 otherwise  
-        return 1 if obj.account else 0
-    
-    def get_full_name(self, obj):
-        return obj.get_full_name()
-
-
-
-
-
     
 
 class UserCreateSerializer(serializers.ModelSerializer):

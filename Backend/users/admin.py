@@ -5,6 +5,7 @@ from django.utils.html import format_html
 from django.urls import reverse, path
 from django.utils import timezone
 from django import forms
+from .utils import generate_strong_password
 import secrets
 import string
 from .models import User, UserAccount, JobTitle
@@ -41,12 +42,12 @@ class CustomUserPermissionWidget(forms.widgets.CheckboxSelectMultiple):
 class UserAdminForm(forms.ModelForm):
     """Custom form for User admin with dynamic custom permissions."""
     
-    custom_permissions = forms.ModelMultipleChoiceField(
-        queryset=Permission.objects.filter(is_active=True).order_by('category', 'level', 'name'),
-        widget=forms.CheckboxSelectMultiple,
-        required=False,
-        help_text='Select additional permissions for this user beyond their role permissions.'
-    )
+    # custom_permissions = forms.ModelMultipleChoiceField(
+    #     queryset=Permission.objects.filter(is_active=True).order_by('category', 'level', 'name'),
+    #     widget=forms.CheckboxSelectMultiple,
+    #     required=False,
+    #     help_text='Select additional permissions for this user beyond their role permissions.'
+    # )
     
     class Meta:
         model = User
@@ -56,9 +57,9 @@ class UserAdminForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         # Update queryset to get fresh permissions from database
-        self.fields['custom_permissions'].queryset = Permission.objects.filter(
-            is_active=True
-        ).order_by('category', 'level', 'name')
+        # self.fields['custom_permissions'].queryset = Permission.objects.filter(
+        #     is_active=True
+        # ).order_by('category', 'level', 'name')
         
         # Filter job titles to only active ones
         if 'job_title' in self.fields:
@@ -68,25 +69,25 @@ class UserAdminForm(forms.ModelForm):
             from boarding.models import JourneyTemplate
             self.fields['template'].queryset = JourneyTemplate.objects.filter(is_active=True)
         # Group permissions by category for better UX
-        permissions = self.fields['custom_permissions'].queryset
-        grouped_choices = []
-        current_category = None
+        # permissions = self.fields['custom_permissions'].queryset
+        # grouped_choices = []
+        # current_category = None
         
-        for permission in permissions:
-            if permission.category != current_category:
-                if current_category is not None:
-                    grouped_choices.append('')  # Separator
-                grouped_choices.append(f"--- {permission.category.replace('_', ' ').title()} ---")
-                current_category = permission.category
+        # for permission in permissions:
+        #     if permission.category != current_category:
+        #         if current_category is not None:
+        #             grouped_choices.append('')  # Separator
+        #         grouped_choices.append(f"--- {permission.category.replace('_', ' ').title()} ---")
+        #         current_category = permission.category
             
-            grouped_choices.append((permission.id, f"{permission.name} ({permission.level})"))
+        #     grouped_choices.append((permission.id, f"{permission.name} ({permission.level})"))
         
-        # Update help text with current count
-        permission_count = permissions.count()
-        self.fields['custom_permissions'].help_text = (
-            f'Select additional permissions for this user beyond their role permissions. '
-            f'({permission_count} permissions available, refreshed from database)'
-        )
+        # # Update help text with current count
+        # permission_count = permissions.count()
+        # self.fields['custom_permissions'].help_text = (
+        #     f'Select additional permissions for this user beyond their role permissions. '
+        #     f'({permission_count} permissions available, refreshed from database)'
+        # )
 
 @admin.register(JobTitle)
 class JobTitleAdmin(admin.ModelAdmin):
@@ -191,11 +192,11 @@ class CustomUserCreationForm(forms.ModelForm):
         self.fields['username'].help_text = 'Username for login. A strong password will be auto-generated.'
 
 
-def generate_strong_password(length=12):
-    """Generate a strong password with uppercase, lowercase, digits, and special characters."""
-    characters = string.ascii_lowercase + string.ascii_uppercase + string.digits + "!@#$%^&*"
-    password = ''.join(secrets.choice(characters) for _ in range(length))
-    return password
+# def generate_strong_password(length=12):
+#     """Generate a strong password with uppercase, lowercase, digits, and special characters."""
+#     characters = string.ascii_lowercase + string.ascii_uppercase + string.digits + "!@#$%^&*"
+#     password = ''.join(secrets.choice(characters) for _ in range(length))
+#     return password
 
 
 class UserAccountInline(admin.TabularInline):
@@ -224,6 +225,19 @@ class UserAdmin(BaseUserAdmin):
     add_form = CustomUserCreationForm
     
     # Display fields
+    # list_display = [
+    #     'username', 
+    #     'email', 
+    #     'get_full_name', 
+    #     'employment_status',
+    #     'is_active', 
+    #     'is_staff',
+    #     'account_count',
+    #     'custom_permissions_count',
+    #     'last_login', 
+    #     'date_joined'
+    # ]
+
     list_display = [
         'username', 
         'email', 
@@ -232,10 +246,10 @@ class UserAdmin(BaseUserAdmin):
         'is_active', 
         'is_staff',
         'account_count',
-        'custom_permissions_count',
         'last_login', 
         'date_joined'
     ]
+    
     
     list_filter = [
         'employment_status',
@@ -268,9 +282,64 @@ class UserAdmin(BaseUserAdmin):
     ]
     
     # Organize fields in sections
+    # fieldsets = (
+    #     ('Authentication', {
+    #         'fields': (
+    #             'username', 
+    #             'password',
+    #             'must_change_password',
+    #             'password_changed_at'
+    #         )
+    #     }),
+    #     ('Personal Information', {
+    #         'fields': (
+    #             'first_name', 
+    #             'last_name', 
+    #             'email'
+    #         )
+    #     }),
+    #     ('Employment Information', {
+    #         'fields': (
+    #             'job_title',
+    #             'department',
+    #             'termination_date',
+    #             'employment_status',
+    #             'account',
+    #             'role',
+    #             'template',  # New field for journey template
+    #         )
+    #     }),
+    #     ('Permissions & Access', {
+    #         'fields': (
+    #             'is_active',
+    #             'is_staff', 
+    #             'is_superuser',
+    #             'groups', 
+    #             'custom_permissions'
+    #         )
+    #     }),
+    #     ('Security', {
+    #         'fields': (
+    #             'two_factor_enabled',
+    #         ),
+    #         'classes': ('collapse',)
+    #     }),
+    #     ('Metadata', {
+    #         'fields': (
+    #             'id',
+    #             'account_count',
+    #             'created_by',
+    #             'date_joined',
+    #             'last_login', 
+    #             'updated_at'
+    #         ),
+    #         'classes': ('collapse',)
+    #     }),
+    # )
+    
     fieldsets = (
-        ('Authentication', {
-            'fields': (
+            ('Authentication', {
+                'fields': (
                 'username', 
                 'password',
                 'must_change_password',
@@ -300,8 +369,8 @@ class UserAdmin(BaseUserAdmin):
                 'is_active',
                 'is_staff', 
                 'is_superuser',
-                'groups', 
-                'custom_permissions'
+                'groups'
+               
             )
         }),
         ('Security', {
@@ -323,6 +392,7 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
     
+
     # Fields for creating new user - No password fields (auto-generated)
     add_fieldsets = (
         ('Required Information', {
@@ -355,7 +425,7 @@ class UserAdmin(BaseUserAdmin):
     
     ordering = ['last_name', 'first_name', 'username']
     
-    actions = ['generate_auth_tokens', 'deactivate_users', 'activate_users', 'test_user_passwords', 'reset_passwords_admin_action']
+    actions = ['generate_auth_tokens', 'deactivate_users', 'activate_users', 'reset_passwords_admin_action']
     
     def generate_auth_tokens(self, request, queryset):
         """Admin action to generate auth tokens for selected users."""
@@ -390,28 +460,6 @@ class UserAdmin(BaseUserAdmin):
     
     activate_users.short_description = "Activate selected users"
     
-    # def test_user_passwords(self, request, queryset):
-    #     """Admin action to test password verification for debugging."""
-    #     from django.contrib import messages
-        
-    #     for user in queryset:
-    #         print(f"\n🔍 PASSWORD DEBUG for {user.username}:")
-    #         print(f"Database Hash: {user.password}")
-    #         print(f"Must Change Password: {user.must_change_password}")
-    #         print(f"Password Changed At: {user.password_changed_at}")
-    #         print(f"Is Active: {user.is_active}")
-            
-    #         # Test with a common password to demonstrate
-    #         test_password = "admin123"
-    #         if user.check_password(test_password):
-    #             print(f"✅ User {user.username} password is: {test_password}")
-    #         else:
-    #             print(f"❌ User {user.username} password is NOT: {test_password}")
-    #             print("💡 Use the original generated password from terminal output")
-        
-    #     self.message_user(request, f"Password debug info printed to terminal for {queryset.count()} users.")
-    
-    # test_user_passwords.short_description = "🔍 Debug password info for selected users"
     
     def reset_passwords_admin_action(self, request, queryset):
         """Admin action to reset passwords for selected users."""
@@ -462,15 +510,15 @@ class UserAdmin(BaseUserAdmin):
         )
     account_count.short_description = 'Has Account'
     
-    def custom_permissions_count(self, obj):
-        """Display count of custom permissions assigned to this user."""
-        count = obj.custom_permissions.filter(is_active=True).count()
-        return format_html(
-            '<span style="color: {};">{}</span>',
-            'green' if count > 0 else 'gray',
-            count
-        )
-    custom_permissions_count.short_description = 'Custom Permissions'
+    # def custom_permissions_count(self, obj):
+    #     """Display count of custom permissions assigned to this user."""
+    #     count = obj.custom_permissions.filter(is_active=True).count()
+    #     return format_html(
+    #         '<span style="color: {};">{}</span>',
+    #         'green' if count > 0 else 'gray',
+    #         count
+    #     )
+    # custom_permissions_count.short_description = 'Custom Permissions'
     
     def reset_password_button(self, obj):
         """Add reset password button for existing users."""

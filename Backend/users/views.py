@@ -29,53 +29,73 @@ class CustomLoginView(LoginView):
     Forces users to go through password reset flow if must_change_password is True.
     """
     
-    def post(self, request, *args, **kwargs):
-        # Get credentials from request
-        username = request.data.get('username')
-        password = request.data.get('password')
-        is_email=True
-        if username and password:
-            is_email = True
-            try:
-                validate_email(username)
-            except ValidationError:
-                is_email = False
-            try:
-                if is_email==True:
-                    user = User.objects.get(email=username)
-                    print("-0---------------")
-                    print("Got an email")
+    # def post(self, request, *args, **kwargs):
+    #     # Get credentials from request
+    #     username = request.data.get('username')
+    #     password = request.data.get('password')
+    #     is_email=True
+    #     if username and password:
+    #         is_email = True
+    #         try:
+    #             validate_email(username)
+    #         except ValidationError:
+    #             is_email = False
+    #         try:
+    #             if is_email==True:
+    #                 user = User.objects.get(email=username)
+    #                 print("-0---------------")
+    #                 print("Got an email")
                     
-                    # Check if user exists and password is correct
-                    if user.check_password(password) and user.is_active:
-                        # If user must change password, prevent login and redirect to reset flow
-                        if user.must_change_password:
-                            return Response({
-                                "error": "You must change your password before logging in.",
-                                "must_reset_password": True,
-                                "redirect_url": "/set-password"
-                            }, status=status.HTTP_403_FORBIDDEN)
+    #                 # Check if user exists and password is correct
+    #                 if user.check_password(password) and user.is_active:
+    #                     # If user must change password, prevent login and redirect to reset flow
+    #                     if user.must_change_password:
+    #                         return Response({
+    #                             "error": "You must change your password before logging in.",
+    #                             "must_reset_password": True,
+    #                             "redirect_url": "/set-password"
+    #                         }, status=status.HTTP_403_FORBIDDEN)
                         
-                elif is_email==False:
-                    user = User.objects.get(username=username)
-                    # Check if user exists and password is correct
-                    if user.check_password(password) and user.is_active:
-                        # If user must change password, prevent login and redirect to reset flow
-                        if user.must_change_password:
-                            return Response({
-                                "error": "You must change your password before logging in.",
-                                "must_reset_password": True,
-                                "redirect_url": "/set-password"
-                            }, status=status.HTTP_403_FORBIDDEN)
-            except User.DoesNotExist:
-                pass  # Let default authentication handle the error   
+    #             elif is_email==False:
+    #                 user = User.objects.get(username=username)
+    #                 # Check if user exists and password is correct
+    #                 if user.check_password(password) and user.is_active:
+    #                     # If user must change password, prevent login and redirect to reset flow
+    #                     if user.must_change_password:
+    #                         return Response({
+    #                             "error": "You must change your password before logging in.",
+    #                             "must_reset_password": True,
+    #                             "redirect_url": "/set-password"
+    #                         }, status=status.HTTP_403_FORBIDDEN)
+    #         except User.DoesNotExist:
+    #             pass  # Let default authentication handle the error   
         
        
         
-        # If no must_change_password issue, proceed with normal login
+    #     # If no must_change_password issue, proceed with normal login
+    #     return super().post(request, *args, **kwargs)
+
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        if username and password:
+            try:
+                validate_email(username)
+                user = User.objects.get(email=username)
+            except ValidationError:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                user = None
+
+            if user and user.check_password(password) and user.is_active:
+                if user.must_change_password:
+                    return Response({
+                        "error": "You must change your password before logging in.",
+                        "must_reset_password": True,
+                        "redirect_url": "/set-password"
+                    }, status=status.HTTP_403_FORBIDDEN)
         return super().post(request, *args, **kwargs)
-
-
 
 class UserViewSet(viewsets.ModelViewSet):
     """
