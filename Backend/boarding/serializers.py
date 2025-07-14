@@ -32,7 +32,8 @@ class JourneyTemplateSerializer(serializers.ModelSerializer):
     steps = JourneyStepSerializer(many=True, read_only=True)
     step_count = serializers.ReadOnlyField()
     # job_title_name = serializers.CharField(source='job_title.title', read_only=True)
-    
+    user_count = serializers.SerializerMethodField()  # <-- FIXED
+
     class Meta:
         model = JourneyTemplate
         fields = [
