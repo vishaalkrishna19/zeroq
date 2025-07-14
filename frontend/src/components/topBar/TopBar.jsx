@@ -31,55 +31,48 @@ export function TopBar() {
     useEffect(() => {
       const authToken = localStorage.getItem('authToken');
       if (!authToken) return;
-  
-      // Try to get userId from localStorage, else fetch from /api/auth/user/
-      let userId = localStorage.getItem('userId');
-      console.log("User ID from localStorage:", userId);
-      const fetchUser = (id) => {
-        fetch(`http://localhost:8000/api/users/${id}/`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Token ${authToken}`,
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
+
+      // Always fetch current user data from /api/auth/user/ first to ensure we have the correct user
+      fetch('http://localhost:8000/api/auth/user/', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Token ${authToken}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      })
+        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(data => {
+          if (data.pk) {
+            console.log('Current user ID from auth/user:', data);
+            // Update localStorage with current user ID
+            localStorage.setItem('userId', data.pk);
+            
+            // Fetch detailed user data
+            fetch(`http://localhost:8000/api/users/${data.pk}/`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Token ${authToken}`,
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+            })
+              .then(res => res.ok ? res.json() : Promise.reject())
+              .then(userData => {
+                console.log('User data:', userData);
+                setRole(userData.role_name || '');
+                setFirstName(userData.first_name || '');
+              })
+              .catch(() => {});
+          }
         })
-          .then(res => res.ok ? res.json() : Promise.reject())
-          .then(data => {
-            console.log('Fetched user data:', data);
-            setRole(data.role_name || '');
-            setFirstName(data.first_name || '');
-          })
-          .catch(() => {});
-      };
-  
-      if (userId) {
-        fetchUser(userId);
-      } else {
-        fetch('http://localhost:8000/api/auth/user/', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Token ${authToken}`,
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        })
-          .then(res => res.ok ? res.json() : Promise.reject())
-          .then(data => {
-            if (data.id) {
-              localStorage.setItem('userId', data.id);
-              fetchUser(data.id);
-            }
-          })
-          .catch(() => {});
-      }
+        .catch(() => {});
     }, []);
 
     console.log('User role:', role); 
 
   const handleSignOut = async () => {
     try {
-
       await fetch('http://localhost:8000/api/auth/logout/', {
         method: 'POST',
         headers: {
@@ -89,16 +82,20 @@ export function TopBar() {
         credentials: 'include',
       });
       
+      // Clear all stored user data
       localStorage.removeItem('authToken');
       localStorage.removeItem('username');
+      localStorage.removeItem('userId'); // Add this line
       
       navigate('/login');
       
     } catch (error) {
       console.error('Logout error:', error);
 
+      // Clear all stored user data
       localStorage.removeItem('authToken');
       localStorage.removeItem('username');
+      localStorage.removeItem('userId'); // Add this line
       navigate('/login');
     }
   };
@@ -146,7 +143,7 @@ export function TopBar() {
               </Avatar>
             </Menu.Target>
             <Menu.Dropdown className={styles.menuDropdown}>
-            {role.toLowerCase() === 'admin' && (
+            {(role.toLowerCase() === 'administrator' || role.toLowerCase() === 'admin') && (
               <Menu.Item 
                 className={styles.menuItem}
                 leftSection={<IconDashboard size={16} />}

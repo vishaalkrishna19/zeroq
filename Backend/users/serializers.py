@@ -92,7 +92,7 @@ class UserListSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-             'termination_date', 'job_title', 'department',
+              'termination_date', 'job_title', 'department',
             'employment_status', 'is_active', 'is_staff',
             'is_superuser', 'must_change_password', 'two_factor_enabled',
             'account_count', 'is_employed', 'custom_permissions',

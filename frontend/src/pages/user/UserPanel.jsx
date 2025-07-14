@@ -11,46 +11,41 @@ function UserPanel() {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) return;
 
-    // Try to get userId from localStorage, else fetch from /api/auth/user/
-    let userId = localStorage.getItem('userId');
-    const fetchUser = (id) => {
-      fetch(`http://localhost:8000/api/users/${id}/`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Token ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+    // Always fetch current user data from /api/auth/user/ first to ensure we have the correct user
+    fetch('http://localhost:8000/api/auth/user/', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Token ${authToken}`,
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+      .then(res => res.ok ? res.json() : Promise.reject())
+      .then(data => {
+        if (data.pk) {
+          console.log('Current user ID from auth/user:', data);
+          // Update localStorage with current user ID
+          localStorage.setItem('userId', data.pk);
+          
+          // Fetch detailed user data
+          fetch(`http://localhost:8000/api/users/${data.pk}/`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Token ${authToken}`,
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          })
+            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(userData => {
+              console.log('User data:', userData);
+              setFirstName(userData.first_name || '');
+              setLastName(userData.last_name || '');
+            })
+            .catch(() => {});
+        }
       })
-        .then(res => res.ok ? res.json() : Promise.reject())
-        .then(data => {
-          setFirstName(data.first_name || '');
-          setLastName(data.last_name || '');
-        })
-        .catch(() => {});
-    };
-
-    if (userId) {
-      fetchUser(userId);
-    } else {
-      fetch('http://localhost:8000/api/auth/user/', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Token ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      })
-        .then(res => res.ok ? res.json() : Promise.reject())
-        .then(data => {
-          if (data) {
-            console.log('Fetched user data:', data);
-            localStorage.setItem('userId', data.pk);
-            fetchUser(data.pk);
-          }
-        })
-        .catch(() => {});
-    }
+      .catch(() => {});
   }, []);
 
   return (
