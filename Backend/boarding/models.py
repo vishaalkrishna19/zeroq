@@ -107,7 +107,8 @@ class JourneyTemplate(models.Model):
     # def __str__(self):
     #     job_title_str = f" - {self.job_title.title}" if self.job_title else ""
     #     return f"{self.get_journey_type_display()}: {self.title}{job_title_str}"
-    
+    def __str__(self):
+        return self.title  # or any field you want to show in the dropdown
     # def clean(self):
     #     # Auto-fill department from job title if available
     #     if self.job_title and not self.department:

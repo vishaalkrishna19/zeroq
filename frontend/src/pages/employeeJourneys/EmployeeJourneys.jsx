@@ -26,11 +26,15 @@ function GradientSparkleIcon() {
 
 
 
-const EmployeeJourneys = () => {
+const EmployeeJourneys = ({ sidebarCollapsed }) => {
   const [carouselRef, setCarouselRef] = useState(null);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(true);
-  const [selectedJourney, setSelectedJourney] = useState('On-boarding');
+  
+  // Initialize selectedJourney from localStorage or default to 'On-boarding'
+  const [selectedJourney, setSelectedJourney] = useState(() => {
+    return localStorage.getItem('selectedJourney') || 'On-boarding';
+  });
 
   const handlePrev = () => {
     if (carouselRef) carouselRef.slidePrev();
@@ -47,6 +51,7 @@ const EmployeeJourneys = () => {
 
   const handleChipChange = (chip) => {
     setSelectedJourney(chip);
+    localStorage.setItem('selectedJourney', chip);
   };
 
   const renderTemplate = () => {
@@ -79,9 +84,11 @@ const EmployeeJourneys = () => {
           <Box className={styles.carouselHeader}>
             <Group gap="sm">
               <GradientSparkleIcon />
-              <Text className={styles.carouselTitle}>
+              {selectedJourney === 'On-boarding' ? <Text className={styles.carouselTitle}>
                 AI-powered assistants to enhance the onboarding experience.
-              </Text>
+              </Text> : <Text className={styles.carouselTitle}>
+                AI-powered assistants to enhance the off-boarding experience.
+              </Text> } 
             </Group>
             
             <Group gap="xs">
@@ -109,13 +116,14 @@ const EmployeeJourneys = () => {
           <AgentCarousel 
             onSwiperInit={setCarouselRef}
             onSlideChange={handleSlideChange}
+            journeyType={selectedJourney}
           />
         </Box>
         
         {renderTemplate()}
 
-        {selectedJourney === 'On-boarding' && <StatsContainer />}
-        {selectedJourney === 'Off-boarding' && <OffBoardingStatsContainer />}
+        {selectedJourney === 'On-boarding' && <StatsContainer sidebarCollapsed={sidebarCollapsed} />}
+        {selectedJourney === 'Off-boarding' && <OffBoardingStatsContainer sidebarCollapsed={sidebarCollapsed} />}
       </Box>
     </>
   );

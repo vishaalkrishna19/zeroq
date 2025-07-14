@@ -3,7 +3,10 @@ import { Box, Text, Group } from '@mantine/core';
 import styles from './EmployeeHeader.module.css';
 
 const EmployeeHeader = ({ onChipChange }) => {
-  const [activeChip, setActiveChip] = useState('On-boarding');
+  // Initialize activeChip from localStorage or default to 'On-boarding'
+  const [activeChip, setActiveChip] = useState(() => {
+    return localStorage.getItem('selectedJourney') || 'On-boarding';
+  });
 
   const chips = ['On-boarding', 'Health Check', 'Internal Mobility', 'Off-boarding'];
 

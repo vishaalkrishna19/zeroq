@@ -6,9 +6,9 @@ import styles from './statsContainer.module.css';
 import AverageTimeChart from './AverageTimeChart';
 import OverdueChart from './OverdueChart';
 
-export default function StatsContainer() {
+export default function StatsContainer({ sidebarCollapsed }) {
   return (
-    <Box className={styles.container}>
+    <Box className={styles.container} mt={24}>
       <Title order={2} className={styles.title}>
         Onboarding Analytics & Insights
       </Title>
@@ -19,20 +19,21 @@ export default function StatsContainer() {
       
       <Grid className={styles.chartsGrid}>
         <Grid.Col span={5} className={styles.chartColumn}>
-          <DepartmentChart />
+          <DepartmentChart sidebarCollapsed={sidebarCollapsed} />
         </Grid.Col>
         <Grid.Col span={7} className={styles.chartColumn}>
-          <JourneyFunnel />
+          <JourneyFunnel sidebarCollapsed={sidebarCollapsed} />
         </Grid.Col>
       </Grid>
       <Grid className={styles.chartsGrid}>
         <Grid.Col span={6} className={styles.chartColumn}>
-          <AverageTimeChart />
+          <AverageTimeChart sidebarCollapsed={sidebarCollapsed} />
         </Grid.Col>
         <Grid.Col span={6} className={styles.chartColumn}>
-          <OverdueChart />
+          <OverdueChart sidebarCollapsed={sidebarCollapsed} />
         </Grid.Col>
       </Grid>
+      <Space h="md" /> 
     </Box>
   );
 }

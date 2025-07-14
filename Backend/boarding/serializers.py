@@ -32,31 +32,42 @@ class JourneyTemplateSerializer(serializers.ModelSerializer):
     steps = JourneyStepSerializer(many=True, read_only=True)
     step_count = serializers.ReadOnlyField()
     # job_title_name = serializers.CharField(source='job_title.title', read_only=True)
-    
+    user_count = serializers.SerializerMethodField()  # <-- FIXED
+
     class Meta:
         model = JourneyTemplate
         fields = [
             'id', 'journey_type', 'title', 'description', 
             'department', 'business_unit', 'estimated_duration_days', 'account',
-            'is_active', 'is_default', 'step_count', 'steps',
+            'is_active', 'is_default', 'step_count', 'steps','user_count',
+            
             'created_at', 'updated_at', 'created_by'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+    def get_step_count(self, obj):
+        return obj.steps.count()
 
+    def get_user_count(self, obj):
+        # Assumes User model has a ForeignKey to JourneyTemplate as 'template'
+        return obj.assigned_users.count()
+
+    
 
 class JourneyTemplateListSerializer(serializers.ModelSerializer):
     step_count = serializers.ReadOnlyField()
     account_name = serializers.CharField(source='account.account_name', read_only=True)
-    # job_title_name = serializers.CharField(source='job_title.title', read_only=True)
+    user_count = serializers.SerializerMethodField()  # <-- FIXED
     
     class Meta:
         model = JourneyTemplate
         fields = [
             'id', 'journey_type', 'title',  'department', 'business_unit',
             'estimated_duration_days', 'account_name', 'is_active',
-            'is_default', 'step_count', 'created_at'
+            'is_default', 'step_count', 'created_at', 'user_count'
         ]
-
+    def get_user_count(self, obj):
+        # Assumes User model has a ForeignKey to JourneyTemplate as 'template'
+        return obj.assigned_users.count()
 
 class JourneyTemplateCreateSerializer(serializers.ModelSerializer):
     steps_data = JourneyStepCreateSerializer(many=True, write_only=True, required=False)

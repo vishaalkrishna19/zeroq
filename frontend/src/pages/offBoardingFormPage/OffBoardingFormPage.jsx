@@ -14,12 +14,12 @@ import {
   Title,
 } from '@mantine/core';
 import { IconTrash, IconPlus } from '@tabler/icons-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
-import { TopBar } from '../../../components/topbar/Topbar';
-import UpdateFormHeader from '../../../components/onBoarding/updateFormHeader/UpdateFormHeader';
-import ApiService from '../../../utils/api';
-import styles from '../OnBoardingFormPage.module.css';
+import { TopBar } from '../../components/topbar/Topbar';
+import OffBoardingFormHeader from '../../components/offBoarding/offBoardingFormHeader/OffBoardingFormHeader';
+import ApiService from '../../utils/api';
+import styles from './OffBoardingFormPage.module.css';
 
 const departmentOptions = [
   { value: 'engineering', label: 'Engineering' },
@@ -37,114 +37,62 @@ const businessUnitOptions = [
 
 const stepTypeOptions = [
   { value: 'documentation', label: 'Documentation' },
-  { value: 'orientation', label: 'Orientation' },
-  { value: 'integration', label: 'Integration' },
+  { value: 'handover', label: 'Handover' },
+  { value: 'access_revocation', label: 'Access Revocation' },
 ];
 
 const responsiblePartyOptionsDefault = [
   { value: 'manager', label: 'Manager' },
   { value: 'it_team', label: 'IT Team' },
   { value: 'hr_team', label: 'HR Team' },
-  { value: 'engineering', label: 'Engineering' }
 ];
 
-const UpdateFormPage = () => {
+const OffBoardingFormPage = () => {
   const navigate = useNavigate();
-  const { templateId } = useParams();
   const stepRefs = useRef({});
   const [formData, setFormData] = useState({
     journeyTitle: '',
     department: '',
     businessUnit: '',
-    estimatedDuration: 30,
+    estimatedDuration:0,
     journeyDescription: '',
   });
 
-  const [steps, setSteps] = useState([]);
+  const [steps, setSteps] = useState([
+    {
+      id: 1,
+      stepTitle: '',
+      stepDescription: '',
+      stepType: '',
+      responsibleParty: '',
+      dueDays: 1,
+    },
+  ]);
+
   const [loading, setLoading] = useState(false);
-  const [fetchLoading, setFetchLoading] = useState(true);
   const [error, setError] = useState('');
   const [account, setAccount] = useState(null);
   const [userOptions, setUserOptions] = useState([]);
 
   useEffect(() => {
-    const fetchInitialData = async () => {
+    const fetchAccount = async () => {
       try {
         const accountData = await ApiService.getAccounts();
         console.log('Fetched account data:', accountData);
         setAccount(accountData);
-        
-        if (templateId) {
-          await fetchTemplateData();
-        }
       } catch (error) {
-        console.error('Failed to fetch initial data:', error);
+        console.error('Failed to fetch account data:', error);
         setError('Failed to load account data');
       }
     };
     
-    fetchInitialData();
-  }, [templateId]);
+    fetchAccount();
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  useEffect(() => {
-    fetchUsers();
-  }, [templateId]);
-
-  const fetchTemplateData = async () => {
-    try {
-      setFetchLoading(true);
-      
-      console.log('Fetching template with ID:', templateId);
-      
-      const template = await ApiService.getJourneyTemplate(templateId);
-      console.log('Fetched template:', template);
-      
-      if (!template || !template.id) {
-        throw new Error('Invalid template data received');
-      }
-      
-      setFormData({
-        journeyTitle: template.title || '',
-        department: template.department || '',
-        businessUnit: template.business_unit || '', // <-- use template.business_unit
-        estimatedDuration: template.estimated_duration_days || 30,
-        journeyDescription: template.description || '',
-      });
-
-      // Pre-fill steps data
-      if (template.steps && Array.isArray(template.steps) && template.steps.length > 0) {
-        const mappedSteps = template.steps.map((step, index) => ({
-          id: step.id || Date.now() + index,
-          stepTitle: step.title || '',
-          stepDescription: step.description || '',
-          stepType: mapBackendToStepType(step.step_type),
-          responsibleParty: mapRoleToResponsibleParty(step.responsible_role),
-          dueDays: step.due_days_from_start || 1,
-        }));
-        setSteps(mappedSteps);
-      } else {
-        // Default single step if no steps exist
-        setSteps([{
-          id: 1,
-          stepTitle: '',
-          stepDescription: '',
-          stepType: '',
-          responsibleParty: '',
-          dueDays: 1,
-        }]);
-      }
-      
-    } catch (error) {
-      console.error('Failed to fetch template data:', error);
-      setError(`Failed to load template data: ${error.message}`);
-    } finally {
-      setFetchLoading(false);
-    }
-  };
 
   const fetchUsers = async () => {
     try {
@@ -168,29 +116,6 @@ const UpdateFormPage = () => {
     } catch (err) {
       // fallback: do nothing, keep default options
     }
-  };
-
-  const mapBackendToStepType = (backendType) => {
-    const mapping = {
-      'documentation': 'documentation',
-      'orientation': 'orientation',
-      'training': 'integration',
-      'other': 'documentation'
-    };
-    return mapping[backendType] || 'documentation';
-  };
-
-  const mapRoleToResponsibleParty = (role) => {
-    // If the role matches a username, return the username directly
-    if (userOptions.some(u => u.value === role)) {
-      return role;
-    }
-    const mapping = {
-      'Manager': 'manager',
-      'IT Administrator': 'it_team',
-      'HR Manager': 'hr_team'
-    };
-    return mapping[role] || role;
   };
 
   const handleAddStep = () => {
@@ -241,8 +166,8 @@ const UpdateFormPage = () => {
   const mapStepTypeToBackend = (frontendType) => {
     const mapping = {
       'documentation': 'documentation',
-      'orientation': 'orientation', 
-      'integration': 'training'
+      'handover': 'handover',
+      'access_revocation': 'access_revocation'
     };
     return mapping[frontendType] || 'other';
   };
@@ -256,12 +181,11 @@ const UpdateFormPage = () => {
     return mapping[party] || party;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (isDraft = false) => {
     setLoading(true);
     setError('');
     
     try {
-      // Validate required fields
       if (!formData.journeyTitle.trim()) {
         throw new Error('Journey title is required');
       }
@@ -279,15 +203,16 @@ const UpdateFormPage = () => {
         accountId = account[0].id;
       }
 
-      // Map form data to API format
       const apiData = {
         title: formData.journeyTitle,
         description: formData.journeyDescription,
         department: formData.department,
         business_unit: formData.businessUnit,
         estimated_duration_days: formData.estimatedDuration,
-        journey_type: 'onboarding',
+        journey_type: 'offboarding',
         account: accountId,
+        is_active: !isDraft, // <-- set false if draft
+        is_default: false,
         steps_data: steps.filter(step => step.stepTitle.trim()).map((step, index) => ({
           title: step.stepTitle,
           description: step.stepDescription,
@@ -304,40 +229,57 @@ const UpdateFormPage = () => {
         }))
       };
 
-      console.log('Updating template data:', apiData);
+      console.log('Creating offboarding template:', apiData);
 
-      const updatedTemplate = await ApiService.updateJourneyTemplate(templateId, apiData);
-      console.log('Template updated successfully:', updatedTemplate);
+      try {
+        const newTemplate = await ApiService.createJourneyTemplate(apiData);
+        console.log('Offboarding template created successfully:', newTemplate);
     
-    toast.success('Onboarding journey updated successfully!', {
-      duration: 3000,
-      position: 'top-center',
-      style: {
-        background: 'white',
-        color: '#111',
-        fontWeight: '400',
-        padding: '16px 25px',
-        borderRadius: '8px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        width: '420px', 
-        maxWidth: '90vw',
-      },
-    });
+        toast.success(isDraft ? 'Draft saved successfully!' : 'Offboarding journey created successfully!', {
+          duration: 3000,
+          position: 'top-center',
+          style: isDraft
+            ? {
+                background: '#facc15',
+                color: '#111',
+                fontWeight: '500',
+                padding: '16px 25px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                width: '420px',
+                maxWidth: '90vw',
+              }
+            : {
+                background: 'white',
+                color: '#111',
+                fontWeight: '400',
+                padding: '16px 25px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                width: '420px',
+                maxWidth: '90vw',
+              },
+        });
 
-      // Navigate back to templates page after a short delay
-      setTimeout(() => {
-        navigate('/dashboard/employee-journeys');
-      }, 1000);
+        setTimeout(() => {
+          navigate('/dashboard/employee-journeys');
+        }, 1000);
         
-    } catch (error) {
-      console.error('Failed to update template:', error);
-      if (error.message.includes('403')) {
-        setError('Permission denied. Please check your authentication.');
-      } else if (error.message.includes('400')) {
-        setError('Invalid data submitted. Please check your form fields.');
-      } else {
-        setError(error.message || 'Failed to update template. Please try again.');
+      } catch (apiError) {
+        console.error('API submission failed:', apiError);
+        if (apiError.message.includes('403')) {
+          setError('Permission denied. Please check your authentication.');
+        } else if (apiError.message.includes('400')) {
+          setError('Invalid data submitted. Please check your form fields.');
+        } else {
+          setError(`Failed to create template: ${apiError.message}`);
+        }
+        return;
       }
+
+    } catch (error) {
+      console.error('Failed to create template:', error);
+      setError(error.message || 'Failed to create template. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -347,23 +289,12 @@ const UpdateFormPage = () => {
     navigate('/dashboard/employee-journeys');
   };
 
-  if (fetchLoading) {
-    return (
-      <>
-        <TopBar />
-        <Box className={styles.container}>
-          <Text>Loading template data...</Text>
-        </Box>
-      </>
-    );
-  }
-
   return (
     <>
       <Toaster />
       <TopBar />
       <Box className={styles.formHeader}>
-        <UpdateFormHeader />
+        <OffBoardingFormHeader />
       </Box>
       <Box className={styles.container}>
         {error && (
@@ -372,22 +303,20 @@ const UpdateFormPage = () => {
           </Box>
         )}
 
-        {/* Main Content */}
         <Box className={styles.mainContent}>
-          {/* Left Side - Journey Details */}
           <Box className={styles.leftSection}>
             <Box className={styles.sectionCard}>
               <Title order={3} className={styles.sectionTitle}>
                 Journey Details
               </Title>
               <Text className={styles.sectionSubtitle}>
-                Update the core details for this onboarding journey.
+                Define the core details for this offboarding journey.
               </Text>
 
               <Stack gap="lg" mt="xl">
                 <TextInput
                   label="Journey Title"
-                  placeholder="e.g., Software Engineer Onboarding"
+                  placeholder="e.g., Software Engineer Offboarding"
                   value={formData.journeyTitle}
                   onChange={(event) => setFormData({ ...formData, journeyTitle: event.target.value })}
                   className={styles.input}
@@ -415,11 +344,11 @@ const UpdateFormPage = () => {
                   />
                   <NumberInput
                     label="Estimated Duration (days)"
-                    placeholder="e.g., 30"
+                    placeholder="e.g., 15"
                     value={formData.estimatedDuration}
                     onChange={(value) => setFormData({ ...formData, estimatedDuration: value })}
                     min={1}
-                    max={365}
+                    max={180}
                     className={styles.numberInput}
                     size="sm"
                   />
@@ -427,7 +356,7 @@ const UpdateFormPage = () => {
 
                 <Textarea
                   label="Journey Description"
-                  placeholder="Brief description of the onboarding process..."
+                  placeholder="Brief description of the offboarding process..."
                   value={formData.journeyDescription}
                   onChange={(event) => setFormData({ ...formData, journeyDescription: event.target.value })}
                   rows={4}
@@ -438,16 +367,15 @@ const UpdateFormPage = () => {
             </Box>
           </Box>
 
-          {/* Right Side - Onboarding Steps */}
           <Box className={styles.rightSection}>
             <Box className={styles.sectionCard}>
               <Group justify="space-between" align="center" mb="md">
                 <Box>
                   <Title order={3} className={styles.sectionTitle}>
-                    Onboarding Steps
+                    Offboarding Steps
                   </Title>
                   <Text className={styles.sectionSubtitle}>
-                    Update the steps for this journey.
+                    Define the steps for this journey.
                   </Text>
                 </Box>
                 <Button
@@ -486,7 +414,7 @@ const UpdateFormPage = () => {
                       <Stack gap="md">
                         <TextInput
                           label="Step Title"
-                          placeholder="e.g., Complete HR Orientation"
+                          placeholder="e.g., Return Company Equipment"
                           value={step.stepTitle}
                           onChange={(event) => handleStepChange(step.id, 'stepTitle', event.target.value)}
                           size="sm"
@@ -524,7 +452,7 @@ const UpdateFormPage = () => {
                             value={step.dueDays}
                             onChange={(value) => handleStepChange(step.id, 'dueDays', value)}
                             min={1}
-                            max={365}
+                            max={180}
                             size="sm"
                           />
                         </Group>
@@ -537,7 +465,6 @@ const UpdateFormPage = () => {
           </Box>
         </Box>
 
-        {/* Footer */}
         <Box className={styles.footer}>
           <Group justify="flex-end">
             <Button
@@ -549,13 +476,29 @@ const UpdateFormPage = () => {
             >
               Cancel
             </Button>
+            {/* Save Draft Button */}
             <Button
-              onClick={handleSubmit}
+              variant="outline"
+              style={{
+                borderColor: '#facc15',
+                color: '#b45309',
+                background: '#fefce8',
+                fontWeight: 500,
+                marginRight: 8,
+              }}
+              onClick={() => handleSubmit(true)}
+              size="sm"
+              disabled={loading}
+            >
+              Save Draft
+            </Button>
+            <Button
+              onClick={() => handleSubmit(false)}
               className={styles.createButton}
               size="sm"
               loading={loading}
             >
-              Update Journey
+              Create Journey
             </Button>
           </Group>
         </Box>
@@ -564,4 +507,4 @@ const UpdateFormPage = () => {
   );
 };
 
-export default UpdateFormPage;
+export default OffBoardingFormPage;

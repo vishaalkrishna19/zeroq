@@ -22,12 +22,16 @@ import {
   IconArrowUp,
   IconArrowDown,
   IconCornerDownLeft,
+  IconHome,
 } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import styles from './SearchModal.module.css';
 
 export function SearchModal({ opened, onClose }) {
   const [searchValue, setSearchValue] = useState('');
+  const navigate = useNavigate();
 
+  const homeItem = { label: 'Home', icon: IconHome };
   const hrItems = [
     { label: 'Employee Journeys', icon: IconRoad },
     { label: 'Manager Hub', icon: IconUserCheck },
@@ -35,6 +39,20 @@ export function SearchModal({ opened, onClose }) {
     { label: 'Employee Center Pro', icon: IconUsers },
     { label: 'HR Case & Knowledge', icon: IconQuestionMark },
   ];
+
+  // Filter items based on searchValue (case-insensitive)
+  const filteredHome = homeItem.label.toLowerCase().includes(searchValue.toLowerCase())
+    ? [homeItem]
+    : [];
+  const filteredHrItems = hrItems.filter(item =>
+    item.label.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
+  // Adjust modal height based on results
+  const resultCount = filteredHome.length + filteredHrItems.length;
+  const modalHeight = resultCount === 0
+    ? 220
+    : Math.min(120 + resultCount * 56, 600); // 56px per item, min 120px, max 600px
 
   return (
     <Modal
@@ -46,8 +64,12 @@ export function SearchModal({ opened, onClose }) {
       padding={0}
       radius="0.625rem"
       overlayProps={{
-        opacity: 0.3,
-        blur: 3,
+        opacity: 0,
+        blur: 0,
+      }}
+      styles={{
+        body: { padding: 0 },
+        content: { minHeight: modalHeight, maxHeight: 600, transition: 'min-height 0.2s' }
       }}
     >
       <Box className={styles.searchModal}>
@@ -65,30 +87,69 @@ export function SearchModal({ opened, onClose }) {
 
         <Box className={styles.searchResults}>
           <Stack gap="xs">
-            <Box>
-              <Text size="sm" fw={600} c="dimmed" className={styles.sectionTitle}>
-                HR
-              </Text>
-              <Stack gap={2}>
-                {hrItems.map((item, index) => (
+            {/* Home section */}
+            {filteredHome.length > 0 && (
+              <Box>
+                <Text size="sm" fw={600} c="dimmed" className={styles.sectionTitle}>
+                  General
+                </Text>
+                <Stack gap={2}>
                   <UnstyledButton
-                    key={item.label}
-                    className={`${styles.searchResultItem} ${index === 0 ? styles.highlighted : ''}`}
+                    key={homeItem.label}
+                    className={`${styles.searchResultItem} ${styles.highlighted}`}
+                    onClick={() => {
+                      navigate('/dashboard');
+                      if (onClose) onClose();
+                    }}
                   >
                     <Group gap="sm">
-                      <item.icon size={16} />
-                      <Text size="sm">{item.label}</Text>
+                      <homeItem.icon size={16} />
+                      <Text size="sm">{homeItem.label}</Text>
                     </Group>
                   </UnstyledButton>
-                ))}
-              </Stack>
-            </Box>
-
-            
+                </Stack>
+              </Box>
+            )}
+            {/* HR section */}
+            {filteredHrItems.length > 0 && (
+              <Box>
+                <Text size="sm" fw={600} c="dimmed" className={styles.sectionTitle}>
+                  HR
+                </Text>
+                <Stack gap={2}>
+                  {filteredHrItems.map((item) => (
+                    <UnstyledButton
+                      key={item.label}
+                      className={styles.searchResultItem}
+                      onClick={() => {
+                        if (item.label === 'Employee Journeys') {
+                          navigate('/dashboard/employee-journeys');
+                          if (onClose) onClose();
+                        }
+                        // Add more navigation logic for other items if needed
+                      }}
+                    >
+                      <Group gap="sm">
+                        <item.icon size={16} />
+                        <Text size="sm">{item.label}</Text>
+                      </Group>
+                    </UnstyledButton>
+                  ))}
+                </Stack>
+              </Box>
+            )}
+            {/* No results */}
+            {filteredHome.length === 0 && filteredHrItems.length === 0 && (
+              <Box p="md">
+                <Text size="sm" c="dimmed" ta="center">
+                  No results found.
+                </Text>
+              </Box>
+            )}
           </Stack>
         </Box>
 
-        <Divider />
+
 
         <Box className={styles.searchFooter}>
           <Group gap="md">

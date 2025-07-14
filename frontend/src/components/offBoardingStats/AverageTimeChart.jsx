@@ -46,7 +46,7 @@ const barColors = [
   '#ffb347',
 ];
 
-export default function AverageTimeChart() {
+export default function AverageTimeChart({ sidebarCollapsed }) {
   const [selectedJourney, setSelectedJourney] = useState('software-engineer');
 
   const chartData = {
@@ -96,9 +96,10 @@ export default function AverageTimeChart() {
       },
     },
   };
-
+  
+  const paperHeight = sidebarCollapsed ? 450 : 520;
   return (
-    <Paper p="30px" style={{ border: "1px solid rgb(235, 235, 235)" }} radius="md" h={450}>
+    <Paper p="30px" style={{ border: "1px solid rgb(235, 235, 235)" }} radius="md" h={paperHeight}>
       <Group justify="space-between" align="flex-start" mb="md">
         <div>
           <Title order={4} mb="xs" fw={500}>

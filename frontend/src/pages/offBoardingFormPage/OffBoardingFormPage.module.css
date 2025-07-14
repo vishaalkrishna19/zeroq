@@ -1,0 +1,184 @@
+.container {
+    padding: 10px 32px 32px ;
+    max-width: 100%;
+    margin: 0 auto;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  
+  .formHeader {
+      padding: 0px 24px;
+  }
+  .errorMessage {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border: 1px solid #f87171;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    color: #dc2626;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.1);
+  }
+  
+  .mainContent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    flex: 1;
+  }
+  
+  .leftSection {
+    min-height: 0;
+  }
+  
+  .rightSection {
+    min-height: 0;
+  }
+  
+  .sectionCard {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sectionTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+  }
+  
+  .sectionSubtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+  
+  .stepsScrollArea {
+    flex: 1;
+    max-height: 600px;
+    margin-top: 24px;
+    scroll-behavior: smooth;
+  }
+  
+  .stepContainer {
+    background: linear-gradient(135deg, #fcfeff 0%, #fafcfd 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+    scroll-margin-top: 20px;
+  }
+  
+  
+  .stepTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+  }
+  
+  .addStepButton {
+    border: 1px solid #d1d5db;
+    color: #374151;
+    background-color: white;
+    border-radius: 6px;
+  }
+  
+  .addStepButton:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+  }
+  
+  .footer {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .cancelButton {
+    border: 1px solid #d1d5db;
+    color: #6b7280;
+    background-color: white;
+  }
+  
+  .cancelButton:hover {
+    background-color: #f9fafb;
+  }
+  
+  .createButton {
+    background: #254cc3;
+    color: white;
+    border: none;
+  }
+  
+  .createButton:hover {
+    background: #1d3a8a;
+  }
+  
+  /* Form field styles */
+  .input input,
+  .select input,
+  .textarea textarea,
+  .numberInput input {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: white;
+  }
+  
+  /* .input input:focus,
+  .select input:focus,
+  .textarea textarea:focus,
+  .numberInput input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px #3b82f6;
+  } */
+  
+  .input label,
+  .select label,
+  .textarea label,
+  .numberInput label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 1024px) {
+    .mainContent {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    
+    .stepsScrollArea {
+      max-height: 400px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      padding: 16px;
+    }
+    
+    .sectionCard {
+      padding: 16px;
+    }
+    
+    .header {
+      margin-bottom: 20px;
+    }
+    
+    .title {
+      font-size: 20px;
+    }
+  }
+  

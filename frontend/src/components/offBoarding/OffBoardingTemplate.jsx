@@ -52,6 +52,7 @@ const OffBoardingTemplate = () => {
       });
       
       const templates = response.results || response;
+      console.log('Fetched templates - OFFBOARDING:', templates);
       setTemplates(templates);
       setFilteredData(templates);
       
@@ -226,6 +227,16 @@ const OffBoardingTemplate = () => {
         </Text>
       </Table.Td>
       <Table.Td>
+        <Text size="sm" fw={500}>
+          {item.user_count || 0}
+        </Text>
+      </Table.Td>
+      <Table.Td>
+        <Text size="sm">
+          {item.estimated_duration_days ? `${item.estimated_duration_days} days` : 'N/A'}
+        </Text>
+      </Table.Td>
+      <Table.Td>
         <Badge
           variant="light"
           color={getBadgeColor(item.is_active)}
@@ -377,6 +388,8 @@ const OffBoardingTemplate = () => {
             <Table.Th>Department</Table.Th>
             <Table.Th>Business Unit</Table.Th>
             <Table.Th>Steps</Table.Th>
+            <Table.Th>Employees Off-boarding</Table.Th>
+            <Table.Th>Intended Duration</Table.Th>
             <Table.Th>Status</Table.Th>
             <Table.Th>Created</Table.Th>
             <Table.Th></Table.Th>

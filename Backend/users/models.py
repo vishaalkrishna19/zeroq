@@ -91,7 +91,15 @@ class User(AbstractUser):
     #     blank=True,
     #     help_text='Date when the employee was hired'
     # )
-    
+    template = models.ForeignKey(
+        'boarding.JourneyTemplate',  # Use app_label.ModelName as a string
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='assigned_users',
+        help_text='Journey template assigned to this user'
+    )
+
     termination_date = models.DateField(
         null=True,
         blank=True,
@@ -220,10 +228,10 @@ class User(AbstractUser):
         """Return the user's short name."""
         return self.first_name or self.username
     
-    @property
-    def is_employed(self):
-        """Return True if user is currently employed."""
-        return self.employment_status == 'active' and self.is_active
+    # @property
+    # def is_employed(self):
+    #     """Return True if user is currently employed."""
+    #     return self.employment_status == 'active' and self.is_active
     
     # @property
     # def days_since_hire(self):

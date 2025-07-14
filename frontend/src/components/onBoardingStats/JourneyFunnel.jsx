@@ -9,7 +9,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(
@@ -46,7 +46,7 @@ const barColors = [
   '#ff7c7c',
 ];
 
-export default function JourneyFunnel() {
+export default function JourneyFunnel({ sidebarCollapsed }) {
   const [selectedJourney, setSelectedJourney] = useState('software-engineer');
 
   const chartData = {
@@ -100,8 +100,34 @@ export default function JourneyFunnel() {
     },
   };
 
+  const getResponsiveHeight = () => {
+    if (sidebarCollapsed) {
+      return 450; // When sidebar is collapsed, more space available
+    } else {
+      return 520; // When sidebar is expanded, less space available, increase height
+    }
+  };
+
+  const getGapWidth = () => {
+    if (sidebarCollapsed) {
+      return 138; // Wider gap when sidebar is collapsed
+    } else {
+      return 185; // Narrower gap when sidebar is expanded
+    }
+  }
+
+
+  const [paperHeight, setPaperHeight] = useState(getResponsiveHeight());
+  const [gapWidth, setGapWidth] = useState(getGapWidth());
+
+  // Update height when sidebar state changes
+  useEffect(() => {
+    setPaperHeight(getResponsiveHeight());
+    setGapWidth(getGapWidth());
+  }, [sidebarCollapsed, gapWidth]);
+
   return (
-    <Paper p="30px" style={{border: "1px solid rgb(235, 235, 235)"}} radius="md" h={450}>
+    <Paper p="30px" style={{border: "1px solid rgb(235, 235, 235)"}} radius="md" h={paperHeight}>
       <Group justify="space-between" align="flex-start" mb="md">
         <div>
           <Title order={4} mb="xs" fw={500}>
@@ -120,7 +146,7 @@ export default function JourneyFunnel() {
         />
       </Group>
 
-      <div style={{ height: '315px', width: '100%' }}>
+      <div style={{ height: paperHeight - gapWidth + 'px', width: '100%' }}>
         <Bar data={chartData} options={options} plugins={[ChartDataLabels]} />
       </div>
     </Paper>

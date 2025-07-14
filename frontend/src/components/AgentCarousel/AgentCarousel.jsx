@@ -4,7 +4,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import styles from './AgentCarousel.module.css';
 
-const agentData = [
+const onBoardingAgentData = [
 	{
 		title: 'Benefits Explainer',
 		description: 'Explains benefits packages and enrollment options.',
@@ -39,6 +39,37 @@ const agentData = [
 	},
 ];
 
+const offBoardingAgentData = [
+	{
+		title: 'Exit Documentation',
+		description: 'Manages exit paperwork and compliance requirements.',
+	},
+	{
+		title: 'Asset Recovery',
+		description: 'Tracks and manages return of company assets.',
+	},
+	{
+		title: 'Access Revocation',
+		description: 'Handles system access deactivation and security clearance.',
+	},
+	{
+		title: 'Knowledge Transfer',
+		description: 'Facilitates documentation and handover of responsibilities.',
+	},
+	{
+		title: 'Exit Interview',
+		description: 'Conducts exit interviews and collects feedback.',
+	},
+	{
+		title: 'Final Payroll',
+		description: 'Manages final payroll processing and tax documentation.',
+	},
+	{
+		title: 'Benefits Cancellation',
+		description: 'Assists with cancellation of benefits and subscriptions.',
+	},
+];
+
 function GradientSparkleIcon() {
 	return (
 		<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28">
@@ -64,7 +95,10 @@ function GradientSparkleIcon() {
 	);
 }
 
-const AgentCarousel = ({ onSwiperInit, onSlideChange }) => {
+const AgentCarousel = ({ onSwiperInit, onSlideChange, journeyType = 'On-boarding' }) => {
+	const agentData =
+		journeyType === 'Off-boarding' ? offBoardingAgentData : onBoardingAgentData;
+
 	return (
 		<Swiper
 			modules={[Navigation]}
@@ -100,7 +134,7 @@ const AgentCarousel = ({ onSwiperInit, onSlideChange }) => {
 			}}
 			freeMode={false}
 			watchSlidesProgress={true}
-			loop={false} // Prevent looping
+			loop={false}
 		>
 			{agentData.map((agent, index) => (
 				<SwiperSlide key={index} className={styles.swiperSlide}>
