@@ -10,7 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 ChartJS.register(
   CategoryScale,
@@ -44,7 +44,7 @@ const barColors = [
   '#ff7c7c', // Added color for new bar
 ];
 
-export default function OverdueChart() {
+export default function OverdueChart({ sidebarCollapsed }) {
   const [selectedJourney, setSelectedJourney] = useState('software-engineer');
 
   const chartData = {
@@ -96,8 +96,22 @@ export default function OverdueChart() {
     },
   };
 
+  const getResponsiveHeight = () => {
+    if (sidebarCollapsed) {
+      return 450; 
+    } else {
+      return 520; 
+    }
+  };
+
+  const [paperHeight, setPaperHeight] = useState(getResponsiveHeight());
+
+  useEffect(() => {
+    setPaperHeight(getResponsiveHeight());
+  }, [sidebarCollapsed]);
+
   return (
-    <Paper p="30px" style={{ border: "1px solid rgb(235, 235, 235)" }} radius="md" h={450}>
+    <Paper p="30px" style={{ border: "1px solid rgb(235, 235, 235)" }} radius="md" h={paperHeight}>
       <Group justify="space-between" align="flex-start" mb="md">
         <div>
           <Title order={4} mb="xs" fw={500}>

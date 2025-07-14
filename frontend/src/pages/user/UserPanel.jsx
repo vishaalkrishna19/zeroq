@@ -11,7 +11,6 @@ function UserPanel() {
     const authToken = localStorage.getItem('authToken');
     if (!authToken) return;
 
-    // Always fetch current user data from /api/auth/user/ first to ensure we have the correct user
     fetch('http://localhost:8000/api/auth/user/', {
       method: 'GET',
       headers: {
@@ -24,10 +23,9 @@ function UserPanel() {
       .then(data => {
         if (data.pk) {
           console.log('Current user ID from auth/user:', data);
-          // Update localStorage with current user ID
+          
           localStorage.setItem('userId', data.pk);
           
-          // Fetch detailed user data
           fetch(`http://localhost:8000/api/users/${data.pk}/`, {
             method: 'GET',
             headers: {

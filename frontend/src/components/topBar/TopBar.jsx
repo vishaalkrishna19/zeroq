@@ -32,7 +32,6 @@ export function TopBar() {
       const authToken = localStorage.getItem('authToken');
       if (!authToken) return;
 
-      // Always fetch current user data from /api/auth/user/ first to ensure we have the correct user
       fetch('http://localhost:8000/api/auth/user/', {
         method: 'GET',
         headers: {
@@ -44,11 +43,10 @@ export function TopBar() {
         .then(res => res.ok ? res.json() : Promise.reject())
         .then(data => {
           if (data.pk) {
-            console.log('Current user ID from auth/user:', data);
-            // Update localStorage with current user ID
+            console.log('Current user ID from auth/user:', data.pk);
+            
             localStorage.setItem('userId', data.pk);
             
-            // Fetch detailed user data
             fetch(`http://localhost:8000/api/users/${data.pk}/`, {
               method: 'GET',
               headers: {
@@ -138,8 +136,8 @@ export function TopBar() {
           {/* User Profile Avatar Dropdown */}
           <Menu shadow="md" width={200}>
             <Menu.Target>
-              <Avatar size={32} className={styles.profileAvatar} style={{ cursor: 'pointer' }}>
-                {firstName ? firstName[0].toUpperCase() : 'U'}
+              <Avatar size={32} fw={200} className={styles.profileAvatar} style={{ cursor: 'pointer' }}>
+                <Text>{firstName ? firstName[0].toUpperCase() : 'U'}</Text>
               </Avatar>
             </Menu.Target>
             <Menu.Dropdown className={styles.menuDropdown}>

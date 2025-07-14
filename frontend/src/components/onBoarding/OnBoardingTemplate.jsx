@@ -240,7 +240,7 @@ const rows = filteredData.map((item) => (
         </Table.Td>
         <Table.Td>
             <Text size="sm" fw={500}>
-                {item.step_count || 0}
+                {item.user_count || 0}
             </Text>
         </Table.Td>
         <Table.Td>
@@ -406,7 +406,7 @@ const rows = filteredData.map((item) => (
             <Table.Th>Journey Name</Table.Th>
             <Table.Th>Department</Table.Th>
             <Table.Th>Business Unit</Table.Th>
-            <Table.Th>Steps</Table.Th>
+            <Table.Th>Onboardings</Table.Th>
             <Table.Th>Status</Table.Th>
             <Table.Th>Created</Table.Th>
             <Table.Th></Table.Th>

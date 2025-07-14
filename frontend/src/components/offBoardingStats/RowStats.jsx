@@ -1,13 +1,44 @@
 import { Grid, Paper, Text, Title, Group, Stack } from '@mantine/core';
-
-const mockStats = [
-  { title: 'Total Templates', value: '4', subtitle: 'Templates' },
-  { title: 'Active Templates', value: '3', subtitle: 'Active' },
-  { title: 'Onboardings', value: '123', subtitle: 'Employees' },
-  { title: 'Avg. Duration', value: '31.7', subtitle: 'days For active journeys' },
-];
+import { useState, useEffect } from 'react';
+import ApiService from '../../utils/api';
 
 export default function RowStats() {
+  const [stats, setStats] = useState({
+      totalTemplates: 0,
+      activeTemplates: 0,
+      onboardings: 0,
+      avgDuration: 0,
+    });
+  
+    useEffect(() => {
+      const fetchStats = async () => {
+        try {
+          const response = await ApiService.getJourneyTemplates({
+            journey_type: 'offboarding'
+          });
+          const templates = response.results || response;
+          const totalTemplates = templates.length;
+          const activeTemplates = templates.filter(t => t.is_active).length;
+        
+          setStats(s => ({
+            ...s,
+            totalTemplates,
+            activeTemplates,
+          }));
+        } catch (e) {
+          console.error('Error fetching journey templates:', e);
+        }
+      };
+      fetchStats();
+    }, []);
+
+    const mockStats = [
+      { title: 'Total Templates', value: stats.totalTemplates, subtitle: 'Templates' },
+      { title: 'Active Templates', value: stats.activeTemplates, subtitle: 'Active' },
+      { title: 'Onboardings', value: '123', subtitle: 'Employees' },
+      { title: 'Avg. Duration', value: '31.7', subtitle: 'days For active journeys' },
+    ];
+
   return (
     <Grid>
       {mockStats.map((stat, index) => (

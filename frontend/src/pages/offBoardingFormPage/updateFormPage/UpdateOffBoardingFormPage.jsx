@@ -17,9 +17,9 @@ import { IconTrash, IconPlus } from '@tabler/icons-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { TopBar } from '../../../components/topbar/Topbar';
-import UpdateFormHeader from '../../../components/onBoarding/updateFormHeader/UpdateFormHeader';
+import UpdateFormHeader from '../../../components/offBoarding/updateFormHeader/UpdateFormHeader';
 import ApiService from '../../../utils/api';
-import styles from '../OnBoardingFormPage.module.css';
+import styles from '../OffBoardingFormPage.module.css';
 
 const departmentOptions = [
   { value: 'engineering', label: 'Engineering' },
@@ -37,18 +37,17 @@ const businessUnitOptions = [
 
 const stepTypeOptions = [
   { value: 'documentation', label: 'Documentation' },
-  { value: 'orientation', label: 'Orientation' },
-  { value: 'integration', label: 'Integration' },
+  { value: 'handover', label: 'Handover' },
+  { value: 'access_revocation', label: 'Access Revocation' },
 ];
 
 const responsiblePartyOptionsDefault = [
   { value: 'manager', label: 'Manager' },
   { value: 'it_team', label: 'IT Team' },
   { value: 'hr_team', label: 'HR Team' },
-  { value: 'engineering', label: 'Engineering' }
 ];
 
-const UpdateFormPage = () => {
+const UpdateOffBoardingFormPage = () => {
   const navigate = useNavigate();
   const { templateId } = useParams();
   const stepRefs = useRef({});
@@ -56,7 +55,7 @@ const UpdateFormPage = () => {
     journeyTitle: '',
     department: '',
     businessUnit: '',
-    estimatedDuration: 30,
+    estimatedDuration: 15,
     journeyDescription: '',
   });
 
@@ -71,18 +70,15 @@ const UpdateFormPage = () => {
     const fetchInitialData = async () => {
       try {
         const accountData = await ApiService.getAccounts();
-        console.log('Fetched account data:', accountData);
         setAccount(accountData);
-        
+        await fetchUsers();
         if (templateId) {
           await fetchTemplateData();
         }
       } catch (error) {
-        console.error('Failed to fetch initial data:', error);
         setError('Failed to load account data');
       }
     };
-    
     fetchInitialData();
   }, [templateId]);
 
@@ -90,18 +86,14 @@ const UpdateFormPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
-    fetchUsers();
-  }, [templateId]);
-
   const fetchTemplateData = async () => {
     try {
       setFetchLoading(true);
       
-      console.log('Fetching template with ID:', templateId);
+      console.log('Fetching offboarding template with ID:', templateId);
       
       const template = await ApiService.getJourneyTemplate(templateId);
-      console.log('Fetched template:', template);
+      console.log('Fetched offboarding template:', template);
       
       if (!template || !template.id) {
         throw new Error('Invalid template data received');
@@ -110,12 +102,11 @@ const UpdateFormPage = () => {
       setFormData({
         journeyTitle: template.title || '',
         department: template.department || '',
-        businessUnit: template.business_unit || '', // <-- use template.business_unit
-        estimatedDuration: template.estimated_duration_days || 30,
+        businessUnit: template.business_unit || '',
+        estimatedDuration: template.estimated_duration_days || 15,
         journeyDescription: template.description || '',
       });
 
-      // Pre-fill steps data
       if (template.steps && Array.isArray(template.steps) && template.steps.length > 0) {
         const mappedSteps = template.steps.map((step, index) => ({
           id: step.id || Date.now() + index,
@@ -127,7 +118,6 @@ const UpdateFormPage = () => {
         }));
         setSteps(mappedSteps);
       } else {
-        // Default single step if no steps exist
         setSteps([{
           id: 1,
           stepTitle: '',
@@ -173,15 +163,14 @@ const UpdateFormPage = () => {
   const mapBackendToStepType = (backendType) => {
     const mapping = {
       'documentation': 'documentation',
-      'orientation': 'orientation',
-      'training': 'integration',
+      'handover': 'handover',
+      'access_revocation': 'access_revocation',
       'other': 'documentation'
     };
     return mapping[backendType] || 'documentation';
   };
 
   const mapRoleToResponsibleParty = (role) => {
-    // If the role matches a username, return the username directly
     if (userOptions.some(u => u.value === role)) {
       return role;
     }
@@ -241,8 +230,8 @@ const UpdateFormPage = () => {
   const mapStepTypeToBackend = (frontendType) => {
     const mapping = {
       'documentation': 'documentation',
-      'orientation': 'orientation', 
-      'integration': 'training'
+      'handover': 'handover',
+      'access_revocation': 'access_revocation'
     };
     return mapping[frontendType] || 'other';
   };
@@ -261,7 +250,6 @@ const UpdateFormPage = () => {
     setError('');
     
     try {
-      // Validate required fields
       if (!formData.journeyTitle.trim()) {
         throw new Error('Journey title is required');
       }
@@ -279,14 +267,13 @@ const UpdateFormPage = () => {
         accountId = account[0].id;
       }
 
-      // Map form data to API format
       const apiData = {
         title: formData.journeyTitle,
         description: formData.journeyDescription,
         department: formData.department,
         business_unit: formData.businessUnit,
         estimated_duration_days: formData.estimatedDuration,
-        journey_type: 'onboarding',
+        journey_type: 'offboarding',
         account: accountId,
         steps_data: steps.filter(step => step.stepTitle.trim()).map((step, index) => ({
           title: step.stepTitle,
@@ -304,27 +291,26 @@ const UpdateFormPage = () => {
         }))
       };
 
-      console.log('Updating template data:', apiData);
+      console.log('Updating offboarding template data:', apiData);
 
       const updatedTemplate = await ApiService.updateJourneyTemplate(templateId, apiData);
-      console.log('Template updated successfully:', updatedTemplate);
+      console.log('Offboarding template updated successfully:', updatedTemplate);
     
-    toast.success('Onboarding journey updated successfully!', {
-      duration: 3000,
-      position: 'top-center',
-      style: {
-        background: 'white',
-        color: '#111',
-        fontWeight: '400',
-        padding: '16px 25px',
-        borderRadius: '8px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        width: '420px', 
-        maxWidth: '90vw',
-      },
-    });
+      toast.success('Offboarding journey updated successfully!', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          background: 'white',
+          color: '#111',
+          fontWeight: '400',
+          padding: '16px 25px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          width: '420px', 
+          maxWidth: '90vw',
+        },
+      });
 
-      // Navigate back to templates page after a short delay
       setTimeout(() => {
         navigate('/dashboard/employee-journeys');
       }, 1000);
@@ -372,22 +358,20 @@ const UpdateFormPage = () => {
           </Box>
         )}
 
-        {/* Main Content */}
         <Box className={styles.mainContent}>
-          {/* Left Side - Journey Details */}
           <Box className={styles.leftSection}>
             <Box className={styles.sectionCard}>
               <Title order={3} className={styles.sectionTitle}>
                 Journey Details
               </Title>
               <Text className={styles.sectionSubtitle}>
-                Update the core details for this onboarding journey.
+                Update the core details for this offboarding journey.
               </Text>
 
               <Stack gap="lg" mt="xl">
                 <TextInput
                   label="Journey Title"
-                  placeholder="e.g., Software Engineer Onboarding"
+                  placeholder="e.g., Software Engineer Offboarding"
                   value={formData.journeyTitle}
                   onChange={(event) => setFormData({ ...formData, journeyTitle: event.target.value })}
                   className={styles.input}
@@ -415,11 +399,11 @@ const UpdateFormPage = () => {
                   />
                   <NumberInput
                     label="Estimated Duration (days)"
-                    placeholder="e.g., 30"
+                    placeholder="e.g., 15"
                     value={formData.estimatedDuration}
                     onChange={(value) => setFormData({ ...formData, estimatedDuration: value })}
                     min={1}
-                    max={365}
+                    max={180}
                     className={styles.numberInput}
                     size="sm"
                   />
@@ -427,7 +411,7 @@ const UpdateFormPage = () => {
 
                 <Textarea
                   label="Journey Description"
-                  placeholder="Brief description of the onboarding process..."
+                  placeholder="Brief description of the offboarding process..."
                   value={formData.journeyDescription}
                   onChange={(event) => setFormData({ ...formData, journeyDescription: event.target.value })}
                   rows={4}
@@ -438,13 +422,12 @@ const UpdateFormPage = () => {
             </Box>
           </Box>
 
-          {/* Right Side - Onboarding Steps */}
           <Box className={styles.rightSection}>
             <Box className={styles.sectionCard}>
               <Group justify="space-between" align="center" mb="md">
                 <Box>
                   <Title order={3} className={styles.sectionTitle}>
-                    Onboarding Steps
+                    Offboarding Steps
                   </Title>
                   <Text className={styles.sectionSubtitle}>
                     Update the steps for this journey.
@@ -486,7 +469,7 @@ const UpdateFormPage = () => {
                       <Stack gap="md">
                         <TextInput
                           label="Step Title"
-                          placeholder="e.g., Complete HR Orientation"
+                          placeholder="e.g., Return Company Equipment"
                           value={step.stepTitle}
                           onChange={(event) => handleStepChange(step.id, 'stepTitle', event.target.value)}
                           size="sm"
@@ -524,7 +507,7 @@ const UpdateFormPage = () => {
                             value={step.dueDays}
                             onChange={(value) => handleStepChange(step.id, 'dueDays', value)}
                             min={1}
-                            max={365}
+                            max={180}
                             size="sm"
                           />
                         </Group>
@@ -537,7 +520,6 @@ const UpdateFormPage = () => {
           </Box>
         </Box>
 
-        {/* Footer */}
         <Box className={styles.footer}>
           <Group justify="flex-end">
             <Button
@@ -564,4 +546,4 @@ const UpdateFormPage = () => {
   );
 };
 
-export default UpdateFormPage;
+export default UpdateOffBoardingFormPage;

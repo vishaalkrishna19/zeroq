@@ -6,7 +6,7 @@ import styles from './OffBoardingStats.module.css';
 import AverageTimeChart from './AverageTimeChart';
 import OverdueChart from './OverdueChart';
 
-export default function OffBoardingStatsContainer() {
+export default function OffBoardingStatsContainer({ sidebarCollapsed }) {
   return (
     <Box className={styles.container}>
       <Title order={2} className={styles.title}>
@@ -19,20 +19,21 @@ export default function OffBoardingStatsContainer() {
       
       <Grid className={styles.chartsGrid}>
         <Grid.Col span={5} className={styles.chartColumn}>
-          <DepartmentChart />
+          <DepartmentChart sidebarCollapsed={sidebarCollapsed} />
         </Grid.Col>
         <Grid.Col span={7} className={styles.chartColumn}>
-          <JourneyFunnel />
+          <JourneyFunnel sidebarCollapsed={sidebarCollapsed} />
         </Grid.Col>
       </Grid>
       <Grid className={styles.chartsGrid}>
         <Grid.Col span={6} className={styles.chartColumn}>
-          <AverageTimeChart />
+          <AverageTimeChart sidebarCollapsed={sidebarCollapsed} />
         </Grid.Col>
         <Grid.Col span={6} className={styles.chartColumn}>
-          <OverdueChart />
+          <OverdueChart sidebarCollapsed={sidebarCollapsed} />
         </Grid.Col>
       </Grid>
+      <Space h="md" /> 
     </Box>
   );
 }

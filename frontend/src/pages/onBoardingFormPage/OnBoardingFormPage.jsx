@@ -41,7 +41,7 @@ const stepTypeOptions = [
   { value: 'integration', label: 'Integration' },
 ];
 
-const responsiblePartyOptions = [
+const responsiblePartyOptionsDefault = [
   { value: 'manager', label: 'Manager' },
   { value: 'it_team', label: 'IT Team' },
   { value: 'hr_team', label: 'HR Team' },
@@ -70,11 +70,13 @@ const OnBoardingFormPage = () => {
   ]);
 
   const [accounts, setAccounts] = useState([]);
+  const [userOptions, setUserOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     fetchAccounts();
+    fetchUsers();
   }, []);
 
   useEffect(() => {
@@ -88,6 +90,31 @@ const OnBoardingFormPage = () => {
     } catch (error) {
       console.error('Failed to fetch accounts:', error);
       setAccounts([{ id: 'default', name: 'Default Account' }]);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/users/', {
+        headers: {
+          'Authorization': `Token ${localStorage.getItem('authToken')}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // If paginated, use data.results, else use data directly
+        const users = Array.isArray(data) ? data : data.results || [];
+        setUserOptions(
+          users.map(user => ({
+            value: user.username,
+            label: user.username,
+          }))
+        );
+      }
+    } catch (err) {
+      // fallback: do nothing, keep default options
     }
   };
 
@@ -428,7 +455,7 @@ const OnBoardingFormPage = () => {
                           <Select
                             label="Responsible Party"
                             placeholder="Select assignee"
-                            data={responsiblePartyOptions}
+                            data={[...responsiblePartyOptionsDefault, ...userOptions]}
                             value={step.responsibleParty}
                             onChange={(value) => handleStepChange(step.id, 'responsibleParty', value)}
                             size="sm"

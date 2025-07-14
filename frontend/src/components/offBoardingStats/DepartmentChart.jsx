@@ -1,5 +1,6 @@
 import { Paper, Text, Title, Center } from '@mantine/core';
 import { Doughnut } from 'react-chartjs-2';
+import { useState, useEffect } from 'react';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -14,7 +15,7 @@ const mockData = [
     { name: 'Sales', value: 10, color: '#B0B0B0' },      // grey
 ];
 
-export default function DepartmentChart() {
+export default function DepartmentChart({ sidebarCollapsed }) {
   const chartData = {
     labels: mockData.map(item => item.name),
     datasets: [
@@ -47,10 +48,35 @@ export default function DepartmentChart() {
     },
     cutout: '75%',
   };
+
+  const getResponsiveHeight = () => {
+      if (sidebarCollapsed) {
+        return 450; 
+      } else {
+        return 520; 
+      }
+    };
+  
+    const getResponsiveMargin = () => {
+      if (sidebarCollapsed) {
+        return 5;
+      } else {
+        return 50;
+      }
+    };
+  
+    const [paperHeight, setPaperHeight] = useState(getResponsiveHeight());
+  
+    const [margin, setMargin] = useState(getResponsiveMargin());
+  
+    useEffect(() => {
+      setPaperHeight(getResponsiveHeight());
+      setMargin(getResponsiveMargin());
+    }, [sidebarCollapsed, margin]);
   
 
   return (
-    <Paper p="30px" style={{border: "1px solid rgb(235, 235, 235)"}} radius="md" h={450}>
+    <Paper p="30px" style={{border: "1px solid rgb(235, 235, 235)"}} radius="md" h={paperHeight}>
       <Title order={4} mb="xs" fw={500}>
         Employees Off-boardings by Department
       </Title>
@@ -59,7 +85,7 @@ export default function DepartmentChart() {
       </Text>
       
       <Center h={300}>
-        <div style={{ position: 'relative', width: '250px', height: '250px' }}>
+        <div style={{ position: 'relative', width: '250px', height: '250px', marginTop: `${margin}px` }}>
           <Doughnut data={chartData} options={options} />
           <div style={{
             position: 'absolute',

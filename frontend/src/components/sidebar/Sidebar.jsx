@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Group,
@@ -32,7 +32,7 @@ import {
   IconQuestionMark,
   IconBell,
 } from '@tabler/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import { SearchModal } from '../searchModal/SearchModal';
 
@@ -96,10 +96,21 @@ function LinksGroup({ icon: Icon, label, links, active, collapsed, onHover, hove
 export function Sidebar({ collapsed, onToggle }) {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [submenuPosition, setSubmenuPosition] = useState({ top: 0 });
-  const [activeLabel, setActiveLabel] = useState('Home');
+  const [activeLabel, setActiveLabel] = useState(null);
   const [activeSubItem, setActiveSubItem] = useState(null);
   const [searchModalOpened, setSearchModalOpened] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/dashboard') {
+      setActiveLabel('Home');
+      setActiveSubItem(null);
+    } else if (location.pathname === '/dashboard/employee-journeys') {
+      setActiveLabel('HR');
+      setActiveSubItem('Employee Journeys');
+    }
+  }, [location.pathname]);
 
   const handleHover = (label) => {
     if (label) {
@@ -116,11 +127,11 @@ export function Sidebar({ collapsed, onToggle }) {
     setActiveLabel(parentLabel);
     setActiveSubItem(subLabel);
     setHoveredItem(null);
-    // Navigation logic for Employee Journeys
+
     if (parentLabel === 'HR' && subLabel === 'Employee Journeys') {
       navigate('/dashboard/employee-journeys');
     }
-    // Add more navigation logic for other subitems if needed
+
   };
 
   const links = mockdata.map((item) => (
@@ -138,14 +149,14 @@ export function Sidebar({ collapsed, onToggle }) {
                 setActiveLabel(item.label);
                 setActiveSubItem(null);
                 if (item.label === 'Home') {
-                  navigate('/');
+                  navigate('/dashboard');
                 }
-                // Add more navigation logic for other main links if needed
+               
               }
             : undefined
         }
       />
-      {/* Separator after Home */}
+    
       {item.label === 'Home' && (
         <Box className={styles.separator} />
       )}

@@ -13,18 +13,19 @@ import UserPanel from "./pages/user/UserPanel";
 import EmployeeJourneys from "./pages/employeeJourneys/EmployeeJourneys";
 import OnBoardingFormPage from "./pages/onBoardingFormPage/OnBoardingFormPage";
 import UpdateFormPage from "./pages/onBoardingFormPage/updateFormPage/UpdateFormPage";
+import OffBoardingFormPage from "./pages/offBoardingFormPage/OffBoardingFormPage";
+import UpdateOffBoardingFormPage from "./pages/offBoardingFormPage/updateFormPage/UpdateOffBoardingFormPage";
 
 function ProtectedRoute({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   
   useEffect(() => {
-    // Check authentication status (replace with your auth logic)
     const token = localStorage.getItem('authToken');
     setIsAuthenticated(!!token);
   }, []);
   
   if (isAuthenticated === null) {
-    return <div>Loading...</div>; // Or your loading component
+    return <div>Loading...</div>; 
   }
   
   return isAuthenticated ? children : <Navigate to="/login" replace />;
@@ -76,9 +77,11 @@ function AppContent() {
           <Route path="/set-password" element={<SetPassword />} />
           <Route path="/enter-key" element={<EnterKey />} />
           <Route path="/user-panel" element={<ProtectedRoute><UserPanel /></ProtectedRoute>} />
-          <Route path="/dashboard/employee-journeys" element={<EmployeeJourneys />} />
+          <Route path="/dashboard/employee-journeys" element={<EmployeeJourneys sidebarCollapsed={sidebarCollapsed} />} />
           <Route path="/onboarding-form" element={<ProtectedRoute><OnBoardingFormPage /></ProtectedRoute>} />
           <Route path="/onboarding-form/update/:templateId" element={<ProtectedRoute><UpdateFormPage /></ProtectedRoute>} />
+          <Route path="/offboarding-form" element={<ProtectedRoute><OffBoardingFormPage /></ProtectedRoute>} />
+          <Route path="/offboarding-form/update/:templateId" element={<ProtectedRoute><UpdateOffBoardingFormPage /></ProtectedRoute>} />
         </Routes>
       </Box>
     </Box>
