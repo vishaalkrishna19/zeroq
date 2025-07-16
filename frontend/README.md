@@ -90,4 +90,28 @@ frontend/
 - **Search Modal:** Press `Cmd+K` (Mac) or `Ctrl+K` (Windows/Linux) to open the command/search modal.
 - **Custom Theme:** All spacing, colors, and component overrides are managed in `src/theme.js`.
 
+## API Endpoints
+
+Below are the main backend API endpoints used by the frontend:
+
+| Endpoint                                      | Method | Description                                 |
+| ---------------------------------------------- | ------ | ------------------------------------------- |
+| `/api/auth/user/`                             | GET    | Get current authenticated user              |
+| `/api/users/`                                 | GET    | List all users                              |
+| `/api/users/{userId}/`                        | GET    | Get user details by ID                      |
+| `/api/accounts/`                              | GET    | List all accounts                           |
+| `/api/journey-templates/`                     | GET    | List all journey templates                  |
+| `/api/journey-templates/`                     | POST   | Create a new journey template               |
+| `/api/journey-templates/{templateId}/`        | GET    | Get a journey template by ID                |
+| `/api/journey-templates/{templateId}/`        | PATCH  | Update a journey template by ID             |
+| `/api/journey-templates/{templateId}/`        | DELETE | Delete a journey template by ID             |
+| `/api/departments/`                           | GET    | List all departments                        |
+| `/api/business-units/`                        | GET    | List all business units                     |
+| `/api/auth/login/`                            | POST   | User login                                  |
+| `/api/auth/logout/`                           | POST   | User logout                                 |
+| `/api/auth/password/reset/`                   | POST   | Request password reset                      |
+| `/api/auth/password/set/`                     | POST   | Set new password                            |
+
+> **Note:** Some endpoints may be prefixed with `/api/v1/` depending on your backend configuration.
+
 **Made with Mantine & React.**
