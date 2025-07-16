@@ -19,11 +19,10 @@ class ApiService {
   }
 
 static async getCSRFToken() {
-    // Try to get from cookie first
+ 
     const match = document.cookie.match(/csrftoken=([^;]+)/);
     if (match) return match[1];
 
-    // If not found, fetch from API and try again
     await fetch(`${API_BASE_URL}/auth/csrf/`, {
         method: 'GET',
         credentials: 'include',
@@ -37,13 +36,12 @@ static async getCSRFToken() {
       'Content-Type': 'application/json',
     };
     
-    // Get auth token if available
+   
     const token = localStorage.getItem('authToken');
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    // Get CSRF token
     const csrfToken = await this.getCSRFToken();
     if (csrfToken) {
       headers['X-CSRFToken'] = csrfToken;
@@ -52,7 +50,7 @@ static async getCSRFToken() {
     return headers;
   }
 
-  // Journey Templates
+ 
   static async getJourneyTemplates(params = {}) {
     const queryParams = new URLSearchParams(params).toString();
     return this.request(`/boarding/templates/?${queryParams}`);
@@ -65,7 +63,7 @@ static async getCSRFToken() {
     });
   }
 
-  // Get a specific journey template by ID
+
   static async getJourneyTemplate(templateId) {
     try {
       const response = await this.request(`/boarding/templates/${templateId}/`, {
@@ -152,12 +150,12 @@ static async getCSRFToken() {
     }
   }
 
-  // Accounts
+  
   static async getAccounts() {
     return this.request('/accounts/');
   }
 
-  // Departments and Business Units
+
   static async getDepartments() {
     return this.request('/boarding/templates/departments/');
   }
@@ -170,7 +168,6 @@ static async getCSRFToken() {
     return this.request('/users/userdata/');
   }
 
-  // Authentication
   static async login(credentials) {
     return this.request('/auth/login/', {
       method: 'POST',

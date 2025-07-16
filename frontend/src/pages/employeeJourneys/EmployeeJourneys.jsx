@@ -61,11 +61,11 @@ const EmployeeJourneys = ({ sidebarCollapsed }) => {
       case 'Off-boarding':
         return <OffBoardingTemplate />;
       case 'Health Check':
-        // You can add other components here when they're created
-        return <OnBoardingTemplate />; // Placeholder
+
+        return <OnBoardingTemplate />; 
       case 'Internal Mobility':
-        // You can add other components here when they're created
-        return <OnBoardingTemplate />; // Placeholder
+
+        return <OnBoardingTemplate />; 
       default:
         return <OnBoardingTemplate />;
     }

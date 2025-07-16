@@ -10,13 +10,11 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 const bgGradient = "#fff";
 const cardRadius = 15;
 
-// Helper to get CSRF token from cookie
 const getCSRFToken = () => {
   const match = document.cookie.match(/csrftoken=([^;]+)/);
   return match ? match[1] : '';
 };
 
-// API service for password reset
 const resetPassword = async (username, currentPassword, newPassword) => {
   const csrfToken = getCSRFToken();
   const response = await fetch('http://localhost:8000/api/users/reset_password/', {

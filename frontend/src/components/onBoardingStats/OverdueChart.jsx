@@ -33,7 +33,7 @@ const mockData = [
   { stage: 'Dev Environment Setup', items: 2 },
   { stage: 'First PR Submitted', items: 3 },
   { stage: 'Fully Onboarded (SE)', items: 1 },
-  { stage: 'Manager Review', items: 2 }, // Added new stage
+  { stage: 'Manager Review', items: 2 }, 
 ];
 
 const barColors = [
@@ -41,7 +41,7 @@ const barColors = [
   '#82ca9d',
   '#ffc658',
   '#20c997',
-  '#ff7c7c', // Added color for new bar
+  '#ff7c7c', 
 ];
 
 export default function OverdueChart({ sidebarCollapsed }) {

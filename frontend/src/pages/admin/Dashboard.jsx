@@ -119,7 +119,7 @@ export default function Dashboard() {
             
               <Group gap="-8px">
                 <Box className={styles.appIcon} style={{ backgroundColor: 'white', padding: '0px 2px' }}>
-                  {/* HappyFox SVG */}
+      
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 500 500">
                     <rect stroke="#E4E4E4" x="0.5" y="0.5" width="499" height="499" rx="12" fill="white"/>
                     <g transform="translate(50, 52)" fill="#FF5A00" fillRule="evenodd">
@@ -136,21 +136,21 @@ export default function Dashboard() {
                 <Box className={styles.appIcon} style={{ backgroundColor: 'white', padding: '0px 2px' }}>
            
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 500 500" version="1.1">
-    <title>Pipe_App Copy</title>
-    <g id="Pipe_App-Copy" stroke="none" fill="none" stroke-width="1">
-        <rect id="Rectangle" stroke="#E4E4E4" x="0.5" y="0.5" width="499" height="499"/>
-        <g id="Pipedrive_Monogram_Green-background" fill-rule="evenodd" transform="translate(50, 50)">
-            <rect id="Rectangle" fill="#017737" fill-rule="nonzero" x="0" y="0" width="400" height="400" rx="200"/>
-            <path d="M309.732283,166.692913 C309.732283,220.80315 274.818898,257.811024 224.897638,257.811024 C201.165354,257.811024 181.606299,248.031496 174.283465,235.811024 L174.629921,248.377953 L174.629921,325.874016 L123.669291,325.874016 L123.669291,125.496063 C123.669291,122.708661 122.976378,122 119.826772,122 L102.362205,122 L102.362205,79.4173228 L144.96063,79.4173228 C164.503937,79.4173228 169.401575,96.1732283 170.787402,103.511811 C178.472441,90.5984252 198.708661,75.5905461 227.338583,75.5905461 C276.566929,75.5748031 309.732283,112.220472 309.732283,166.692913 Z M257.716535,167.03937 C257.716535,138.062992 238.866142,118.173228 215.11811,118.173228 C195.574803,118.173228 173.574803,131.086614 173.574803,167.401575 C173.574803,191.133858 186.834646,215.92126 214.425197,215.92126 C234.677165,215.905512 257.716535,201.244094 257.716535,167.03937 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"/>
-        </g>
-    </g>
-</svg>
+                    <title>Pipe_App Copy</title>
+                    <g id="Pipe_App-Copy" stroke="none" fill="none" stroke-width="1">
+                        <rect id="Rectangle" stroke="#E4E4E4" x="0.5" y="0.5" width="499" height="499"/>
+                        <g id="Pipedrive_Monogram_Green-background" fill-rule="evenodd" transform="translate(50, 50)">
+                            <rect id="Rectangle" fill="#017737" fill-rule="nonzero" x="0" y="0" width="400" height="400" rx="200"/>
+                            <path d="M309.732283,166.692913 C309.732283,220.80315 274.818898,257.811024 224.897638,257.811024 C201.165354,257.811024 181.606299,248.031496 174.283465,235.811024 L174.629921,248.377953 L174.629921,325.874016 L123.669291,325.874016 L123.669291,125.496063 C123.669291,122.708661 122.976378,122 119.826772,122 L102.362205,122 L102.362205,79.4173228 L144.96063,79.4173228 C164.503937,79.4173228 169.401575,96.1732283 170.787402,103.511811 C178.472441,90.5984252 198.708661,75.5905461 227.338583,75.5905461 C276.566929,75.5748031 309.732283,112.220472 309.732283,166.692913 Z M257.716535,167.03937 C257.716535,138.062992 238.866142,118.173228 215.11811,118.173228 C195.574803,118.173228 173.574803,131.086614 173.574803,167.401575 C173.574803,191.133858 186.834646,215.92126 214.425197,215.92126 C234.677165,215.905512 257.716535,201.244094 257.716535,167.03937 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"/>
+                        </g>
+                    </g>
+                </svg>
                 </Box>
               </Group>
               
               <Button 
                 variant="outline"
-                onClick={() => setIntegrationModalOpened(true)}
+   
                 className={styles.connectAppsButton}
               >
                 Connect Apps

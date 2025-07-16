@@ -149,7 +149,6 @@ export function IntegrationBlock({ opened, onClose }) {
   const [selectedApp, setSelectedApp] = useState(integratedApps[0]);
   const [showConfigForm, setShowConfigForm] = useState(true);
 
-  // Form state for HappyFox Helpdesk
   const [category, setCategory] = useState('');
   const [ticketTitle, setTicketTitle] = useState('New Employee Onboarding');
   const [ticketDescription, setTicketDescription] = useState('Dynamic / pre-defined with placeholders');
@@ -167,7 +166,7 @@ export function IntegrationBlock({ opened, onClose }) {
   };
 
   const handleSave = () => {
-    // Handle save logic here
+ 
     onClose();
   };
 

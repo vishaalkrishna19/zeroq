@@ -101,7 +101,6 @@ export default function ResetPassword() {
           </div>
         </Box>
 
-        {/* Right: Form */}
         <Box
           style={{
             flex: 1,

@@ -56,7 +56,7 @@ export function SearchModal({ opened, onClose }) {
   const resultCount = filteredHome.length + filteredHrItems.length;
   const modalHeight = resultCount === 0
     ? 225
-    : Math.min(120 + resultCount * 56, 600); // 56px per item, min 120px, max 600px
+    : Math.min(120 + resultCount * 56, 600); 
 
   return (
     <Modal
@@ -92,7 +92,7 @@ export function SearchModal({ opened, onClose }) {
 
         <Box className={styles.searchResults}>
           <Stack gap="xs">
-            {/* Home section */}
+        
             {filteredHome.length > 0 && (
               <Box>
                 <Text size="sm" fw={600} c="dimmed" className={styles.sectionTitle}>
@@ -115,7 +115,7 @@ export function SearchModal({ opened, onClose }) {
                 </Stack>
               </Box>
             )}
-            {/* HR section */}
+
             {filteredHrItems.length > 0 && (
               <Box>
                 <Text size="sm" fw={600} c="dimmed" className={styles.sectionTitle}>
@@ -131,7 +131,7 @@ export function SearchModal({ opened, onClose }) {
                           navigate('/dashboard/employee-journeys');
                           if (onClose) onClose();
                         }
-                        // Add more navigation logic for other items if needed
+                       
                       }}
                     >
                       <Group gap="sm">
@@ -143,7 +143,7 @@ export function SearchModal({ opened, onClose }) {
                 </Stack>
               </Box>
             )}
-            {/* No results */}
+
             {filteredHome.length === 0 && filteredHrItems.length === 0 && (
               <Box p="md">
                 <Text size="sm" c="dimmed" ta="center">

@@ -175,7 +175,7 @@ export function Sidebar({ collapsed, onToggle }) {
         {collapsed ? <IconChevronRight size={14} /> : <IconChevronLeft size={14} />}
       </ActionIcon>
 
-      {/* Header */}
+
       <Box className={styles.header}>
         <Group gap="sm">
           <ThemeIcon size={30} color="transparent">
@@ -205,14 +205,12 @@ export function Sidebar({ collapsed, onToggle }) {
         </Group>
       </UnstyledButton>
 
-      {/* Navigation Links */}
       <ScrollArea className={styles.scrollArea}>
         <Stack gap="xs">
           {links}
         </Stack>
       </ScrollArea>
 
-      {/* Submenu Portal - positioned outside sidebar */}
       {hoveredItem && (
         <Box
           className={styles.submenuPortal}
@@ -225,7 +223,7 @@ export function Sidebar({ collapsed, onToggle }) {
             bottom: 'auto'
           }}
         >
-          {/* Transparent bridge */}
+       
           <Box className={styles.submenuBridge} />
           
           {mockdata.find(item => item.label === hoveredItem)?.links && (

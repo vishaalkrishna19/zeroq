@@ -115,7 +115,7 @@ const OffBoardingFormPage = () => {
         );
       }
     } catch (err) {
-      // fallback: do nothing, keep default options
+      console.error('Failed to fetch users:', err);
     }
   };
 
@@ -212,7 +212,7 @@ const OffBoardingFormPage = () => {
         estimated_duration_days: formData.estimatedDuration,
         journey_type: 'offboarding',
         account: accountId,
-        is_active: !isDraft, // <-- set false if draft
+        is_active: !isDraft, 
         is_default: false,
         steps_data: steps.filter(step => step.stepTitle.trim()).map((step, index) => ({
           title: step.stepTitle,

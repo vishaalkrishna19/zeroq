@@ -2,17 +2,6 @@
 
 ZeroQ is a modern employee journey management platform. This frontend is built with **React** and uses **Mantine** for UI components, styling, and layouts. It features onboarding/offboarding workflows, AI-powered assistants, analytics, and seamless third-party integrations.
 
-## Features
-
-- Employee onboarding & offboarding journey templates
-- AI-powered assistant carousel
-- Analytics dashboards
-- Integration with external apps (HappyFox, BambooHR, Pipedrive, etc.)
-- Responsive layouts with Mantine
-- Protected routes and authentication
-- Command/search modal (Cmd+K)
-- Custom theming and standardized spacing
-
 ## Tech Stack
 
 - [React](https://react.dev/)
@@ -94,24 +83,59 @@ frontend/
 
 Below are the main backend API endpoints used by the frontend:
 
-| Endpoint                                      | Method | Description                                 |
-| ---------------------------------------------- | ------ | ------------------------------------------- |
-| `/api/auth/user/`                             | GET    | Get current authenticated user              |
-| `/api/users/`                                 | GET    | List all users                              |
-| `/api/users/{userId}/`                        | GET    | Get user details by ID                      |
-| `/api/accounts/`                              | GET    | List all accounts                           |
-| `/api/journey-templates/`                     | GET    | List all journey templates                  |
-| `/api/journey-templates/`                     | POST   | Create a new journey template               |
-| `/api/journey-templates/{templateId}/`        | GET    | Get a journey template by ID                |
-| `/api/journey-templates/{templateId}/`        | PATCH  | Update a journey template by ID             |
-| `/api/journey-templates/{templateId}/`        | DELETE | Delete a journey template by ID             |
-| `/api/departments/`                           | GET    | List all departments                        |
-| `/api/business-units/`                        | GET    | List all business units                     |
-| `/api/auth/login/`                            | POST   | User login                                  |
-| `/api/auth/logout/`                           | POST   | User logout                                 |
-| `/api/auth/password/reset/`                   | POST   | Request password reset                      |
-| `/api/auth/password/set/`                     | POST   | Set new password                            |
+### Authentication Endpoints
+| Endpoint                                      | Method | Description                                 | Used In |
+| ---------------------------------------------- | ------ | ------------------------------------------- | ------- |
+| `/api/auth/user/`                             | GET    | Get current authenticated user              | Dashboard.jsx |
+| `/api/auth/login/`                            | POST   | User login                                  | ApiService.login() |
+| `/api/auth/logout/`                           | POST   | User logout                                 | ApiService.logout() |
+| `/api/auth/csrf/`                             | GET    | Get CSRF token for authentication          | ApiService.getCSRFToken() |
 
-> **Note:** Some endpoints may be prefixed with `/api/v1/` depending on your backend configuration.
+### User Management Endpoints
+| Endpoint                                      | Method | Description                                 | Used In |
+| ---------------------------------------------- | ------ | ------------------------------------------- | ------- |
+| `/api/users/`                                 | GET    | List all users                              | OnBoardingFormPage.jsx, OffBoardingFormPage.jsx, UpdateFormPage.jsx |
+| `/api/users/{userId}/`                        | GET    | Get user details by ID                      | Dashboard.jsx |
+
+### Journey Template Endpoints
+| Endpoint                                      | Method | Description                                 | Used In |
+| ---------------------------------------------- | ------ | ------------------------------------------- | ------- |
+| `/api/boarding/templates/`                    | GET    | List all journey templates (with filters)  | OnBoardingTemplate.jsx, OffBoardingTemplate.jsx |
+| `/api/boarding/templates/`                    | POST   | Create a new journey template               | OnBoardingFormPage.jsx, OffBoardingFormPage.jsx, OffBoardingForm.jsx |
+| `/api/boarding/templates/{templateId}/`       | GET    | Get a journey template by ID                | UpdateFormPage.jsx, UpdateOffBoardingFormPage.jsx |
+| `/api/boarding/templates/{templateId}/`       | PUT    | Update a journey template by ID             | UpdateFormPage.jsx, UpdateOffBoardingFormPage.jsx |
+| `/api/boarding/templates/{templateId}/`       | DELETE | Delete a journey template by ID             | OnBoardingTemplate.jsx, OffBoardingTemplate.jsx |
+
+### Organization Data Endpoints
+| Endpoint                                      | Method | Description                                 | Used In |
+| ---------------------------------------------- | ------ | ------------------------------------------- | ------- |
+| `/api/accounts/`                              | GET    | List all accounts                           | OnBoardingFormPage.jsx, OffBoardingFormPage.jsx, OffBoardingForm.jsx, UpdateFormPage.jsx |
+| `/api/boarding/templates/departments/`        | GET    | List all departments                        | OnBoardingTemplate.jsx, OffBoardingTemplate.jsx |
+| `/api/boarding/templates/business_units/`     | GET    | List all business units                     | OnBoardingTemplate.jsx, OffBoardingTemplate.jsx |
+
+### Query Parameters Used
+- **For Journey Templates (`/api/boarding/templates/`)**:
+  - `journey_type`: Filter by 'onboarding' or 'offboarding'
+  - `department`: Filter by department
+  - `business_unit`: Filter by business unit
+  - `is_active`: Filter by active/draft status
+
+### Authentication Headers
+All API requests include:
+- `Authorization: Bearer {token}` (from localStorage)
+- `X-CSRFToken: {csrfToken}` (obtained from `/api/auth/csrf/`)
+- `Content-Type: application/json`
+
+> **Note:** All endpoints are prefixed with `http://localhost:8000` in development mode.
+
+## Screenshots
+
+### Employee Journeys
+
+![Employee Journeys Screenshot](./screenshots/employee-journeys.png)
+
+### Stats
+
+![Stats Screenshot](./screenshots/stats.png)
 
 **Made with Mantine & React.**
