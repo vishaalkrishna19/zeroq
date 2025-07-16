@@ -132,10 +132,10 @@ All API requests include:
 
 ### Employee Journeys
 
-![Employee Journeys Screenshot](./screenshots/employee-journeys.png)
+![Employee Journeys Screenshot](./employee-journeys.png)
 
 ### Stats
 
-![Stats Screenshot](./screenshots/stats.png)
+![Stats Screenshot](./stats.png)
 
 **Made with Mantine & React.**
