@@ -4,7 +4,7 @@ import { useState } from 'react';
 import {TopBar} from '../../components/topbar/Topbar';
 import EmployeeHeader from '../../components/employeeHeader/EmployeeHeader';
 import styles from './EmployeeJourneys.module.css';
-import AgentCarousel from '../../components/AgentCarousel/AgentCarousel';
+import AgentCarousel from '../../components/agentCarousel/AgentCarousel';
 import OnBoardingTemplate from '../../components/onBoarding/OnBoardingTemplate';
 import StatsContainer from '../../components/onBoardingStats/statsContainer';
 import OffBoardingTemplate from '../../components/offBoarding/OffBoardingTemplate';

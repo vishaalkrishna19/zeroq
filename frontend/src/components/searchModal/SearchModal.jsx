@@ -1,5 +1,4 @@
-/* filepath: /Users/happyfox/Documents/GitHub/zeroq/frontend/src/components/searchModal/SearchModal.jsx */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Modal,
   Box,
@@ -31,6 +30,14 @@ export function SearchModal({ opened, onClose }) {
   const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
 
+  // Remove internalOpened and keydown logic
+  // Modal open state is now controlled only by the parent via 'opened' prop
+
+  // When closed, call onClose if provided
+  const handleClose = () => {
+    if (onClose) onClose();
+  };
+
   const homeItem = { label: 'Home', icon: IconHome };
   const hrItems = [
     { label: 'Employee Journeys', icon: IconRoad },
@@ -39,8 +46,6 @@ export function SearchModal({ opened, onClose }) {
     { label: 'Employee Center Pro', icon: IconUsers },
     { label: 'HR Case & Knowledge', icon: IconQuestionMark },
   ];
-
-  // Filter items based on searchValue (case-insensitive)
   const filteredHome = homeItem.label.toLowerCase().includes(searchValue.toLowerCase())
     ? [homeItem]
     : [];
@@ -48,10 +53,9 @@ export function SearchModal({ opened, onClose }) {
     item.label.toLowerCase().includes(searchValue.toLowerCase())
   );
 
-  // Adjust modal height based on results
   const resultCount = filteredHome.length + filteredHrItems.length;
   const modalHeight = resultCount === 0
-    ? 220
+    ? 225
     : Math.min(120 + resultCount * 56, 600); // 56px per item, min 120px, max 600px
 
   return (
@@ -68,8 +72,9 @@ export function SearchModal({ opened, onClose }) {
         blur: 0,
       }}
       styles={{
-        body: { padding: 0 },
-        content: { minHeight: modalHeight, maxHeight: 600, transition: 'min-height 0.2s' }
+        body: { padding: 0, background: '#eeeef0' },
+        backdrop: { backgroundColor:  '#eeeef0' },
+        content: { minHeight: modalHeight, maxHeight: 600, transition: 'min-height 0.2s', background: '#eeeef0', boxShadow: 'none' }
       }}
     >
       <Box className={styles.searchModal}>

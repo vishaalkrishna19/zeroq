@@ -127,7 +127,7 @@ export default function SetPassword() {
           background: "#fff",
         }}
       >
-        {/* Left: Image */}
+    
         <Box
           style={{
             flex: 1,

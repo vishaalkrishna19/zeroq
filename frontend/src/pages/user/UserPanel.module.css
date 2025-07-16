@@ -43,8 +43,6 @@
 }
 
 .greetingText {
-  font-size: 36px;
-  font-weight: 400;
-  margin-bottom: 8px;
+
   color: var(--mantine-color-dark-9);
 }

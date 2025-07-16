@@ -1,11 +1,71 @@
 import { createTheme } from "@mantine/core";
 
 export const theme = createTheme({
+
+  spacing: {
+    xs: "4px",    
+    sm: "8px",   
+    md: "16px",   
+    lg: "24px",  
+    xl: "32px",  
+    xxl: "40px",  
+    xxxl: "48px", 
+  },
   
-    shadows: {
-        md: '3px 8px 6px rgba(0,0,0,0.3)', // x-offset 3px, y-offset 8px
-        // other sizes...
-        xl: '0px 0px 8px rgba(0,0,0,0.1)', // x-offset 4px, y-offset 12px
+
+  components: {
+    Container: {
+      defaultProps: {
+        padding: "md",
+      },
+    },
+    Stack: {
+      defaultProps: {
+        gap: "md",
+      },
+    },
+    Group: {
+      defaultProps: {
+        gap: "md",
+      },
+    },
+  },
+  
+  other: {
+    spacing: {
+      xs: "4px",
+      sm: "8px", 
+      md: "16px",
+      lg: "24px",
+      xl: "32px",
+      xxl: "40px",
+      xxxl: "48px",
     },
     
+    component: {
+      padding: {
+        xs: "8px",
+        sm: "16px",
+        md: "24px",
+        lg: "32px",
+        xl: "48px",
+      },
+      margin: {
+        xs: "4px",
+        sm: "8px",
+        md: "16px",
+        lg: "24px",
+        xl: "32px",
+      },
+      gap: {
+        xs: "4px",
+        sm: "8px",
+        md: "16px",
+        lg: "24px",
+        xl: "32px",
+      },
+    },
+  },
 });
+
+

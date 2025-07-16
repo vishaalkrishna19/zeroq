@@ -83,7 +83,8 @@ const UpdateOffBoardingFormPage = () => {
   }, [templateId]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const scrollBox = document.getElementById('main-scroll-box');
+    if (scrollBox) scrollBox.scrollTop = 0;
   }, []);
 
   const fetchTemplateData = async () => {

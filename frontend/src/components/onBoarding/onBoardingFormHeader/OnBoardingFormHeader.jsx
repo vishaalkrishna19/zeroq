@@ -34,7 +34,7 @@ const OnBoardingFormHeader = () => {
         </Text>
       </Box>
       
-      <Group className={styles.chipContainer}>
+      <Group gap={0} className={styles.chipContainer}>
         {chips.map((chip) => (
           <button
             key={chip}

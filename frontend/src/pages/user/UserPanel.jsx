@@ -63,7 +63,7 @@ function UserPanel() {
                 <Text className={styles.logoText}>
                   User Panel
                 </Text>
-                <Text className={styles.greetingText}>
+                <Text size="36px" fw={400} mb={8} className={styles.greetingText}>
                   Welcome, {firstName} {lastName}!
                 </Text>
               </Box>

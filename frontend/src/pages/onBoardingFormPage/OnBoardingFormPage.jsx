@@ -80,7 +80,8 @@ const OnBoardingFormPage = () => {
   }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const scrollBox = document.getElementById('main-scroll-box');
+    if (scrollBox) scrollBox.scrollTop = 0;
   }, []);
 
   const fetchAccounts = async () => {
@@ -104,7 +105,7 @@ const OnBoardingFormPage = () => {
       });
       if (res.ok) {
         const data = await res.json();
-        // If paginated, use data.results, else use data directly
+
         const users = Array.isArray(data) ? data : data.results || [];
         setUserOptions(
           users.map(user => ({
@@ -114,7 +115,7 @@ const OnBoardingFormPage = () => {
         );
       }
     } catch (err) {
-      // fallback: do nothing, keep default options
+      console.error('Failed to fetch users:', err);
     }
   };
 
@@ -130,7 +131,6 @@ const OnBoardingFormPage = () => {
     setSteps(prevSteps => {
       const updatedSteps = [...prevSteps, newStep];
       
-      // Scroll to the new step after it's rendered
       setTimeout(() => {
         const newStepElement = stepRefs.current[newStep.id];
         if (newStepElement) {
@@ -140,7 +140,6 @@ const OnBoardingFormPage = () => {
             inline: 'nearest'
           });
           
-          // Optional: Add a subtle highlight animation
           newStepElement.style.transform = 'scale(1.02)';
           newStepElement.style.transition = 'transform 0.3s ease';
           setTimeout(() => {
@@ -188,7 +187,7 @@ const OnBoardingFormPage = () => {
     setError('');
     
     try {
-      // Validate required fields
+ 
       if (!formData.journeyTitle.trim()) {
         throw new Error('Journey title is required');
       }
@@ -197,13 +196,11 @@ const OnBoardingFormPage = () => {
         throw new Error('All steps must have a title');
       }
 
-      // Get account - use first account or create a default ID
       let accountId = 'default';
       if (accounts.length > 0) {
         accountId = accounts[0].id;
       }
 
-      // Map form data to API format
       const apiData = {
         journey_type: 'onboarding',
         title: formData.journeyTitle,
@@ -213,7 +210,7 @@ const OnBoardingFormPage = () => {
         business_unit: formData.businessUnit,
         estimated_duration_days: formData.estimatedDuration,
         account: accountId,
-        is_active: !isDraft, // <-- set false if draft
+        is_active: !isDraft, 
         is_default: false,
         steps_data: steps.filter(step => step.stepTitle.trim()).map((step, index) => ({
           title: step.stepTitle,
@@ -237,7 +234,7 @@ const OnBoardingFormPage = () => {
         const newTemplate = await ApiService.createJourneyTemplate(apiData);
         console.log('Template created successfully:', newTemplate);
         
-        // Show success toast
+      
         toast.success(isDraft ? 'Draft saved successfully!' : 'Onboarding journey created successfully!', {
           duration: 3000,
           position: 'top-center',
@@ -264,7 +261,6 @@ const OnBoardingFormPage = () => {
               },
         });
 
-        // Navigate back to templates page after a short delay
         setTimeout(() => {
           navigate('/dashboard/employee-journeys');
         }, 1000);
@@ -311,9 +307,9 @@ const OnBoardingFormPage = () => {
           </Box>
         )}
 
-        {/* Main Content */}
+ 
         <Box className={styles.mainContent}>
-          {/* Left Side - Journey Details */}
+    
           <Box className={styles.leftSection}>
             <Box className={styles.sectionCard}>
               <Title order={3} className={styles.sectionTitle}>
@@ -324,7 +320,7 @@ const OnBoardingFormPage = () => {
               </Text>
 
               <Stack gap="lg" mt="xl">
-                {/* Journey Title only */}
+         
                 <TextInput
                   label="Journey Title"
                   placeholder="e.g., Software Engineer Onboarding"
@@ -334,7 +330,6 @@ const OnBoardingFormPage = () => {
                   size="sm"
                 />
 
-                {/* Department, Business Unit, Duration */}
                 <Group grow align="flex-start">
                   <Select
                     label="Department"
@@ -366,7 +361,6 @@ const OnBoardingFormPage = () => {
                   />
                 </Group>
 
-                {/* Journey Description */}
                 <Textarea
                   label="Journey Description"
                   placeholder="Brief description of the onboarding process..."
@@ -380,7 +374,6 @@ const OnBoardingFormPage = () => {
             </Box>
           </Box>
 
-          {/* Right Side - Onboarding Steps */}
           <Box className={styles.rightSection}>
             <Box className={styles.sectionCard}>
               <Group justify="space-between" align="center" mb="md">
@@ -479,7 +472,6 @@ const OnBoardingFormPage = () => {
           </Box>
         </Box>
 
-        {/* Footer */}
         <Box className={styles.footer}>
           <Group justify="flex-end">
             <Button
@@ -491,7 +483,7 @@ const OnBoardingFormPage = () => {
             >
               Cancel
             </Button>
-            {/* Save Draft Button */}
+    
             <Button
               variant="outline"
               style={{

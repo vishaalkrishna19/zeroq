@@ -335,7 +335,7 @@ const OffBoardingTemplate = () => {
       
       <Box className={styles.header}>
         <Title order={3} className={styles.title}>
-          Offboarding Journey Templates
+          Off-boarding Journey Templates
         </Title>
         
         <Group gap="md">

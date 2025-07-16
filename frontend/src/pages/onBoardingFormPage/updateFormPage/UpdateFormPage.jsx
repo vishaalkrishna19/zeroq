@@ -87,7 +87,8 @@ const UpdateFormPage = () => {
   }, [templateId]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const scrollBox = document.getElementById('main-scroll-box');
+    if (scrollBox) scrollBox.scrollTop = 0;
   }, []);
 
   useEffect(() => {
@@ -181,7 +182,7 @@ const UpdateFormPage = () => {
   };
 
   const mapRoleToResponsibleParty = (role) => {
-    // If the role matches a username, return the username directly
+   
     if (userOptions.some(u => u.value === role)) {
       return role;
     }
@@ -279,7 +280,6 @@ const UpdateFormPage = () => {
         accountId = account[0].id;
       }
 
-      // Map form data to API format
       const apiData = {
         title: formData.journeyTitle,
         description: formData.journeyDescription,
@@ -324,7 +324,6 @@ const UpdateFormPage = () => {
       },
     });
 
-      // Navigate back to templates page after a short delay
       setTimeout(() => {
         navigate('/dashboard/employee-journeys');
       }, 1000);
@@ -372,9 +371,9 @@ const UpdateFormPage = () => {
           </Box>
         )}
 
-        {/* Main Content */}
+   
         <Box className={styles.mainContent}>
-          {/* Left Side - Journey Details */}
+       
           <Box className={styles.leftSection}>
             <Box className={styles.sectionCard}>
               <Title order={3} className={styles.sectionTitle}>
@@ -438,7 +437,6 @@ const UpdateFormPage = () => {
             </Box>
           </Box>
 
-          {/* Right Side - Onboarding Steps */}
           <Box className={styles.rightSection}>
             <Box className={styles.sectionCard}>
               <Group justify="space-between" align="center" mb="md">
@@ -537,7 +535,7 @@ const UpdateFormPage = () => {
           </Box>
         </Box>
 
-        {/* Footer */}
+
         <Box className={styles.footer}>
           <Group justify="flex-end">
             <Button

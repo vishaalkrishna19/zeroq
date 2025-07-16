@@ -293,7 +293,6 @@ const rows = filteredData.map((item) => (
     try {
       await ApiService.deleteJourneyTemplate(templateToDelete.id);
       
-      // Remove from local state
       const updatedTemplates = templates.filter(template => template.id !== templateToDelete.id);
       setTemplates(updatedTemplates);
       filterTemplates(updatedTemplates, selectedDepartment, selectedBusinessUnit);
@@ -302,8 +301,8 @@ const rows = filteredData.map((item) => (
         duration: 3000,
         position: 'top-center',
         style: {
-          background: '#ef4444',
-          color: 'white',
+          background: 'white',
+          color: '#ef4444',
           fontWeight: '500',
           padding: '16px 20px',
           borderRadius: '8px',

@@ -1,0 +1,225 @@
+.modalHeader {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 1.5rem;
+}
+
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.modalContent {
+  padding: 0;
+}
+
+.modalBody {
+  padding: 1.5rem;
+  max-height: 600px;
+}
+
+.integrationModalBody {
+  display: flex;
+  min-height: 540px;
+  max-height: 700px;
+  min-width: 800px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.integrationSidebar {
+  width: 270px;
+  background: #f7f8fa;
+  border-right: 1px solid #e5e7eb;
+  padding: 24px 0 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.searchContainer {
+  position: relative;
+  padding: 0 24px 16px 24px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  padding-left: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  font-size: 14px;
+}
+
+.sidebarSection {
+  padding: 0 24px;
+  margin-bottom: 18px;
+}
+
+.sidebarSectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebarAppItem {
+  width: 100%;
+  padding: 10px 10px 10px 0;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.sidebarAppItemActive,
+.sidebarAppItem:hover {
+  background: #e8f0fe;
+}
+
+.sidebarAppLogo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: #fff;
+  margin-right: 8px;
+}
+
+.sidebarAppName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.sidebarConfiguredText {
+  font-size: 12px;
+  color: #73C41D;
+}
+
+.sidebarChevronIcon {
+  color: #bdbdbd;
+}
+
+.integrationFormArea {
+  flex: 1;
+  padding: 36px 40px 36px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-width: 350px;
+}
+
+.configForm {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.configHeader {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1.5rem;
+}
+
+.appLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  font-size: 22px;
+  margin-right: 10px;
+}
+
+.configTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.configSubtitle {
+  font-size: 13px;
+  color: #73C41D;
+  font-weight: 500;
+}
+
+.formField {
+  margin-bottom: 0;
+}
+
+.formField label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.formField input,
+.formField .mantine-Select-input {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.checkbox {
+  margin-bottom: 0;
+}
+
+.checkbox label {
+  font-size: 14px;
+  color: #374151;
+}
+
+.cancelButton {
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+  background: white;
+}
+
+.cancelButton:hover {
+  background: #f9fafb;
+}
+
+.saveButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.saveButton:hover {
+  background: #2563eb;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.closeButton:hover {
+  background: #f3f4f6;
+}

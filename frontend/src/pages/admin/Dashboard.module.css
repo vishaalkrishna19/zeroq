@@ -12,7 +12,11 @@
 }
 
 .headerSection {
-  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+  width: 100%;
 }
 
 .title {
@@ -47,4 +51,57 @@
   font-weight: 400;
   margin-bottom: 8px;
   color: var(--mantine-color-dark-9);
+}
+
+.connectAppsButton {
+  border: 1px solid #d1d5db;
+  color: #161719;
+  background: white;
+  font-weight: 400;
+  padding: 6px 16px;
+  font-size: 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: rgba(0, 0, 0, 0.09) 3px 3px 5px 0px;
+}
+
+.connectAppsButton::after {
+  content: '+';
+  font-size: 16px;
+  font-weight: 600;
+  color: #5f6268;
+}
+
+.connectAppsButton:hover {
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.appIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: 2px solid white;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: rgba(0, 0, 0, 0.09) 4px 1px 5px 0px;
+}
+
+.appIcon:nth-child(1) {
+  z-index: 3;
+  margin-left: 0;
+
+}
+
+.appIcon:nth-child(2) {
+  z-index: 2;
+  margin-left: -8px;
+}
+
+.appIcon:nth-child(3) {
+  z-index: 1;
+  margin-left: -8px;
 }

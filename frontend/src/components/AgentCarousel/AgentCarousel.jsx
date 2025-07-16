@@ -1,5 +1,5 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
+import { Navigation, Mousewheel } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import styles from './AgentCarousel.module.css';
@@ -101,11 +101,12 @@ const AgentCarousel = ({ onSwiperInit, onSlideChange, journeyType = 'On-boarding
 
 	return (
 		<Swiper
-			modules={[Navigation]}
+			modules={[Navigation, Mousewheel]}
 			spaceBetween={6}
 			onSwiper={onSwiperInit}
 			onSlideChange={onSlideChange}
 			className={styles.swiper}
+			mousewheel={{ forceToAxis: true }}
 			breakpoints={{
 				320: {
 					slidesPerView: 1,

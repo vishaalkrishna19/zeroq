@@ -1,0 +1,31 @@
+
+.p-xs { padding: var(--padding-xs) !important; }
+.p-sm { padding: var(--padding-sm) !important; }
+.p-md { padding: var(--padding-md) !important; }
+.p-lg { padding: var(--padding-lg) !important; }
+.p-xl { padding: var(--padding-xl) !important; }
+
+.m-xs { margin: var(--margin-xs) !important; }
+.m-sm { margin: var(--margin-sm) !important; }
+.m-md { margin: var(--margin-md) !important; }
+.m-lg { margin: var(--margin-lg) !important; }
+.m-xl { margin: var(--margin-xl) !important; }
+
+.gap-xs { gap: var(--gap-xs) !important; }
+.gap-sm { gap: var(--gap-sm) !important; }
+.gap-md { gap: var(--gap-md) !important; }
+.gap-lg { gap: var(--gap-lg) !important; }
+.gap-xl { gap: var(--gap-xl) !important; }
+
+.container-padding { padding: var(--padding-md); }
+.section-padding { padding: var(--padding-lg); }
+.card-padding { padding: var(--padding-md); }
+.form-padding { padding: var(--padding-sm); }
+
+.container-margin { margin: var(--margin-md); }
+.section-margin { margin: var(--margin-lg); }
+.element-margin { margin: var(--margin-sm); }
+
+.stack-gap { gap: var(--gap-md); }
+.group-gap { gap: var(--gap-sm); }
+.grid-gap { gap: var(--gap-lg); }
